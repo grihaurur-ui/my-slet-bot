@@ -146,8 +146,8 @@ def home():
 def health():
     return "OK"
 
-# ========== ЗАПУСК БОТА (БЕЗ ПОТОКА) ==========
-def run_bot():
+# ========== ЗАПУСК БОТА (ПРОСТОЙ ВАРИАНТ) ==========
+async def main():
     logging.basicConfig(level=logging.INFO)
     
     # Создаем приложение бота
@@ -161,15 +161,19 @@ def run_bot():
     
     logging.info("🚀 Бот запущен!")
     
-    # Запускаем бота (это блокирующий вызов)
-    application.run_polling()
+    # Запускаем бота
+    await application.initialize()
+    await application.start()
+    await application.updater.start_polling()
+    
+    # Запускаем Flask
+    port = int(os.environ.get("PORT", 8000))
+    app_flask.run(host="0.0.0.0", port=port)
+    
+    # Останавливаем бота (никогда не дойдем сюда)
+    await application.updater.stop()
+    await application.stop()
+    await application.shutdown()
 
 if __name__ == "__main__":
-    # Запускаем Flask в отдельном потоке, а бота в основном
-    import threading
-    flask_thread = threading.Thread(target=lambda: app_flask.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8000))))
-    flask_thread.daemon = True
-    flask_thread.start()
-    
-    # Запускаем бота в основном потоке
-    run_bot()
+    asyncio.run(main())
