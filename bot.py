@@ -2,9 +2,10 @@ import json
 import logging
 import os
 import threading
+import asyncio
 from flask import Flask
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram.ext import Application, CommandHandler, ContextTypes
 
 # ========== НАСТРОЙКИ ==========
 TOKEN = os.environ.get("BOT_TOKEN")
@@ -93,8 +94,8 @@ def find_server(query):
     return None
 
 # ========== КОМАНДЫ ==========
-def start(update: Update, context: CallbackContext):
-    update.message.reply_text(
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
         "Чтобы записать слет:\n"
         "/i НАЗВАНИЕ_СЕРВЕРА ТЕКСТ\n"
         "Примеры:\n"
@@ -103,9 +104,9 @@ def start(update: Update, context: CallbackContext):
         "/i вайт подъезд 22:30"
     )
 
-def add_entry(update: Update, context: CallbackContext):
+async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 2:
-        update.message.reply_text("❓ Нужно указать сервер и текст")
+        await update.message.reply_text("❓ Нужно указать сервер и текст")
         return
     
     query = context.args[0]
@@ -114,26 +115,26 @@ def add_entry(update: Update, context: CallbackContext):
     server = find_server(query)
     
     if not server:
-        update.message.reply_text("❌ Сервер не найден")
+        await update.message.reply_text("❌ Сервер не найден")
         return
     
     servers_data[server] = text
     save_data()
     
-    update.message.reply_text(f"✅ Записано на {server}: {text}")
+    await update.message.reply_text(f"✅ Записано на {server}: {text}")
 
-def list_entries(update: Update, context: CallbackContext):
-    update.message.reply_text(format_list())
+async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(format_list())
 
-def clear_data(update: Update, context: CallbackContext):
+async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
-        update.message.reply_text("⛔ Только для владельца")
+        await update.message.reply_text("⛔ Только для владельца")
         return
     
     for server in SERVERS:
         servers_data[server] = ""
     save_data()
-    update.message.reply_text("🗑 Все записи удалены")
+    await update.message.reply_text("🗑 Все записи удалены")
 
 # ========== Flask ==========
 app_flask = Flask(__name__)
@@ -150,22 +151,29 @@ def health():
 def run_bot():
     logging.basicConfig(level=logging.INFO)
     
-    updater = Updater(token=TOKEN, use_context=True)
-    dp = updater.dispatcher
+    # Создаваем приложение бота
+    application = Application.builder().token(TOKEN).build()
     
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("i", add_entry))
-    dp.add_handler(CommandHandler("list", list_entries))
-    dp.add_handler(CommandHandler("clear", clear_data))
+    # Добавляем обработчики
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("i", add_entry))
+    application.add_handler(CommandHandler("list", list_entries))
+    application.add_handler(CommandHandler("clear", clear_data))
     
     logging.info("🚀 Бот запущен!")
-    updater.start_polling()
-    updater.idle()
-
-if __name__ == "__main__":
-    thread = threading.Thread(target=run_bot)
-    thread.daemon = True
-    thread.start()
     
+    # Запускаем бота
+    application.run_polling()
+
+def run_flask():
     port = int(os.environ.get("PORT", 8000))
     app_flask.run(host="0.0.0.0", port=port)
+
+if __name__ == "__main__":
+    # Запускаем бота в отдельном потоке
+    bot_thread = threading.Thread(target=run_bot)
+    bot_thread.daemon = True
+    bot_thread.start()
+    
+    # Запускаем Flask в основном потоке
+    run_flask()
