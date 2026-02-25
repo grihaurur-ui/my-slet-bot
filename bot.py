@@ -34,8 +34,9 @@ SERVERS = [
     "🧡 ORANGE", "💛 YELLOW", "💙 BLUE", "💚 GREEN", "❤ RED"
 ]
 
-# ========== ТВОИ ПОЛНЫЕ СИНОНИМЫ ==========
+# ========== ПОЛНЫЕ СИНОНИМЫ (ВСЁ ЧТО ТЫ ПРОСИЛ) ==========
 SYNONYMS = {
+    # Цвета (русские и сленг)
     "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE",
     "БЛУ": "BLUE", "СИНИЙ": "BLUE",
     "ГРИН": "GREEN", "ЗЕЛЕНЫЙ": "GREEN",
@@ -45,17 +46,88 @@ SYNONYMS = {
     "РЭД": "RED", "РЕД": "RED", "КРАСНЫЙ": "RED",
     "ОРАНЖ": "ORANGE", "ОРАНЖЕВЫЙ": "ORANGE",
     "ПЁРПЛ": "PURPLE", "ПУРПЛ": "PURPLE", "ФИОЛЕТОВЫЙ": "PURPLE",
-    "ЛАЙМ": "LIME", "ЧЕРРИ": "CHERRY", "ВИШНЯ": "CHERRY",
-    "ИНДИГО": "INDIGO", "МАДЖЕНТА": "MAGENTA", "КРИМСОН": "CRIMSON",
-    "АКВА": "AQUA", "ГРЕЙ": "GRAY", "СЕРЫЙ": "GRAY",
-    "ЛЦЕ": "LCE", "ЧИЛЛИ": "CHILLI", "КОКО": "COCO",
-    "ПЛАТИНУМ": "PLATINUM", "АКУРЕ": "AQURE",
-    "МОСКВА": "MOSCOW", "ПИТЕР": "SPB", "СПБ": "SPB",
-    "КАЗАНЬ": "KAZAN", "ЕКБ": "EKB", "ЕКАТЕРИНБУРГ": "EKB",
+    "ЛАЙМ": "LIME",
+    "ЧЕРРИ": "CHERRY", "ВИШНЯ": "CHERRY",
+    "ИНДИГО": "INDIGO",
+    "МАДЖЕНТА": "MAGENTA",
+    "КРИМСОН": "CRIMSON",
+    "АКВА": "AQUA",
+    "ГРЕЙ": "GRAY", "СЕРЫЙ": "GRAY",
+    "ЛЦЕ": "LCE",
+    "ЧИЛЛИ": "CHILLI",
+    "КОКО": "COCO",
+    "ПЛАТИНУМ": "PLATINUM",
+    "АКУРЕ": "AQURE",
+
+    # Города (русские названия)
+    "МОСКВА": "MOSCOW",
+    "ПИТЕР": "SPB", "СПБ": "SPB", "САНКТ-ПЕТЕРБУРГ": "SPB",
+    "КАЗАНЬ": "KAZAN",
+    "ЕКБ": "EKB", "ЕКАТЕРИНБУРГ": "EKB",
     "НОВОСИБ": "NOVOSIB", "НОВОСИБИРСК": "NOVOSIB",
-    "КРАСНОДАР": "KRASNODAR", "СОЧИ": "SOCHI", "УФА": "UFA",
-    "РОСТОВ": "ROSTOV", "САМАРА": "SAMARA",
+    "КРАСНОДАР": "KRASNODAR",
+    "СОЧИ": "SOCHI",
+    "УФА": "UFA",
+    "РОСТОВ": "ROSTOV",
+    "САМАРА": "SAMARA",
     "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НН": "NOVGOROD",
+    "НОРИЛЬСК": "NORILSK",
+    "ЧЕРЕПОВЕЦ": "CHEREPOVETS",
+    "МАГАДАН": "MAGADAN",
+    "ПОДОЛЬСК": "PODOLSK",
+    "СУРГУТ": "SURGUT",
+    "ИЖЕВСК": "IZHEVSK",
+    "ТОМСК": "TOMSK",
+    "ТВЕРЬ": "TVER",
+    "ВОЛОГДА": "VOLOGDA",
+    "ТАГАНРОГ": "TAGANROG",
+    "НОВГОРОД": "NOVGOROD",
+    "КАЛУГА": "KALUGA",
+    "ВЛАДИМИР": "VLADIMIR",
+    "КОСТРОМА": "KOSTROMA",
+    "ЧИТА": "CHITA",
+    "АСТРАХАНЬ": "ASTRAKHAN",
+    "БРАТСК": "BRATSK",
+    "ТАМБОВ": "TAMBOV",
+    "ЯКУТСК": "YAKUTSK",
+    "УЛЬЯНОВСК": "ULYANOVSK",
+    "ЛИПЕЦК": "LIPETSK",
+    "БАРНАУЛ": "BARNAUL",
+    "ЯРОСЛАВЛЬ": "YAROSLAVL",
+    "ОРЕЛ": "OREL",
+    "БРЯНСК": "BRYANSK",
+    "ПСКОВ": "PSKOV",
+    "СМОЛЕНСК": "SMOLENSK",
+    "СТАВРОПОЛЬ": "STAVROPOL",
+    "ИВАНОВО": "IVANOVO",
+    "ТОЛЬЯТТИ": "TOLYATTI",
+    "ТЮМЕНЬ": "TYUMEN",
+    "КЕМЕРОВО": "KEMEROVO",
+    "КИРОВ": "KIROV",
+    "ОРЕНБУРГ": "ORENBURG",
+    "АРХАНГЕЛЬСК": "ARKHANGELSK",
+    "КУРСК": "KURSK",
+    "МУРМАНСК": "MURMANSK",
+    "ПЕНЗА": "PENZA",
+    "РЯЗАНЬ": "RYAZAN",
+    "ТУЛА": "TULA",
+    "ПЕРМЬ": "PERM",
+    "ХАБАРОВСК": "KHABAROVSK",
+    "ЧЕБОКСАРЫ": "CHEBOKSARY",
+    "КРАСНОЯРСК": "KRASNOYARSK",
+    "ЧЕЛЯБИНСК": "CHELYABINSK",
+    "КАЛИНИНГРАД": "KALININGRAD",
+    "ВЛАДИВОСТОК": "VLADIVOSTOK",
+    "ВЛАДИКАВКАЗ": "VLADIKAVKAZ",
+    "МАХАЧКАЛА": "MAKHACHKALA",
+    "БЕЛГОРОД": "BELGOROD",
+    "ВОРОНЕЖ": "VORONEZH",
+    "ВОЛГОГРАД": "VOLGOGRAD",
+    "ИРКУТСК": "IRKUTSK",
+    "ОМСК": "OMSK",
+    "САРАТОВ": "SARATOV",
+    "ГРОЗНЫЙ": "GROZNY",
+    "АРЗАМАС": "ARZAMAS",
 }
 
 # ========== ЗАГРУЗКА ДАННЫХ ==========
@@ -81,31 +153,44 @@ def format_list():
         lines.append("")
     return '\n'.join(lines)
 
-# ========== ПОИСК СЕРВЕРА ==========
+# ========== ПОИСК СЕРВЕРА (С СИНОНИМАМИ) ==========
 def find_server(query):
-    query = query.upper()
+    query = query.upper().strip()
+    
+    # Сначала проверяем синонимы
     if query in SYNONYMS:
         query = SYNONYMS[query]
+    
+    # Потом ищем в списке серверов
     for server in SERVERS:
         server_name = server.split(' ')[1].upper() if ' ' in server else server.upper()
-        if query == server_name or query in server_name:
+        if query == server_name:
             return server
+    
+    # Если точного совпадения нет, ищем частичное
+    for server in SERVERS:
+        server_name = server.split(' ')[1].upper() if ' ' in server else server.upper()
+        if query in server_name or server_name in query:
+            return server
+    
     return None
 
 # ========== КОМАНДЫ ==========
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "Чтобы записать слет:\n"
-        "/i НАЗВАНИЕ_СЕРВЕРА ТЕКСТ\n"
+        "/i НАЗВАНИЕ_СЕРВЕРА ТЕКСТ\n\n"
         "Примеры:\n"
         "/i блу тест 123\n"
         "/i москва кор 20\n"
-        "/i вайт подъезд 22:30"
+        "/i вайт подъезд 22:30\n"
+        "/i красный бусс 15\n\n"
+        "Список всех серверов — /list"
     )
 
 async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 2:
-        await update.message.reply_text("❓ Нужно указать сервер и текст")
+        await update.message.reply_text("❓ Нужно указать сервер и текст\nПример: /i блу тест 123")
         return
     
     query = context.args[0]
@@ -114,7 +199,19 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     server = find_server(query)
     
     if not server:
-        await update.message.reply_text("❌ Сервер не найден")
+        # Показываем похожие сервера
+        similar = []
+        query_up = query.upper()
+        for s in SERVERS[:10]:  # первые 10 для примера
+            s_name = s.split(' ')[1].upper() if ' ' in s else s.upper()
+            if query_up in s_name or s_name in query_up:
+                similar.append(s)
+        
+        if similar:
+            similar_text = '\n'.join(similar[:5])
+            await update.message.reply_text(f"❌ Сервер не найден. Возможно, вы искали:\n{similar_text}")
+        else:
+            await update.message.reply_text("❌ Сервер не найден")
         return
     
     servers_data[server] = text
@@ -123,7 +220,14 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"✅ Записано на {server}: {text}")
 
 async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(format_list())
+    full_list = format_list()
+    if len(full_list) > 4096:
+        # Разбиваем на части если слишком длинный
+        parts = [full_list[i:i+4096] for i in range(0, len(full_list), 4096)]
+        for part in parts:
+            await update.message.reply_text(part)
+    else:
+        await update.message.reply_text(full_list)
 
 async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
@@ -163,7 +267,7 @@ async def run_bot():
     application.add_handler(CommandHandler("list", list_entries))
     application.add_handler(CommandHandler("clear", clear_data))
     
-    logging.info("🚀 Бот запущен!")
+    logging.info("🚀 Бот с синонимами запущен!")
     
     # Запускаем бота
     await application.initialize()
