@@ -2,7 +2,6 @@ import json
 import logging
 import os
 import threading
-import asyncio
 from flask import Flask
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
@@ -151,7 +150,7 @@ def health():
 def run_bot():
     logging.basicConfig(level=logging.INFO)
     
-    # Создаваем приложение бота
+    # Создаем приложение бота
     application = Application.builder().token(TOKEN).build()
     
     # Добавляем обработчики
@@ -165,15 +164,12 @@ def run_bot():
     # Запускаем бота
     application.run_polling()
 
-def run_flask():
-    port = int(os.environ.get("PORT", 8000))
-    app_flask.run(host="0.0.0.0", port=port)
-
 if __name__ == "__main__":
     # Запускаем бота в отдельном потоке
     bot_thread = threading.Thread(target=run_bot)
     bot_thread.daemon = True
     bot_thread.start()
     
-    # Запускаем Flask в основном потоке
-    run_flask()
+    # Запускаем Flask сервер
+    port = int(os.environ.get("PORT", 8000))
+    app_flask.run(host="0.0.0.0", port=port)
