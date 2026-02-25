@@ -2,14 +2,16 @@ import json
 import logging
 import datetime
 import os
+import threading
 import unidecode
+from flask import Flask
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
 # ========== НАСТРОЙКИ ==========
-TOKEN = "8326308179:AAHvTjKEIa4Ru4TqcrrRZ_BUZ3uX23EOFsk"
-CHAT_ID = -1003542800512  # ID чата для списка
-OWNER_ID = 6005507174  # твой Telegram ID
+TOKEN = os.environ.get("BOT_TOKEN")
+CHAT_ID = int(os.environ.get("CHAT_ID", "0"))
+OWNER_ID = int(os.environ.get("OWNER_ID", "0"))
 DATA_FILE = "data.json"
 MESSAGE_ID_FILE = "message_id.txt"
 
@@ -127,11 +129,6 @@ def parse_servers(text):
         }
     return servers
 
-# ========== ФУНКЦИЯ СОХРАНЕНИЯ ==========
-def save_data():
-    with open(DATA_FILE, 'w', encoding='utf-8') as f:
-        json.dump(servers_data, f, ensure_ascii=False, indent=2)
-
 # ========== ЗАГРУЗКА ==========
 if os.path.exists(DATA_FILE):
     try:
@@ -152,6 +149,10 @@ if os.path.exists(DATA_FILE):
         servers_data = parse_servers(SERVERS_TEXT)
 else:
     servers_data = parse_servers(SERVERS_TEXT)
+
+def save_data():
+    with open(DATA_FILE, 'w', encoding='utf-8') as f:
+        json.dump(servers_data, f, ensure_ascii=False, indent=2)
 
 save_data()
 
@@ -193,7 +194,8 @@ async def update_list_message(context):
                 message_id=message_id,
                 text=format_list()
             )
-        except:
+        except Exception as e:
+            print(f"Error editing message: {e}")
             sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=format_list())
             save_message_id(sent_message.message_id)
             try:
@@ -203,7 +205,6 @@ async def update_list_message(context):
 
 # ========== СИНОНИМЫ ==========
 SYNONYMS = {
-    # Цвета
     "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE",
     "БЛУ": "BLUE", "СИНИЙ": "BLUE",
     "ГРИН": "GREEN", "ЗЕЛЕНЫЙ": "GREEN",
@@ -225,82 +226,14 @@ SYNONYMS = {
     "КОКО": "COCO",
     "ПЛАТИНУМ": "PLATINUM",
     "АКУРЕ": "AQURE",
-
-    # Города
     "МОСКВА": "MOSCOW",
     "ПИТЕР": "SPB", "СПБ": "SPB", "САНКТ-ПЕТЕРБУРГ": "SPB",
     "КАЗАНЬ": "KAZAN",
     "ЕКБ": "EKB", "ЕКАТЕРИНБУРГ": "EKB",
     "НОВОСИБ": "NOVOSIB", "НОВОСИБИРСК": "NOVOSIB",
-    "КРАСНОДАР": "KRASNODAR",
-    "СОЧИ": "SOCHI",
-    "УФА": "UFA",
-    "РОСТОВ": "ROSTOV",
-    "САМАРА": "SAMARA",
-    "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НН": "NOVGOROD",
-    "НОРИЛЬСК": "NORILSK",
-    "ЧЕРЕПОВЕЦ": "CHEREPOVETS",
-    "МАГАДАН": "MAGADAN",
-    "ПОДОЛЬСК": "PODOLSK",
-    "СУРГУТ": "SURGUT",
-    "ИЖЕВСК": "IZHEVSK",
-    "ТОМСК": "TOMSK",
-    "ТВЕРЬ": "TVER",
-    "ВОЛОГДА": "VOLOGDA",
-    "ТАГАНРОГ": "TAGANROG",
-    "НОВГОРОД": "NOVGOROD",
-    "КАЛУГА": "KALUGA",
-    "ВЛАДИМИР": "VLADIMIR",
-    "КОСТРОМА": "KOSTROMA",
-    "ЧИТА": "CHITA",
-    "АСТРАХАНЬ": "ASTRAKHAN",
-    "БРАТСК": "BRATSK",
-    "ТАМБОВ": "TAMBOV",
-    "ЯКУТСК": "YAKUTSK",
-    "УЛЬЯНОВСК": "ULYANOVSK",
-    "ЛИПЕЦК": "LIPETSK",
-    "БАРНАУЛ": "BARNAUL",
-    "ЯРОСЛАВЛЬ": "YAROSLAVL",
-    "ОРЕЛ": "OREL",
-    "БРЯНСК": "BRYANSK",
-    "ПСКОВ": "PSKOV",
-    "СМОЛЕНСК": "SMOLENSK",
-    "СТАВРОПОЛЬ": "STAVROPOL",
-    "ИВАНОВО": "IVANOVO",
-    "ТОЛЬЯТТИ": "TOLYATTI",
-    "ТЮМЕНЬ": "TYUMEN",
-    "КЕМЕРОВО": "KEMEROVO",
-    "КИРОВ": "KIROV",
-    "ОРЕНБУРГ": "ORENBURG",
-    "АРХАНГЕЛЬСК": "ARKHANGELSK",
-    "КУРСК": "KURSK",
-    "МУРМАНСК": "MURMANSK",
-    "ПЕНЗА": "PENZA",
-    "РЯЗАНЬ": "RYAZAN",
-    "ТУЛА": "TULA",
-    "ПЕРМЬ": "PERM",
-    "ХАБАРОВСК": "KHABAROVSK",
-    "ЧЕБОКСАРЫ": "CHEBOKSARY",
-    "КРАСНОЯРСК": "KRASNOYARSK",
-    "ЧЕЛЯБИНСК": "CHELYABINSK",
-    "КАЛИНИНГРАД": "KALININGRAD",
-    "ВЛАДИВОСТОК": "VLADIVOSTOK",
-    "ВЛАДИКАВКАЗ": "VLADIKAVKAZ",
-    "МАХАЧКАЛА": "MAKHACHKALA",
-    "БЕЛГОРОД": "BELGOROD",
-    "ВОРОНЕЖ": "VORONEZH",
-    "ВОЛГОГРАД": "VOLGOGRAD",
-    "ИРКУТСК": "IRKUTSK",
-    "ОМСК": "OMSK",
-    "САРАТОВ": "SARATOV",
-    "ГРОЗНЫЙ": "GROZNY",
-    "АРЗАМАС": "ARZAMAS",
-    "МХЧ": "MAKHACHKALA",
-    "АНАПА": "ANAPA",
-    "ВОЛГОГРАД": "VOLGOGRAD",
 }
 
-# ========== КОМАНДЫ ==========
+# ========== КОМАНДЫ БОТА ==========
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "Чтобы записать слет /i (сервер)\n"
@@ -354,22 +287,39 @@ async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🗑 Все записи удалены.")
     await update_list_message(context)
 
-# ========== ЗАПУСК ==========
-def main():
+# ========== Flask для Health Check ==========
+app_flask = Flask(__name__)
+
+@app_flask.route('/')
+def home():
+    return "Bot is running!"
+
+@app_flask.route('/health')
+def health():
+    return "OK", 200
+
+# ========== ЗАПУСК БОТА ==========
+def run_bot():
     logging.basicConfig(
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", 
         level=logging.INFO
     )
     
     app = Application.builder().token(TOKEN).build()
-
+    
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("i", add_entry))
     app.add_handler(CommandHandler("list", list_entries))
     app.add_handler(CommandHandler("clear", clear_data))
-
+    
     logging.info("🚀 Бот запущен...")
-    app.run_polling()
+    app.run_polling(drop_pending_updates=True)
 
+# ========== ТОЧКА ВХОДА ==========
 if __name__ == "__main__":
-    main()
+    bot_thread = threading.Thread(target=run_bot)
+    bot_thread.daemon = True
+    bot_thread.start()
+    
+    port = int(os.environ.get("PORT", 8000))
+    app_flask.run(host="0.0.0.0", port=port)
