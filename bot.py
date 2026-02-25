@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import threading
+import asyncio
 from flask import Flask
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
@@ -149,6 +150,10 @@ def health():
 # ========== ЗАПУСК БОТА ==========
 def run_bot():
     logging.basicConfig(level=logging.INFO)
+    
+    # СОЗДАЕМ НОВЫЙ ЦИКЛ СОБЫТИЙ ДЛЯ ПОТОКА
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     
     # Создаем приложение бота
     application = Application.builder().token(TOKEN).build()
