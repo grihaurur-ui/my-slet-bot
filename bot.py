@@ -12,7 +12,7 @@ CHAT_ID = int(os.environ.get("CHAT_ID", "0"))
 OWNER_ID = int(os.environ.get("OWNER_ID", "0"))
 DATA_FILE = "data.json"
 
-# ========== СПИСОК СЕРВЕРОВ ==========
+# ========== ТВОЙ ПОЛНЫЙ СПИСОК СЕРВЕРОВ ==========
 SERVERS = [
     "🎉 NORILSK", "🦈 CHEREPOVETS", "💨 MAGADAN", "🏰 PODOLSK", "🏙 SURGUT",
     "🏍 IZHEVSK", "🎄 TOMSK", "🐿 TVER", "🐦‍🔥 VOLOGDA", "🦁 TAGANROG",
@@ -34,7 +34,7 @@ SERVERS = [
     "🧡 ORANGE", "💛 YELLOW", "💙 BLUE", "💚 GREEN", "❤ RED"
 ]
 
-# ========== СИНОНИМЫ ==========
+# ========== ТВОИ ПОЛНЫЕ СИНОНИМЫ ==========
 SYNONYMS = {
     "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE",
     "БЛУ": "BLUE", "СИНИЙ": "BLUE",
@@ -135,7 +135,7 @@ async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     save_data()
     await update.message.reply_text("🗑 Все записи удалены")
 
-# ========== Flask ==========
+# ========== Flask для Render ==========
 app_flask = Flask(__name__)
 
 @app_flask.route('/')
@@ -146,9 +146,13 @@ def home():
 def health():
     return "OK"
 
-# ========== ЗАПУСК БОТА (ПРОСТОЙ ВАРИАНТ) ==========
-async def main():
+# ========== ЗАПУСК ==========
+async def run_bot():
     logging.basicConfig(level=logging.INFO)
+    
+    # СОЗДАЕМ ЦИКЛ СОБЫТИЙ
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     
     # Создаем приложение бота
     application = Application.builder().token(TOKEN).build()
@@ -166,14 +170,17 @@ async def main():
     await application.start()
     await application.updater.start_polling()
     
-    # Запускаем Flask
-    port = int(os.environ.get("PORT", 8000))
-    app_flask.run(host="0.0.0.0", port=port)
-    
-    # Останавливаем бота (никогда не дойдем сюда)
-    await application.updater.stop()
-    await application.stop()
-    await application.shutdown()
+    # Держим бота запущенным
+    while True:
+        await asyncio.sleep(3600)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    # Запускаем Flask в отдельном потоке
+    import threading
+    port = int(os.environ.get("PORT", 8000))
+    flask_thread = threading.Thread(target=lambda: app_flask.run(host="0.0.0.0", port=port))
+    flask_thread.daemon = True
+    flask_thread.start()
+    
+    # Запускаем бота
+    asyncio.run(run_bot())
