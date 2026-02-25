@@ -11,6 +11,7 @@ TOKEN = os.environ.get("BOT_TOKEN")
 CHAT_ID = int(os.environ.get("CHAT_ID", "0"))
 OWNER_ID = int(os.environ.get("OWNER_ID", "0"))
 DATA_FILE = "data.json"
+MESSAGE_ID_FILE = "message_id.txt"  # файл для хранения ID сообщения
 
 # ========== ТВОЙ ПОЛНЫЙ СПИСОК СЕРВЕРОВ ==========
 SERVERS = [
@@ -34,9 +35,8 @@ SERVERS = [
     "🧡 ORANGE", "💛 YELLOW", "💙 BLUE", "💚 GREEN", "❤ RED"
 ]
 
-# ========== ПОЛНЫЕ СИНОНИМЫ (ВСЁ ЧТО ТЫ ПРОСИЛ) ==========
+# ========== ПОЛНЫЕ СИНОНИМЫ ==========
 SYNONYMS = {
-    # Цвета (русские и сленг)
     "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE",
     "БЛУ": "BLUE", "СИНИЙ": "BLUE",
     "ГРИН": "GREEN", "ЗЕЛЕНЫЙ": "GREEN",
@@ -46,88 +46,35 @@ SYNONYMS = {
     "РЭД": "RED", "РЕД": "RED", "КРАСНЫЙ": "RED",
     "ОРАНЖ": "ORANGE", "ОРАНЖЕВЫЙ": "ORANGE",
     "ПЁРПЛ": "PURPLE", "ПУРПЛ": "PURPLE", "ФИОЛЕТОВЫЙ": "PURPLE",
-    "ЛАЙМ": "LIME",
-    "ЧЕРРИ": "CHERRY", "ВИШНЯ": "CHERRY",
-    "ИНДИГО": "INDIGO",
-    "МАДЖЕНТА": "MAGENTA",
-    "КРИМСОН": "CRIMSON",
-    "АКВА": "AQUA",
-    "ГРЕЙ": "GRAY", "СЕРЫЙ": "GRAY",
-    "ЛЦЕ": "LCE",
-    "ЧИЛЛИ": "CHILLI",
-    "КОКО": "COCO",
-    "ПЛАТИНУМ": "PLATINUM",
-    "АКУРЕ": "AQURE",
-
-    # Города (русские названия)
-    "МОСКВА": "MOSCOW",
-    "ПИТЕР": "SPB", "СПБ": "SPB", "САНКТ-ПЕТЕРБУРГ": "SPB",
-    "КАЗАНЬ": "KAZAN",
-    "ЕКБ": "EKB", "ЕКАТЕРИНБУРГ": "EKB",
+    "ЛАЙМ": "LIME", "ЧЕРРИ": "CHERRY", "ВИШНЯ": "CHERRY",
+    "ИНДИГО": "INDIGO", "МАДЖЕНТА": "MAGENTA", "КРИМСОН": "CRIMSON",
+    "АКВА": "AQUA", "ГРЕЙ": "GRAY", "СЕРЫЙ": "GRAY",
+    "ЛЦЕ": "LCE", "ЧИЛЛИ": "CHILLI", "КОКО": "COCO",
+    "ПЛАТИНУМ": "PLATINUM", "АКУРЕ": "AQURE",
+    "МОСКВА": "MOSCOW", "ПИТЕР": "SPB", "СПБ": "SPB", "САНКТ-ПЕТЕРБУРГ": "SPB",
+    "КАЗАНЬ": "KAZAN", "ЕКБ": "EKB", "ЕКАТЕРИНБУРГ": "EKB",
     "НОВОСИБ": "NOVOSIB", "НОВОСИБИРСК": "NOVOSIB",
-    "КРАСНОДАР": "KRASNODAR",
-    "СОЧИ": "SOCHI",
-    "УФА": "UFA",
-    "РОСТОВ": "ROSTOV",
-    "САМАРА": "SAMARA",
-    "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НН": "NOVGOROD",
-    "НОРИЛЬСК": "NORILSK",
-    "ЧЕРЕПОВЕЦ": "CHEREPOVETS",
-    "МАГАДАН": "MAGADAN",
-    "ПОДОЛЬСК": "PODOLSK",
-    "СУРГУТ": "SURGUT",
-    "ИЖЕВСК": "IZHEVSK",
-    "ТОМСК": "TOMSK",
-    "ТВЕРЬ": "TVER",
-    "ВОЛОГДА": "VOLOGDA",
-    "ТАГАНРОГ": "TAGANROG",
-    "НОВГОРОД": "NOVGOROD",
-    "КАЛУГА": "KALUGA",
-    "ВЛАДИМИР": "VLADIMIR",
-    "КОСТРОМА": "KOSTROMA",
-    "ЧИТА": "CHITA",
-    "АСТРАХАНЬ": "ASTRAKHAN",
-    "БРАТСК": "BRATSK",
-    "ТАМБОВ": "TAMBOV",
-    "ЯКУТСК": "YAKUTSK",
-    "УЛЬЯНОВСК": "ULYANOVSK",
-    "ЛИПЕЦК": "LIPETSK",
-    "БАРНАУЛ": "BARNAUL",
-    "ЯРОСЛАВЛЬ": "YAROSLAVL",
-    "ОРЕЛ": "OREL",
-    "БРЯНСК": "BRYANSK",
-    "ПСКОВ": "PSKOV",
-    "СМОЛЕНСК": "SMOLENSK",
-    "СТАВРОПОЛЬ": "STAVROPOL",
-    "ИВАНОВО": "IVANOVO",
-    "ТОЛЬЯТТИ": "TOLYATTI",
-    "ТЮМЕНЬ": "TYUMEN",
-    "КЕМЕРОВО": "KEMEROVO",
-    "КИРОВ": "KIROV",
-    "ОРЕНБУРГ": "ORENBURG",
-    "АРХАНГЕЛЬСК": "ARKHANGELSK",
-    "КУРСК": "KURSK",
-    "МУРМАНСК": "MURMANSK",
-    "ПЕНЗА": "PENZA",
-    "РЯЗАНЬ": "RYAZAN",
-    "ТУЛА": "TULA",
-    "ПЕРМЬ": "PERM",
-    "ХАБАРОВСК": "KHABAROVSK",
-    "ЧЕБОКСАРЫ": "CHEBOKSARY",
-    "КРАСНОЯРСК": "KRASNOYARSK",
-    "ЧЕЛЯБИНСК": "CHELYABINSK",
-    "КАЛИНИНГРАД": "KALININGRAD",
-    "ВЛАДИВОСТОК": "VLADIVOSTOK",
-    "ВЛАДИКАВКАЗ": "VLADIKAVKAZ",
-    "МАХАЧКАЛА": "MAKHACHKALA",
-    "БЕЛГОРОД": "BELGOROD",
-    "ВОРОНЕЖ": "VORONEZH",
-    "ВОЛГОГРАД": "VOLGOGRAD",
-    "ИРКУТСК": "IRKUTSK",
-    "ОМСК": "OMSK",
-    "САРАТОВ": "SARATOV",
-    "ГРОЗНЫЙ": "GROZNY",
-    "АРЗАМАС": "ARZAMAS",
+    "КРАСНОДАР": "KRASNODAR", "СОЧИ": "SOCHI", "УФА": "UFA",
+    "РОСТОВ": "ROSTOV", "САМАРА": "SAMARA", "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НН": "NOVGOROD",
+    "НОРИЛЬСК": "NORILSK", "ЧЕРЕПОВЕЦ": "CHEREPOVETS", "МАГАДАН": "MAGADAN",
+    "ПОДОЛЬСК": "PODOLSK", "СУРГУТ": "SURGUT", "ИЖЕВСК": "IZHEVSK",
+    "ТОМСК": "TOMSK", "ТВЕРЬ": "TVER", "ВОЛОГДА": "VOLOGDA",
+    "ТАГАНРОГ": "TAGANROG", "НОВГОРОД": "NOVGOROD", "КАЛУГА": "KALUGA",
+    "ВЛАДИМИР": "VLADIMIR", "КОСТРОМА": "KOSTROMA", "ЧИТА": "CHITA",
+    "АСТРАХАНЬ": "ASTRAKHAN", "БРАТСК": "BRATSK", "ТАМБОВ": "TAMBOV",
+    "ЯКУТСК": "YAKUTSK", "УЛЬЯНОВСК": "ULYANOVSK", "ЛИПЕЦК": "LIPETSK",
+    "БАРНАУЛ": "BARNAUL", "ЯРОСЛАВЛЬ": "YAROSLAVL", "ОРЕЛ": "OREL",
+    "БРЯНСК": "BRYANSK", "ПСКОВ": "PSKOV", "СМОЛЕНСК": "SMOLENSK",
+    "СТАВРОПОЛЬ": "STAVROPOL", "ИВАНОВО": "IVANOVO", "ТОЛЬЯТТИ": "TOLYATTI",
+    "ТЮМЕНЬ": "TYUMEN", "КЕМЕРОВО": "KEMEROVO", "КИРОВ": "KIROV",
+    "ОРЕНБУРГ": "ORENBURG", "АРХАНГЕЛЬСК": "ARKHANGELSK", "КУРСК": "KURSK",
+    "МУРМАНСК": "MURMANSK", "ПЕНЗА": "PENZA", "РЯЗАНЬ": "RYAZAN",
+    "ТУЛА": "TULA", "ПЕРМЬ": "PERM", "ХАБАРОВСК": "KHABAROVSK",
+    "ЧЕБОКСАРЫ": "CHEBOKSARY", "КРАСНОЯРСК": "KRASNOYARSK", "ЧЕЛЯБИНСК": "CHELYABINSK",
+    "КАЛИНИНГРАД": "KALININGRAD", "ВЛАДИВОСТОК": "VLADIVOSTOK", "ВЛАДИКАВКАЗ": "VLADIKAVKAZ",
+    "МАХАЧКАЛА": "MAKHACHKALA", "БЕЛГОРОД": "BELGOROD", "ВОРОНЕЖ": "VORONEZH",
+    "ВОЛГОГРАД": "VOLGOGRAD", "ИРКУТСК": "IRKUTSK", "ОМСК": "OMSK",
+    "САРАТОВ": "SARATOV", "ГРОЗНЫЙ": "GROZNY", "АРЗАМАС": "ARZAMAS",
 }
 
 # ========== ЗАГРУЗКА ДАННЫХ ==========
@@ -153,27 +100,61 @@ def format_list():
         lines.append("")
     return '\n'.join(lines)
 
-# ========== ПОИСК СЕРВЕРА (С СИНОНИМАМИ) ==========
+# ========== ПОИСК СЕРВЕРА ==========
 def find_server(query):
     query = query.upper().strip()
-    
-    # Сначала проверяем синонимы
     if query in SYNONYMS:
         query = SYNONYMS[query]
-    
-    # Потом ищем в списке серверов
     for server in SERVERS:
         server_name = server.split(' ')[1].upper() if ' ' in server else server.upper()
         if query == server_name:
             return server
-    
-    # Если точного совпадения нет, ищем частичное
     for server in SERVERS:
         server_name = server.split(' ')[1].upper() if ' ' in server else server.upper()
         if query in server_name or server_name in query:
             return server
-    
     return None
+
+# ========== РАБОТА С ID СООБЩЕНИЯ ==========
+def save_message_id(message_id):
+    with open(MESSAGE_ID_FILE, 'w') as f:
+        f.write(str(message_id))
+
+def load_message_id():
+    if os.path.exists(MESSAGE_ID_FILE):
+        with open(MESSAGE_ID_FILE, 'r') as f:
+            return int(f.read().strip())
+    return None
+
+async def update_list_message(context):
+    """Обновляет одно закреплённое сообщение со списком"""
+    message_id = load_message_id()
+    full_text = format_list()
+    
+    if message_id is None:
+        # Если сообщения ещё нет — отправляем новое
+        sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
+        save_message_id(sent_message.message_id)
+        try:
+            await context.bot.pin_chat_message(chat_id=CHAT_ID, message_id=sent_message.message_id)
+        except:
+            pass
+    else:
+        # Если есть — редактируем
+        try:
+            await context.bot.edit_message_text(
+                chat_id=CHAT_ID,
+                message_id=message_id,
+                text=full_text
+            )
+        except:
+            # Если сообщение не найдено — создаём новое
+            sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
+            save_message_id(sent_message.message_id)
+            try:
+                await context.bot.pin_chat_message(chat_id=CHAT_ID, message_id=sent_message.message_id)
+            except:
+                pass
 
 # ========== КОМАНДЫ ==========
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -183,10 +164,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Примеры:\n"
         "/i блу тест 123\n"
         "/i москва кор 20\n"
-        "/i вайт подъезд 22:30\n"
-        "/i красный бусс 15\n\n"
-        "Список всех серверов — /list"
+        "/i вайт подъезд 22:30\n\n"
+        "Список обновляется в закреплённом сообщении."
     )
+    # При первом запуске создаём список
+    await update_list_message(context)
 
 async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 2:
@@ -199,30 +181,20 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     server = find_server(query)
     
     if not server:
-        # Показываем похожие сервера
-        similar = []
-        query_up = query.upper()
-        for s in SERVERS[:10]:  # первые 10 для примера
-            s_name = s.split(' ')[1].upper() if ' ' in s else s.upper()
-            if query_up in s_name or s_name in query_up:
-                similar.append(s)
-        
-        if similar:
-            similar_text = '\n'.join(similar[:5])
-            await update.message.reply_text(f"❌ Сервер не найден. Возможно, вы искали:\n{similar_text}")
-        else:
-            await update.message.reply_text("❌ Сервер не найден")
+        await update.message.reply_text("❌ Сервер не найден")
         return
     
     servers_data[server] = text
     save_data()
     
     await update.message.reply_text(f"✅ Записано на {server}: {text}")
+    
+    # Обновляем закреплённое сообщение
+    await update_list_message(context)
 
 async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
     full_list = format_list()
     if len(full_list) > 4096:
-        # Разбиваем на части если слишком длинный
         parts = [full_list[i:i+4096] for i in range(0, len(full_list), 4096)]
         for part in parts:
             await update.message.reply_text(part)
@@ -238,8 +210,9 @@ async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
         servers_data[server] = ""
     save_data()
     await update.message.reply_text("🗑 Все записи удалены")
+    await update_list_message(context)
 
-# ========== Flask для Render ==========
+# ========== Flask ==========
 app_flask = Flask(__name__)
 
 @app_flask.route('/')
@@ -254,37 +227,30 @@ def health():
 async def run_bot():
     logging.basicConfig(level=logging.INFO)
     
-    # СОЗДАЕМ ЦИКЛ СОБЫТИЙ
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     
-    # Создаем приложение бота
     application = Application.builder().token(TOKEN).build()
     
-    # Добавляем обработчики
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("i", add_entry))
     application.add_handler(CommandHandler("list", list_entries))
     application.add_handler(CommandHandler("clear", clear_data))
     
-    logging.info("🚀 Бот с синонимами запущен!")
+    logging.info("🚀 Бот запущен! Список будет обновляться в одном сообщении.")
     
-    # Запускаем бота
     await application.initialize()
     await application.start()
     await application.updater.start_polling()
     
-    # Держим бота запущенным
     while True:
         await asyncio.sleep(3600)
 
 if __name__ == "__main__":
-    # Запускаем Flask в отдельном потоке
     import threading
     port = int(os.environ.get("PORT", 8000))
     flask_thread = threading.Thread(target=lambda: app_flask.run(host="0.0.0.0", port=port))
     flask_thread.daemon = True
     flask_thread.start()
     
-    # Запускаем бота
     asyncio.run(run_bot())
