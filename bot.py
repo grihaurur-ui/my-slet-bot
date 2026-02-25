@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-import threading
 import asyncio
 from flask import Flask
 from telegram import Update
@@ -147,13 +146,9 @@ def home():
 def health():
     return "OK"
 
-# ========== ЗАПУСК БОТА ==========
+# ========== ЗАПУСК БОТА (БЕЗ ПОТОКА) ==========
 def run_bot():
     logging.basicConfig(level=logging.INFO)
-    
-    # СОЗДАЕМ НОВЫЙ ЦИКЛ СОБЫТИЙ ДЛЯ ПОТОКА
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
     
     # Создаем приложение бота
     application = Application.builder().token(TOKEN).build()
@@ -166,15 +161,15 @@ def run_bot():
     
     logging.info("🚀 Бот запущен!")
     
-    # Запускаем бота
+    # Запускаем бота (это блокирующий вызов)
     application.run_polling()
 
 if __name__ == "__main__":
-    # Запускаем бота в отдельном потоке
-    bot_thread = threading.Thread(target=run_bot)
-    bot_thread.daemon = True
-    bot_thread.start()
+    # Запускаем Flask в отдельном потоке, а бота в основном
+    import threading
+    flask_thread = threading.Thread(target=lambda: app_flask.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8000))))
+    flask_thread.daemon = True
+    flask_thread.start()
     
-    # Запускаем Flask сервер
-    port = int(os.environ.get("PORT", 8000))
-    app_flask.run(host="0.0.0.0", port=port)
+    # Запускаем бота в основном потоке
+    run_bot()
