@@ -174,6 +174,21 @@ def add_log(user_id, user_name, action, details):
         logs = logs[-MAX_LOGS:]
     save_logs(logs)
 
+# ========== ПРОВЕРКА ДОСТУПА В ЛИЧНЫХ СООБЩЕНИЯХ ==========
+async def check_private_access(update: Update):
+    """Проверяет, имеет ли пользователь доступ в личных сообщениях"""
+    # Если это не личное сообщение - пропускаем
+    if update.message.chat.type != "private":
+        return True
+    
+    # Если личное сообщение - проверяем, владелец ли это
+    if update.effective_user.id == OWNER_ID:
+        return True
+    
+    # Если не владелец в личке - отправляем сообщение и блокируем
+    await update.message.reply_text("⛔ Бот доступен только в группе")
+    return False
+
 # ========== ФОРМАТИРОВАНИЕ СПИСКА ==========
 def format_list():
     lines = []
@@ -210,20 +225,16 @@ def load_message_id():
             return int(f.read().strip())
     return None
 
-# ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ СПИСКА ==========
+# ========== ФУНКЦИЯ ОБНОВЛЕНИЯ СПИСКА ==========
 async def update_list_message(context):
     """Обновляет закреплённое сообщение со списком"""
     full_text = format_list()
     
     try:
-        # Получаем информацию о чате
         chat = await context.bot.get_chat(chat_id=CHAT_ID)
         
-        # Проверяем, есть ли закреплённое сообщение
         if chat.pinned_message:
             pinned_id = chat.pinned_message.message_id
-            
-            # Пробуем отредактировать закреплённое
             try:
                 await context.bot.edit_message_text(
                     chat_id=CHAT_ID,
@@ -231,52 +242,49 @@ async def update_list_message(context):
                     text=full_text
                 )
                 save_message_id(pinned_id)
-                logging.info(f"Отредактировано закреплённое сообщение {pinned_id}")
                 return
-            except Exception as e:
-                logging.warning(f"Не удалось отредактировать закреплённое: {e}")
+            except:
+                pass
         
-        # Если не получилось - отправляем новое сообщение
         sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
         
-        # Закрепляем новое сообщение
         try:
             await context.bot.pin_chat_message(
                 chat_id=CHAT_ID,
                 message_id=sent_message.message_id,
                 disable_notification=True
             )
-            logging.info(f"Отправлено и закреплено новое сообщение {sent_message.message_id}")
-        except Exception as e:
-            logging.warning(f"Не удалось закрепить новое сообщение: {e}")
+        except:
+            pass
         
         save_message_id(sent_message.message_id)
         
     except Exception as e:
         logging.error(f"Ошибка в update_list_message: {e}")
-        # В крайнем случае просто отправляем сообщение
         sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
         save_message_id(sent_message.message_id)
 
-# ========== ОБНОВЛЁННАЯ КОМАНДА START ==========
+# ========== КОМАНДА START ==========
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Отправляет приветственное сообщение с инструкцией"""
+    """Отправляет приветственное сообщение"""
+    # Проверяем доступ в личных сообщениях
+    if not await check_private_access(update):
+        return
+    
     await update.message.reply_text(
-        "📋 **Чтобы записать слет:**\n"
-        "/i сервер слет\n\n"
-        "**Примеры:**\n"
-        "/i москва бус\n"
-        "/i ред гараж бус\n"
-        "/i блек бус 22\n"
-        "/i вайт подъезд\n\n"
-        "Список обновляется в закреплённом сообщении."
+        "чтобы записать слет /i (сервер/\n"
+        "пример /i блу бусс 22 или /i москва кор 20"
     )
     await update_list_message(context)
 
 # ========== КОМАНДА ДОБАВЛЕНИЯ СЛЁТА ==========
 async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Проверяем доступ в личных сообщениях
+    if not await check_private_access(update):
+        return
+    
     if len(context.args) < 2:
-        await update.message.reply_text("❓ Нужно указать сервер и слет\nПример: /i москва бус")
+        await update.message.reply_text("❓ Нужно указать сервер и текст\nПример: /i блу бусс 22")
         return
     
     query = context.args[0]
@@ -291,7 +299,6 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     servers_data[server] = text
     save_data()
     
-    # Логируем действие
     user = update.effective_user
     user_name = user.username or user.first_name or str(user.id)
     add_log(
@@ -306,6 +313,10 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ========== КОМАНДА ПОКАЗАТЬ СПИСОК ==========
 async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Проверяем доступ в личных сообщениях
+    if not await check_private_access(update):
+        return
+    
     full_list = format_list()
     if len(full_list) > 4096:
         parts = [full_list[i:i+4096] for i in range(0, len(full_list), 4096)]
@@ -391,10 +402,10 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ========== АВТОМАТИЧЕСКИЙ ПЕРЕЗАПУСК ==========
 async def auto_start(context: ContextTypes.DEFAULT_TYPE):
     """Автоматически вызывает команду start в 00:00 и 06:00 МСК"""
-    # Создаем фейковый update для вызова start
     class FakeMessage:
         def __init__(self):
             self.chat_id = CHAT_ID
+            self.chat = type('obj', (object,), {'type': 'group'})
         async def reply_text(self, text):
             await context.bot.send_message(chat_id=CHAT_ID, text=text)
     
