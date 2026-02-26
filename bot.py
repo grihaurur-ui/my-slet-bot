@@ -3,7 +3,6 @@ import logging
 import os
 import asyncio
 import datetime
-from collections import deque
 from flask import Flask
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
@@ -40,7 +39,6 @@ SERVERS = [
 ]
 
 # ========== РАСШИРЕННЫЕ СИНОНИМЫ ==========
-# ========== РАСШИРЕННЫЕ СИНОНИМЫ ==========
 SYNONYMS = {
     # WHITE - все варианты
     "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE", "ВЙТ": "WHITE", "УАЙТ": "WHITE",
@@ -57,10 +55,10 @@ SYNONYMS = {
     # PINK - все варианты
     "ПИНК": "PINK", "РОЗОВЫЙ": "PINK", "ПИНКК": "PINK",
     
-    # BLACK - все варианты с "блек" вместо "блэк"
+    # BLACK - все варианты
     "БЛЕК": "BLACK", "ЧЕРНЫЙ": "BLACK", "ЧЁРНЫЙ": "BLACK", "БЛЕКК": "BLACK",
     
-    # RED - все варианты (оставляем "рэд", но можно убрать если нужно)
+    # RED - все варианты
     "РЭД": "RED", "РЕД": "RED", "КРАСНЫЙ": "RED", "РЭДД": "RED",
     
     # ORANGE - все варианты
@@ -105,7 +103,7 @@ SYNONYMS = {
     # AQURE - все варианты
     "АКУРЕ": "AQURE", "АКУРЭ": "AQURE",
     
-    # Города (русские названия) с вариантами
+    # Города
     "МОСКВА": "MOSCOW", "МСК": "MOSCOW",
     "ПИТЕР": "SPB", "СПБ": "SPB", "САНКТ-ПЕТЕРБУРГ": "SPB", "ЛЕНИНГРАД": "SPB",
     "КАЗАНЬ": "KAZAN", "КАЗАН": "KAZAN",
@@ -117,63 +115,25 @@ SYNONYMS = {
     "РОСТОВ": "ROSTOV", "РОСТОВ-НА-ДОНУ": "ROSTOV", "РНД": "ROSTOV",
     "САМАРА": "SAMARA",
     "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НН": "NOVGOROD", "НИЖНИЙ": "NOVGOROD",
-    "НОРИЛЬСК": "NORILSK",
-    "ЧЕРЕПОВЕЦ": "CHEREPOVETS",
-    "МАГАДАН": "MAGADAN",
-    "ПОДОЛЬСК": "PODOLSK",
-    "СУРГУТ": "SURGUT",
-    "ИЖЕВСК": "IZHEVSK",
-    "ТОМСК": "TOMSK",
-    "ТВЕРЬ": "TVER",
-    "ВОЛОГДА": "VOLOGDA",
-    "ТАГАНРОГ": "TAGANROG",
-    "НОВГОРОД": "NOVGOROD", "ВЕЛИКИЙ НОВГОРОД": "NOVGOROD",
-    "КАЛУГА": "KALUGA",
-    "ВЛАДИМИР": "VLADIMIR",
-    "КОСТРОМА": "KOSTROMA",
-    "ЧИТА": "CHITA",
-    "АСТРАХАНЬ": "ASTRAKHAN",
-    "БРАТСК": "BRATSK",
-    "ТАМБОВ": "TAMBOV",
-    "ЯКУТСК": "YAKUTSK",
-    "УЛЬЯНОВСК": "ULYANOVSK",
-    "ЛИПЕЦК": "LIPETSK",
-    "БАРНАУЛ": "BARNAUL",
-    "ЯРОСЛАВЛЬ": "YAROSLAVL",
-    "ОРЕЛ": "OREL", "ОРЁЛ": "OREL",
-    "БРЯНСК": "BRYANSK",
-    "ПСКОВ": "PSKOV",
-    "СМОЛЕНСК": "SMOLENSK",
-    "СТАВРОПОЛЬ": "STAVROPOL",
-    "ИВАНОВО": "IVANOVO",
-    "ТОЛЬЯТТИ": "TOLYATTI",
-    "ТЮМЕНЬ": "TYUMEN",
-    "КЕМЕРОВО": "KEMEROVO",
-    "КИРОВ": "KIROV",
-    "ОРЕНБУРГ": "ORENBURG",
-    "АРХАНГЕЛЬСК": "ARKHANGELSK",
-    "КУРСК": "KURSK",
-    "МУРМАНСК": "MURMANSK",
-    "ПЕНЗА": "PENZA",
-    "РЯЗАНЬ": "RYAZAN",
-    "ТУЛА": "TULA",
-    "ПЕРМЬ": "PERM",
-    "ХАБАРОВСК": "KHABAROVSK",
-    "ЧЕБОКСАРЫ": "CHEBOKSARY",
-    "КРАСНОЯРСК": "KRASNOYARSK",
-    "ЧЕЛЯБИНСК": "CHELYABINSK",
-    "КАЛИНИНГРАД": "KALININGRAD",
-    "ВЛАДИВОСТОК": "VLADIVOSTOK",
-    "ВЛАДИКАВКАЗ": "VLADIKAVKAZ",
-    "МАХАЧКАЛА": "MAKHACHKALA",
-    "БЕЛГОРОД": "BELGOROD",
-    "ВОРОНЕЖ": "VORONEZH",
-    "ВОЛГОГРАД": "VOLGOGRAD",
-    "ИРКУТСК": "IRKUTSK",
-    "ОМСК": "OMSK",
-    "САРАТОВ": "SARATOV",
-    "ГРОЗНЫЙ": "GROZNY",
-    "АРЗАМАС": "ARZAMAS",
+    "НОРИЛЬСК": "NORILSK", "ЧЕРЕПОВЕЦ": "CHEREPOVETS", "МАГАДАН": "MAGADAN",
+    "ПОДОЛЬСК": "PODOLSK", "СУРГУТ": "SURGUT", "ИЖЕВСК": "IZHEVSK",
+    "ТОМСК": "TOMSK", "ТВЕРЬ": "TVER", "ВОЛОГДА": "VOLOGDA",
+    "ТАГАНРОГ": "TAGANROG", "НОВГОРОД": "NOVGOROD", "КАЛУГА": "KALUGA",
+    "ВЛАДИМИР": "VLADIMIR", "КОСТРОМА": "KOSTROMA", "ЧИТА": "CHITA",
+    "АСТРАХАНЬ": "ASTRAKHAN", "БРАТСК": "BRATSK", "ТАМБОВ": "TAMBOV",
+    "ЯКУТСК": "YAKUTSK", "УЛЬЯНОВСК": "ULYANOVSK", "ЛИПЕЦК": "LIPETSK",
+    "БАРНАУЛ": "BARNAUL", "ЯРОСЛАВЛЬ": "YAROSLAVL", "ОРЕЛ": "OREL", "ОРЁЛ": "OREL",
+    "БРЯНСК": "BRYANSK", "ПСКОВ": "PSKOV", "СМОЛЕНСК": "SMOLENSK",
+    "СТАВРОПОЛЬ": "STAVROPOL", "ИВАНОВО": "IVANOVO", "ТОЛЬЯТТИ": "TOLYATTI",
+    "ТЮМЕНЬ": "TYUMEN", "КЕМЕРОВО": "KEMEROVO", "КИРОВ": "KIROV",
+    "ОРЕНБУРГ": "ORENBURG", "АРХАНГЕЛЬСК": "ARKHANGELSK", "КУРСК": "KURSK",
+    "МУРМАНСК": "MURMANSK", "ПЕНЗА": "PENZA", "РЯЗАНЬ": "RYAZAN",
+    "ТУЛА": "TULA", "ПЕРМЬ": "PERM", "ХАБАРОВСК": "KHABAROVSK",
+    "ЧЕБОКСАРЫ": "CHEBOKSARY", "КРАСНОЯРСК": "KRASNOYARSK", "ЧЕЛЯБИНСК": "CHELYABINSK",
+    "КАЛИНИНГРАД": "KALININGRAD", "ВЛАДИВОСТОК": "VLADIVOSTOK", "ВЛАДИКАВКАЗ": "VLADIKAVKAZ",
+    "МАХАЧКАЛА": "MAKHACHKALA", "БЕЛГОРОД": "BELGOROD", "ВОРОНЕЖ": "VORONEZH",
+    "ВОЛГОГРАД": "VOLGOGRAD", "ИРКУТСК": "IRKUTSK", "ОМСК": "OMSK",
+    "САРАТОВ": "SARATOV", "ГРОЗНЫЙ": "GROZNY", "АРЗАМАС": "ARZAMAS",
 }
 
 # ========== ЗАГРУЗКА ДАННЫХ ==========
@@ -254,7 +214,6 @@ def load_message_id():
 async def update_list_message(context):
     """Обновляет закреплённое сообщение со списком"""
     full_text = format_list()
-    bot_username = (await context.bot.get_me()).username
     
     try:
         # Получаем информацию о чате
@@ -263,47 +222,21 @@ async def update_list_message(context):
         # Проверяем, есть ли закреплённое сообщение
         if chat.pinned_message:
             pinned_id = chat.pinned_message.message_id
-            pinned_from_bot = chat.pinned_message.from_user.is_bot
             
-            # Если закреплённое сообщение от бота - редактируем его
-            if pinned_from_bot:
-                try:
-                    await context.bot.edit_message_text(
-                        chat_id=CHAT_ID,
-                        message_id=pinned_id,
-                        text=full_text
-                    )
-                    save_message_id(pinned_id)
-                    logging.info(f"Отредактировано закреплённое сообщение {pinned_id}")
-                    return
-                except Exception as e:
-                    logging.warning(f"Не удалось отредактировать закреплённое: {e}")
+            # Пробуем отредактировать закреплённое
+            try:
+                await context.bot.edit_message_text(
+                    chat_id=CHAT_ID,
+                    message_id=pinned_id,
+                    text=full_text
+                )
+                save_message_id(pinned_id)
+                logging.info(f"Отредактировано закреплённое сообщение {pinned_id}")
+                return
+            except Exception as e:
+                logging.warning(f"Не удалось отредактировать закреплённое: {e}")
         
-        # Если закреплённого нет или оно не от бота - ищем последние сообщения бота
-        async for message in context.bot.get_chat_history(chat_id=CHAT_ID, limit=10):
-            if message.from_user and message.from_user.is_bot and message.from_user.username == bot_username:
-                try:
-                    await context.bot.edit_message_text(
-                        chat_id=CHAT_ID,
-                        message_id=message.message_id,
-                        text=full_text
-                    )
-                    # Пробуем закрепить это сообщение
-                    try:
-                        await context.bot.pin_chat_message(
-                            chat_id=CHAT_ID,
-                            message_id=message.message_id,
-                            disable_notification=True
-                        )
-                    except:
-                        pass
-                    save_message_id(message.message_id)
-                    logging.info(f"Отредактировано и закреплено сообщение {message.message_id}")
-                    return
-                except:
-                    pass
-        
-        # Если ничего не нашли - отправляем новое сообщение
+        # Если не получилось - отправляем новое сообщение
         sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
         
         # Закрепляем новое сообщение
@@ -320,31 +253,30 @@ async def update_list_message(context):
         save_message_id(sent_message.message_id)
         
     except Exception as e:
-        logging.error(f"Критическая ошибка в update_list_message: {e}")
+        logging.error(f"Ошибка в update_list_message: {e}")
         # В крайнем случае просто отправляем сообщение
         sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
         save_message_id(sent_message.message_id)
 
-# ========== АВТОМАТИЧЕСКИЙ ПЕРЕЗАПУСК ==========
-async def auto_start(context: ContextTypes.DEFAULT_TYPE):
-    await start(Update(None, None), context)
-
-# ========== КОМАНДЫ ==========
+# ========== ОБНОВЛЁННАЯ КОМАНДА START ==========
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Отправляет приветственное сообщение с инструкцией"""
     await update.message.reply_text(
-        "Чтобы записать слет:\n"
-        "/i НАЗВАНИЕ_СЕРВЕРА ТЕКСТ\n\n"
-        "Примеры:\n"
-        "/i блу тест 123\n"
-        "/i москва кор 20\n"
-        "/i вайт подъезд 22:30\n\n"
+        "📋 **Чтобы записать слет:**\n"
+        "/i сервер слет\n\n"
+        "**Примеры:**\n"
+        "/i москва бус\n"
+        "/i ред гараж бус\n"
+        "/i блек бус 22\n"
+        "/i вайт подъезд\n\n"
         "Список обновляется в закреплённом сообщении."
     )
     await update_list_message(context)
 
+# ========== КОМАНДА ДОБАВЛЕНИЯ СЛЁТА ==========
 async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 2:
-        await update.message.reply_text("❓ Нужно указать сервер и текст\nПример: /i блу тест 123")
+        await update.message.reply_text("❓ Нужно указать сервер и слет\nПример: /i москва бус")
         return
     
     query = context.args[0]
@@ -359,6 +291,7 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     servers_data[server] = text
     save_data()
     
+    # Логируем действие
     user = update.effective_user
     user_name = user.username or user.first_name or str(user.id)
     add_log(
@@ -371,6 +304,7 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"✅ Записано на {server}: {text}")
     await update_list_message(context)
 
+# ========== КОМАНДА ПОКАЗАТЬ СПИСОК ==========
 async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
     full_list = format_list()
     if len(full_list) > 4096:
@@ -380,6 +314,7 @@ async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text(full_list)
 
+# ========== КОМАНДА ОЧИСТКИ ВСЕХ ЗАПИСЕЙ ==========
 async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
@@ -401,6 +336,7 @@ async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🗑 Все записи удалены")
     await update_list_message(context)
 
+# ========== КОМАНДА ПРОСМОТРА ЛОГОВ ==========
 async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
@@ -426,6 +362,7 @@ async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text(text)
 
+# ========== КОМАНДА ОЧИСТКИ ЛОГОВ ==========
 async def clear_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
@@ -434,6 +371,7 @@ async def clear_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
     save_logs([])
     await update.message.reply_text("🗑 Логи очищены")
 
+# ========== КОМАНДА НОВОГО СПИСКА ==========
 async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
@@ -449,6 +387,23 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("📋 Создаю новый чистый список...")
     await update_list_message(context)
     await update.message.reply_text("✅ Новый список готов и закреплён!")
+
+# ========== АВТОМАТИЧЕСКИЙ ПЕРЕЗАПУСК ==========
+async def auto_start(context: ContextTypes.DEFAULT_TYPE):
+    """Автоматически вызывает команду start в 00:00 и 06:00 МСК"""
+    # Создаем фейковый update для вызова start
+    class FakeMessage:
+        def __init__(self):
+            self.chat_id = CHAT_ID
+        async def reply_text(self, text):
+            await context.bot.send_message(chat_id=CHAT_ID, text=text)
+    
+    class FakeUpdate:
+        def __init__(self):
+            self.message = FakeMessage()
+            self.effective_user = type('obj', (object,), {'id': OWNER_ID})
+    
+    await start(FakeUpdate(), context)
 
 # ========== Flask ==========
 app_flask = Flask(__name__)
@@ -501,5 +456,3 @@ if __name__ == "__main__":
     flask_thread.start()
     
     asyncio.run(run_bot())
-
-
