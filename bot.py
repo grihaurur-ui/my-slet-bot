@@ -168,27 +168,53 @@ async def update_list_message(context):
     message_id = load_message_id()
     full_text = format_list()
     
-    if message_id is None:
-        sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
-        save_message_id(sent_message.message_id)
-        try:
-            await context.bot.pin_chat_message(chat_id=CHAT_ID, message_id=sent_message.message_id)
-        except:
-            pass
-    else:
+    # Если есть сохранённый ID, пробуем отредактировать
+    if message_id is not None:
         try:
             await context.bot.edit_message_text(
                 chat_id=CHAT_ID,
                 message_id=message_id,
                 text=full_text
             )
-        except:
-            sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
-            save_message_id(sent_message.message_id)
+            return  # Успешно отредактировали, выходим
+        except Exception as e:
+            # Если не получилось отредактировать (сообщение удалено или ID неверный)
+            logging.warning(f"Не удалось отредактировать сообщение {message_id}: {e}")
+            # Продолжаем и создаём новое
+    
+    # Создаём новое сообщение
+    try:
+        # Сначала ищем существующее закреплённое сообщение бота
+        chat = await context.bot.get_chat(chat_id=CHAT_ID)
+        if chat.pinned_message and chat.pinned_message.from_user.id == context.bot.id:
+            # Если есть закреплённое сообщение от бота - редактируем его
             try:
-                await context.bot.pin_chat_message(chat_id=CHAT_ID, message_id=sent_message.message_id)
+                await context.bot.edit_message_text(
+                    chat_id=CHAT_ID,
+                    message_id=chat.pinned_message.message_id,
+                    text=full_text
+                )
+                save_message_id(chat.pinned_message.message_id)
+                return
             except:
                 pass
+        
+        # Если нет - отправляем новое
+        sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
+        save_message_id(sent_message.message_id)
+        
+        # Пробуем закрепить
+        try:
+            await context.bot.pin_chat_message(
+                chat_id=CHAT_ID, 
+                message_id=sent_message.message_id,
+                disable_notification=True
+            )
+        except Exception as e:
+            logging.warning(f"Не удалось закрепить сообщение: {e}")
+            
+    except Exception as e:
+        logging.error(f"Ошибка при создании сообщения: {e}")
 
 # ========== АВТОМАТИЧЕСКИЙ ПЕРЕЗАПУСК ==========
 async def auto_start(context: ContextTypes.DEFAULT_TYPE):
@@ -383,3 +409,4 @@ if __name__ == "__main__":
     flask_thread.start()
     
     asyncio.run(run_bot())
+
