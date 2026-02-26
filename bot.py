@@ -40,67 +40,67 @@ SERVERS = [
 
 # ========== РАСШИРЕННЫЕ СИНОНИМЫ ==========
 SYNONYMS = {
-    # WHITE - все варианты
+    # WHITE
     "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE", "ВЙТ": "WHITE", "УАЙТ": "WHITE",
     
-    # BLUE - все варианты
+    # BLUE
     "БЛУ": "BLUE", "СИНИЙ": "BLUE", "БЛЮ": "BLUE", "БЛУУ": "BLUE",
     
-    # GREEN - все варианты
+    # GREEN
     "ГРИН": "GREEN", "ЗЕЛЕНЫЙ": "GREEN", "ГРИНН": "GREEN",
     
-    # GOLD - все варианты
+    # GOLD
     "ГОЛД": "GOLD", "ЗОЛОТО": "GOLD", "ГОЛДД": "GOLD",
     
-    # PINK - все варианты
+    # PINK
     "ПИНК": "PINK", "РОЗОВЫЙ": "PINK", "ПИНКК": "PINK",
     
-    # BLACK - все варианты
+    # BLACK
     "БЛЕК": "BLACK", "ЧЕРНЫЙ": "BLACK", "ЧЁРНЫЙ": "BLACK", "БЛЕКК": "BLACK",
     
-    # RED - все варианты
+    # RED
     "РЭД": "RED", "РЕД": "RED", "КРАСНЫЙ": "RED", "РЭДД": "RED",
     
-    # ORANGE - все варианты
+    # ORANGE
     "ОРАНЖ": "ORANGE", "ОРАНЖЕВЫЙ": "ORANGE", "ОРАНЖЖ": "ORANGE",
     
-    # PURPLE - все варианты
+    # PURPLE
     "ПЁРПЛ": "PURPLE", "ПУРПЛ": "PURPLE", "ФИОЛЕТОВЫЙ": "PURPLE", "ПУРПУР": "PURPLE",
     
-    # LIME - все варианты
+    # LIME
     "ЛАЙМ": "LIME", "ЛАЙММ": "LIME",
     
-    # CHERRY - все варианты
+    # CHERRY
     "ЧЕРРИ": "CHERRY", "ВИШНЯ": "CHERRY", "ЧЕРИ": "CHERRY",
     
-    # INDIGO - все варианты
+    # INDIGO
     "ИНДИГО": "INDIGO",
     
-    # MAGENTA - все варианты
+    # MAGENTA
     "МАДЖЕНТА": "MAGENTA", "МАДЖЕНТТА": "MAGENTA",
     
-    # CRIMSON - все варианты
+    # CRIMSON
     "КРИМСОН": "CRIMSON", "КРИМЗОН": "CRIMSON",
     
-    # AQUA - все варианты
+    # AQUA
     "АКВА": "AQUA", "АКВВА": "AQUA",
     
-    # GRAY - все варианты
+    # GRAY
     "ГРЕЙ": "GRAY", "СЕРЫЙ": "GRAY", "ГРЭЙ": "GRAY",
     
-    # LCE - все варианты
+    # LCE
     "ЛЦЕ": "LCE", "ЛСЕ": "LCE",
     
-    # CHILLI - все варианты
+    # CHILLI
     "ЧИЛЛИ": "CHILLI", "ЧИЛИ": "CHILLI",
     
-    # COCO - все варианты
+    # COCO
     "КОКО": "COCO",
     
-    # PLATINUM - все варианты
+    # PLATINUM
     "ПЛАТИНУМ": "PLATINUM", "ПЛАТИНА": "PLATINUM",
     
-    # AQURE - все варианты
+    # AQURE
     "АКУРЕ": "AQURE", "АКУРЭ": "AQURE",
     
     # Города
@@ -115,25 +115,6 @@ SYNONYMS = {
     "РОСТОВ": "ROSTOV", "РОСТОВ-НА-ДОНУ": "ROSTOV", "РНД": "ROSTOV",
     "САМАРА": "SAMARA",
     "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НН": "NOVGOROD", "НИЖНИЙ": "NOVGOROD",
-    "НОРИЛЬСК": "NORILSK", "ЧЕРЕПОВЕЦ": "CHEREPOVETS", "МАГАДАН": "MAGADAN",
-    "ПОДОЛЬСК": "PODOLSK", "СУРГУТ": "SURGUT", "ИЖЕВСК": "IZHEVSK",
-    "ТОМСК": "TOMSK", "ТВЕРЬ": "TVER", "ВОЛОГДА": "VOLOGDA",
-    "ТАГАНРОГ": "TAGANROG", "НОВГОРОД": "NOVGOROD", "КАЛУГА": "KALUGA",
-    "ВЛАДИМИР": "VLADIMIR", "КОСТРОМА": "KOSTROMA", "ЧИТА": "CHITA",
-    "АСТРАХАНЬ": "ASTRAKHAN", "БРАТСК": "BRATSK", "ТАМБОВ": "TAMBOV",
-    "ЯКУТСК": "YAKUTSK", "УЛЬЯНОВСК": "ULYANOVSK", "ЛИПЕЦК": "LIPETSK",
-    "БАРНАУЛ": "BARNAUL", "ЯРОСЛАВЛЬ": "YAROSLAVL", "ОРЕЛ": "OREL", "ОРЁЛ": "OREL",
-    "БРЯНСК": "BRYANSK", "ПСКОВ": "PSKOV", "СМОЛЕНСК": "SMOLENSK",
-    "СТАВРОПОЛЬ": "STAVROPOL", "ИВАНОВО": "IVANOVO", "ТОЛЬЯТТИ": "TOLYATTI",
-    "ТЮМЕНЬ": "TYUMEN", "КЕМЕРОВО": "KEMEROVO", "КИРОВ": "KIROV",
-    "ОРЕНБУРГ": "ORENBURG", "АРХАНГЕЛЬСК": "ARKHANGELSK", "КУРСК": "KURSK",
-    "МУРМАНСК": "MURMANSK", "ПЕНЗА": "PENZA", "РЯЗАНЬ": "RYAZAN",
-    "ТУЛА": "TULA", "ПЕРМЬ": "PERM", "ХАБАРОВСК": "KHABAROVSK",
-    "ЧЕБОКСАРЫ": "CHEBOKSARY", "КРАСНОЯРСК": "KRASNOYARSK", "ЧЕЛЯБИНСК": "CHELYABINSK",
-    "КАЛИНИНГРАД": "KALININGRAD", "ВЛАДИВОСТОК": "VLADIVOSTOK", "ВЛАДИКАВКАЗ": "VLADIKAVKAZ",
-    "МАХАЧКАЛА": "MAKHACHKALA", "БЕЛГОРОД": "BELGOROD", "ВОРОНЕЖ": "VORONEZH",
-    "ВОЛГОГРАД": "VOLGOGRAD", "ИРКУТСК": "IRKUTSK", "ОМСК": "OMSK",
-    "САРАТОВ": "SARATOV", "ГРОЗНЫЙ": "GROZNY", "АРЗАМАС": "ARZAMAS",
 }
 
 # ========== ЗАГРУЗКА ДАННЫХ ==========
@@ -174,15 +155,12 @@ def add_log(user_id, user_name, action, details):
         logs = logs[-MAX_LOGS:]
     save_logs(logs)
 
-# ========== ПРОВЕРКА ДОСТУПА В ЛИЧНЫХ СООБЩЕНИЯХ ==========
+# ========== ПРОВЕРКА ДОСТУПА ==========
 async def check_private_access(update: Update):
-    """Проверяет, имеет ли пользователь доступ в личных сообщениях"""
     if update.message.chat.type != "private":
         return True
-    
     if update.effective_user.id == OWNER_ID:
         return True
-    
     await update.message.reply_text("⛔ Бот доступен только в группе")
     return False
 
@@ -228,78 +206,56 @@ async def update_list_message(context):
     full_text = format_list()
     
     try:
-        # Получаем информацию о чате
         chat = await context.bot.get_chat(chat_id=CHAT_ID)
         
-        # ПРОВЕРЯЕМ ЗАКРЕПЛЁННОЕ СООБЩЕНИЕ
+        # Проверяем закреплённое сообщение
         if chat.pinned_message:
-            pinned_id = chat.pinned_message.message_id
             try:
-                # Пробуем отредактировать закреплённое
                 await context.bot.edit_message_text(
                     chat_id=CHAT_ID,
-                    message_id=pinned_id,
+                    message_id=chat.pinned_message.message_id,
                     text=full_text
                 )
-                save_message_id(pinned_id)
-                logging.info(f"✅ Отредактировано закреплённое сообщение {pinned_id}")
+                save_message_id(chat.pinned_message.message_id)
+                logging.info("✅ Закреплённое сообщение обновлено")
                 return
             except Exception as e:
                 logging.warning(f"⚠️ Не удалось отредактировать закреплённое: {e}")
         
-        # Если закреплённого нет - ищем последние сообщения бота
-        async for message in context.bot.get_chat_history(chat_id=CHAT_ID, limit=20):
-            # Проверяем, что сообщение от бота
-            if message.from_user and message.from_user.is_bot:
-                try:
-                    # Пробуем отредактировать
-                    await context.bot.edit_message_text(
-                        chat_id=CHAT_ID,
-                        message_id=message.message_id,
-                        text=full_text
-                    )
-                    # Закрепляем это сообщение
-                    try:
-                        await context.bot.pin_chat_message(
-                            chat_id=CHAT_ID,
-                            message_id=message.message_id,
-                            disable_notification=True
-                        )
-                        logging.info(f"📌 Закреплено сообщение {message.message_id}")
-                    except:
-                        pass
-                    
-                    save_message_id(message.message_id)
-                    logging.info(f"✅ Отредактировано сообщение бота {message.message_id}")
-                    return
-                except:
-                    continue
+        # Пробуем использовать сохранённый ID
+        saved_id = load_message_id()
+        if saved_id:
+            try:
+                await context.bot.edit_message_text(
+                    chat_id=CHAT_ID,
+                    message_id=saved_id,
+                    text=full_text
+                )
+                logging.info("✅ Сообщение обновлено по сохранённому ID")
+                return
+            except:
+                pass
         
-        # Если ничего не нашли - создаём новое сообщение
+        # Создаём новое сообщение
         sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
         
-        # Закрепляем новое сообщение
         try:
             await context.bot.pin_chat_message(
                 chat_id=CHAT_ID,
                 message_id=sent_message.message_id,
                 disable_notification=True
             )
-            logging.info(f"📌 Создано и закреплено новое сообщение {sent_message.message_id}")
-        except Exception as e:
-            logging.warning(f"⚠️ Не удалось закрепить новое сообщение: {e}")
+            logging.info("📌 Новое сообщение создано и закреплено")
+        except:
+            logging.warning("⚠️ Не удалось закрепить сообщение")
         
         save_message_id(sent_message.message_id)
         
     except Exception as e:
-        logging.error(f"❌ Критическая ошибка в update_list_message: {e}")
-        # В крайнем случае отправляем новое сообщение
-        sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
-        save_message_id(sent_message.message_id)
+        logging.error(f"❌ Ошибка: {e}")
 
 # ========== КОМАНДА START ==========
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Отправляет приветственное сообщение"""
     if not await check_private_access(update):
         return
     
@@ -309,9 +265,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     await update_list_message(context)
 
-# ========== КОМАНДА ДОБАВЛЕНИЯ СЛЁТА ==========
+# ========== КОМАНДА ДОБАВЛЕНИЯ ==========
 async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Добавляет запись на сервер"""
     if not await check_private_access(update):
         return
     
@@ -340,29 +295,23 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
         details=f"{server}: {text}"
     )
     
-    # Только подтверждение, без отправки списка
     await update.message.reply_text(f"✅ Записано на {server}: {text}")
-    
-    # Обновляем закреплённое сообщение (без отправки в текущий чат)
     await update_list_message(context)
 
-# ========== КОМАНДА ПОКАЗАТЬ СПИСОК ==========
+# ========== КОМАНДА СПИСОК ==========
 async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Показывает текущий список"""
     if not await check_private_access(update):
         return
     
     full_list = format_list()
     if len(full_list) > 4096:
-        parts = [full_list[i:i+4096] for i in range(0, len(full_list), 4096)]
-        for part in parts:
-            await update.message.reply_text(part)
+        for i in range(0, len(full_list), 4096):
+            await update.message.reply_text(full_list[i:i+4096])
     else:
         await update.message.reply_text(full_list)
 
-# ========== КОМАНДА ОЧИСТКИ ВСЕХ ЗАПИСЕЙ ==========
+# ========== КОМАНДА ОЧИСТКИ ==========
 async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Очищает все записи (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -383,9 +332,8 @@ async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🗑 Все записи удалены")
     await update_list_message(context)
 
-# ========== КОМАНДА ПРОСМОТРА ЛОГОВ ==========
+# ========== КОМАНДА ЛОГИ ==========
 async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Показывает логи действий (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -412,7 +360,6 @@ async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ========== КОМАНДА ОЧИСТКИ ЛОГОВ ==========
 async def clear_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Очищает все логи (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -422,7 +369,6 @@ async def clear_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ========== КОМАНДА НОВОГО СПИСКА ==========
 async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Создаёт новый чистый список (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -436,11 +382,10 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     await update.message.reply_text("📋 Создаю новый чистый список...")
     await update_list_message(context)
-    await update.message.reply_text("✅ Новый список готов и закреплён!")
+    await update.message.reply_text("✅ Новый список готов!")
 
 # ========== АВТОМАТИЧЕСКИЙ ПЕРЕЗАПУСК ==========
 async def auto_start(context: ContextTypes.DEFAULT_TYPE):
-    """Автоматически вызывает команду start в 00:00 и 06:00 МСК"""
     class FakeMessage:
         def __init__(self):
             self.chat_id = CHAT_ID
@@ -487,7 +432,7 @@ async def run_bot():
     if job_queue:
         job_queue.run_daily(auto_start, time=datetime.time(hour=21, minute=0, tzinfo=datetime.timezone.utc))
         job_queue.run_daily(auto_start, time=datetime.time(hour=3, minute=0, tzinfo=datetime.timezone.utc))
-        logging.info("✅ Автоматический перезапуск /start запланирован на 00:00 и 06:00 МСК")
+        logging.info("✅ Автоматический перезапуск запланирован")
     
     logging.info("🚀 Бот запущен!")
     
