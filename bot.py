@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import asyncio
+import datetime
 from flask import Flask
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
@@ -11,7 +12,7 @@ TOKEN = os.environ.get("BOT_TOKEN")
 CHAT_ID = int(os.environ.get("CHAT_ID", "0"))
 OWNER_ID = int(os.environ.get("OWNER_ID", "0"))
 DATA_FILE = "data.json"
-MESSAGE_ID_FILE = "message_id.txt"  # файл для хранения ID сообщения
+MESSAGE_ID_FILE = "message_id.txt"
 
 # ========== ТВОЙ ПОЛНЫЙ СПИСОК СЕРВЕРОВ ==========
 SERVERS = [
@@ -35,7 +36,7 @@ SERVERS = [
     "🧡 ORANGE", "💛 YELLOW", "💙 BLUE", "💚 GREEN", "❤ RED"
 ]
 
-# ========== ПОЛНЫЕ СИНОНИМЫ ==========
+# ========== СИНОНИМЫ ==========
 SYNONYMS = {
     "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE",
     "БЛУ": "BLUE", "СИНИЙ": "BLUE",
@@ -90,8 +91,7 @@ def save_data():
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(servers_data, f, ensure_ascii=False, indent=2)
 
-# ========== ФОРМАТИРОВАНИЕ СПИСКА ==========
-# ========== ФОРМАТИРОВАНИЕ СПИСКА ==========
+# ========== ФОРМАТИРОВАНИЕ СПИСКА (НОВАЯ ВЕРСИЯ) ==========
 def format_list():
     lines = []
     for server in SERVERS:
@@ -128,12 +128,10 @@ def load_message_id():
     return None
 
 async def update_list_message(context):
-    """Обновляет одно закреплённое сообщение со списком"""
     message_id = load_message_id()
     full_text = format_list()
     
     if message_id is None:
-        # Если сообщения ещё нет — отправляем новое
         sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
         save_message_id(sent_message.message_id)
         try:
@@ -141,7 +139,6 @@ async def update_list_message(context):
         except:
             pass
     else:
-        # Если есть — редактируем
         try:
             await context.bot.edit_message_text(
                 chat_id=CHAT_ID,
@@ -149,13 +146,16 @@ async def update_list_message(context):
                 text=full_text
             )
         except:
-            # Если сообщение не найдено — создаём новое
             sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
             save_message_id(sent_message.message_id)
             try:
                 await context.bot.pin_chat_message(chat_id=CHAT_ID, message_id=sent_message.message_id)
             except:
                 pass
+
+# ========== АВТОМАТИЧЕСКИЙ ПЕРЕЗАПУСК ==========
+async def auto_start(context: ContextTypes.DEFAULT_TYPE):
+    await start(Update(None, None), context)
 
 # ========== КОМАНДЫ ==========
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -168,7 +168,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/i вайт подъезд 22:30\n\n"
         "Список обновляется в закреплённом сообщении."
     )
-    # При первом запуске создаём список
     await update_list_message(context)
 
 async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -189,8 +188,6 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     save_data()
     
     await update.message.reply_text(f"✅ Записано на {server}: {text}")
-    
-    # Обновляем закреплённое сообщение
     await update_list_message(context)
 
 async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -212,6 +209,26 @@ async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     save_data()
     await update.message.reply_text("🗑 Все записи удалены")
     await update_list_message(context)
+
+# ========== НОВАЯ КОМАНДА ДЛЯ ВЛАДЕЛЬЦА ==========
+async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Создаёт новый чистый список (только для владельца)"""
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    # Очищаем все записи
+    for server in SERVERS:
+        servers_data[server] = ""
+    save_data()
+    
+    # Удаляем старый файл с ID сообщения (чтобы создать новое)
+    if os.path.exists(MESSAGE_ID_FILE):
+        os.remove(MESSAGE_ID_FILE)
+    
+    await update.message.reply_text("📋 Создаю новый чистый список...")
+    await update_list_message(context)
+    await update.message.reply_text("✅ Новый список готов и закреплён!")
 
 # ========== Flask ==========
 app_flask = Flask(__name__)
@@ -237,8 +254,16 @@ async def run_bot():
     application.add_handler(CommandHandler("i", add_entry))
     application.add_handler(CommandHandler("list", list_entries))
     application.add_handler(CommandHandler("clear", clear_data))
+    application.add_handler(CommandHandler("newlist", new_list))  # Новая команда
     
-    logging.info("🚀 Бот запущен! Список будет обновляться в одном сообщении.")
+    # Планировщик задач
+    job_queue = application.job_queue
+    if job_queue:
+        job_queue.run_daily(auto_start, time=datetime.time(hour=21, minute=0, tzinfo=datetime.timezone.utc))
+        job_queue.run_daily(auto_start, time=datetime.time(hour=3, minute=0, tzinfo=datetime.timezone.utc))
+        logging.info("✅ Автоматический перезапуск /start запланирован")
+    
+    logging.info("🚀 Бот запущен!")
     
     await application.initialize()
     await application.start()
@@ -255,4 +280,3 @@ if __name__ == "__main__":
     flask_thread.start()
     
     asyncio.run(run_bot())
-
