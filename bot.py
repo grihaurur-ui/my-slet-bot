@@ -222,42 +222,78 @@ def load_message_id():
             return int(f.read().strip())
     return None
 
-# ========== ФУНКЦИЯ ОБНОВЛЕНИЯ СПИСКА ==========
+# ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ СПИСКА ==========
 async def update_list_message(context):
     """Обновляет закреплённое сообщение со списком"""
     full_text = format_list()
     
     try:
+        # Получаем информацию о чате
         chat = await context.bot.get_chat(chat_id=CHAT_ID)
         
+        # ПРОВЕРЯЕМ ЗАКРЕПЛЁННОЕ СООБЩЕНИЕ
         if chat.pinned_message:
             pinned_id = chat.pinned_message.message_id
             try:
+                # Пробуем отредактировать закреплённое
                 await context.bot.edit_message_text(
                     chat_id=CHAT_ID,
                     message_id=pinned_id,
                     text=full_text
                 )
                 save_message_id(pinned_id)
+                logging.info(f"✅ Отредактировано закреплённое сообщение {pinned_id}")
                 return
-            except:
-                pass
+            except Exception as e:
+                logging.warning(f"⚠️ Не удалось отредактировать закреплённое: {e}")
         
+        # Если закреплённого нет - ищем последние сообщения бота
+        async for message in context.bot.get_chat_history(chat_id=CHAT_ID, limit=20):
+            # Проверяем, что сообщение от бота
+            if message.from_user and message.from_user.is_bot:
+                try:
+                    # Пробуем отредактировать
+                    await context.bot.edit_message_text(
+                        chat_id=CHAT_ID,
+                        message_id=message.message_id,
+                        text=full_text
+                    )
+                    # Закрепляем это сообщение
+                    try:
+                        await context.bot.pin_chat_message(
+                            chat_id=CHAT_ID,
+                            message_id=message.message_id,
+                            disable_notification=True
+                        )
+                        logging.info(f"📌 Закреплено сообщение {message.message_id}")
+                    except:
+                        pass
+                    
+                    save_message_id(message.message_id)
+                    logging.info(f"✅ Отредактировано сообщение бота {message.message_id}")
+                    return
+                except:
+                    continue
+        
+        # Если ничего не нашли - создаём новое сообщение
         sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
         
+        # Закрепляем новое сообщение
         try:
             await context.bot.pin_chat_message(
                 chat_id=CHAT_ID,
                 message_id=sent_message.message_id,
                 disable_notification=True
             )
-        except:
-            pass
+            logging.info(f"📌 Создано и закреплено новое сообщение {sent_message.message_id}")
+        except Exception as e:
+            logging.warning(f"⚠️ Не удалось закрепить новое сообщение: {e}")
         
         save_message_id(sent_message.message_id)
         
     except Exception as e:
-        logging.error(f"Ошибка в update_list_message: {e}")
+        logging.error(f"❌ Критическая ошибка в update_list_message: {e}")
+        # В крайнем случае отправляем новое сообщение
         sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
         save_message_id(sent_message.message_id)
 
