@@ -3,6 +3,7 @@ import logging
 import os
 import asyncio
 import datetime
+from collections import deque
 from flask import Flask
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
@@ -13,6 +14,8 @@ CHAT_ID = int(os.environ.get("CHAT_ID", "0"))
 OWNER_ID = int(os.environ.get("OWNER_ID", "0"))
 DATA_FILE = "data.json"
 MESSAGE_ID_FILE = "message_id.txt"
+LOG_FILE = "logs.json"
+MAX_LOGS = 100  # хранить максимум 100 записей
 
 # ========== ТВОЙ ПОЛНЫЙ СПИСОК СЕРВЕРОВ ==========
 SERVERS = [
@@ -36,7 +39,7 @@ SERVERS = [
     "🧡 ORANGE", "💛 YELLOW", "💙 BLUE", "💚 GREEN", "❤ RED"
 ]
 
-# ========== СИНОНИМЫ ==========
+# ========== ПОЛНЫЕ СИНОНИМЫ ==========
 SYNONYMS = {
     "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE",
     "БЛУ": "BLUE", "СИНИЙ": "BLUE",
@@ -91,7 +94,40 @@ def save_data():
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(servers_data, f, ensure_ascii=False, indent=2)
 
-# ========== ФОРМАТИРОВАНИЕ СПИСКА (НОВАЯ ВЕРСИЯ) ==========
+# ========== ЛОГИРОВАНИЕ ДЕЙСТВИЙ ==========
+def load_logs():
+    """Загружает логи из файла"""
+    if os.path.exists(LOG_FILE):
+        with open(LOG_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return []
+
+def save_logs(logs):
+    """Сохраняет логи в файл"""
+    with open(LOG_FILE, 'w', encoding='utf-8') as f:
+        json.dump(logs, f, ensure_ascii=False, indent=2)
+
+def add_log(user_id, user_name, action, details):
+    """Добавляет запись в лог"""
+    logs = load_logs()
+    
+    log_entry = {
+        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "user_id": user_id,
+        "user_name": user_name,
+        "action": action,
+        "details": details
+    }
+    
+    logs.append(log_entry)
+    
+    # Оставляем только последние MAX_LOGS записей
+    if len(logs) > MAX_LOGS:
+        logs = logs[-MAX_LOGS:]
+    
+    save_logs(logs)
+
+# ========== ФОРМАТИРОВАНИЕ СПИСКА (КОМПАКТНАЯ ВЕРСИЯ) ==========
 def format_list():
     lines = []
     for server in SERVERS:
@@ -128,6 +164,7 @@ def load_message_id():
     return None
 
 async def update_list_message(context):
+    """Обновляет одно закреплённое сообщение со списком"""
     message_id = load_message_id()
     full_text = format_list()
     
@@ -155,6 +192,7 @@ async def update_list_message(context):
 
 # ========== АВТОМАТИЧЕСКИЙ ПЕРЕЗАПУСК ==========
 async def auto_start(context: ContextTypes.DEFAULT_TYPE):
+    """Автоматически вызывает команду start в 00:00 и 06:00 МСК"""
     await start(Update(None, None), context)
 
 # ========== КОМАНДЫ ==========
@@ -187,6 +225,18 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     servers_data[server] = text
     save_data()
     
+    # Получаем имя пользователя
+    user = update.effective_user
+    user_name = user.username or user.first_name or str(user.id)
+    
+    # Логируем действие
+    add_log(
+        user_id=user.id,
+        user_name=user_name,
+        action="Добавление слёта",
+        details=f"{server}: {text}"
+    )
+    
     await update.message.reply_text(f"✅ Записано на {server}: {text}")
     await update_list_message(context)
 
@@ -207,10 +257,61 @@ async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for server in SERVERS:
         servers_data[server] = ""
     save_data()
+    
+    # Логируем действие
+    user = update.effective_user
+    user_name = user.username or user.first_name or str(user.id)
+    add_log(
+        user_id=user.id,
+        user_name=user_name,
+        action="Очистка всех слётов",
+        details="Полная очистка"
+    )
+    
     await update.message.reply_text("🗑 Все записи удалены")
     await update_list_message(context)
 
-# ========== НОВАЯ КОМАНДА ДЛЯ ВЛАДЕЛЬЦА ==========
+# ========== НОВАЯ КОМАНДА ДЛЯ ПРОСМОТРА ЛОГОВ ==========
+async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Показывает последние действия (только для владельца)"""
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    logs = load_logs()
+    
+    if not logs:
+        await update.message.reply_text("📭 Лог пуст")
+        return
+    
+    # Показываем последние 20 записей
+    lines = ["📋 **Последние действия:**\n"]
+    for log in logs[-20:]:
+        lines.append(
+            f"[{log['timestamp']}] "
+            f"@{log['user_name']} (ID: {log['user_id']})\n"
+            f"  • {log['action']}: {log['details']}\n"
+        )
+    
+    text = '\n'.join(lines)
+    
+    if len(text) > 4096:
+        for i in range(0, len(text), 4096):
+            await update.message.reply_text(text[i:i+4096])
+    else:
+        await update.message.reply_text(text)
+
+# ========== КОМАНДА ДЛЯ ОЧИСТКИ ЛОГОВ ==========
+async def clear_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Очищает все логи (только для владельца)"""
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    save_logs([])
+    await update.message.reply_text("🗑 Логи очищены")
+
+# ========== КОМАНДА ДЛЯ НОВОГО СПИСКА ==========
 async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Создаёт новый чистый список (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
@@ -222,7 +323,7 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
         servers_data[server] = ""
     save_data()
     
-    # Удаляем старый файл с ID сообщения (чтобы создать новое)
+    # Удаляем старый файл с ID сообщения
     if os.path.exists(MESSAGE_ID_FILE):
         os.remove(MESSAGE_ID_FILE)
     
@@ -254,14 +355,16 @@ async def run_bot():
     application.add_handler(CommandHandler("i", add_entry))
     application.add_handler(CommandHandler("list", list_entries))
     application.add_handler(CommandHandler("clear", clear_data))
-    application.add_handler(CommandHandler("newlist", new_list))  # Новая команда
+    application.add_handler(CommandHandler("newlist", new_list))
+    application.add_handler(CommandHandler("logs", show_logs))
+    application.add_handler(CommandHandler("clear_logs", clear_logs))
     
     # Планировщик задач
     job_queue = application.job_queue
     if job_queue:
         job_queue.run_daily(auto_start, time=datetime.time(hour=21, minute=0, tzinfo=datetime.timezone.utc))
         job_queue.run_daily(auto_start, time=datetime.time(hour=3, minute=0, tzinfo=datetime.timezone.utc))
-        logging.info("✅ Автоматический перезапуск /start запланирован")
+        logging.info("✅ Автоматический перезапуск /start запланирован на 00:00 и 06:00 МСК")
     
     logging.info("🚀 Бот запущен!")
     
