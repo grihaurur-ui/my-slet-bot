@@ -91,13 +91,14 @@ def save_data():
         json.dump(servers_data, f, ensure_ascii=False, indent=2)
 
 # ========== ФОРМАТИРОВАНИЕ СПИСКА ==========
+# ========== ФОРМАТИРОВАНИЕ СПИСКА ==========
 def format_list():
     lines = []
     for server in SERVERS:
-        lines.append(server)
         if servers_data.get(server):
-            lines.append(f"  • {servers_data[server]}")
-        lines.append("")
+            lines.append(f"{server}  • {servers_data[server]}")
+        else:
+            lines.append(server)
     return '\n'.join(lines)
 
 # ========== ПОИСК СЕРВЕРА ==========
@@ -254,3 +255,4 @@ if __name__ == "__main__":
     flask_thread.start()
     
     asyncio.run(run_bot())
+
