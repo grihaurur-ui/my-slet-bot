@@ -200,15 +200,37 @@ def load_message_id():
             return int(f.read().strip())
     return None
 
-# ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ СПИСКА ==========
+# ========== УЛУЧШЕННАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ СПИСКА ==========
 async def update_list_message(context):
     """Обновляет закреплённое сообщение со списком"""
     full_text = format_list()
+    current_message_id = load_message_id()
     
     try:
+        # Сначала пробуем отредактировать по сохранённому ID
+        if current_message_id:
+            try:
+                await context.bot.edit_message_text(
+                    chat_id=CHAT_ID,
+                    message_id=current_message_id,
+                    text=full_text
+                )
+                # Если дошли сюда - значит успешно отредактировали
+                return
+            except Exception as e:
+                error_str = str(e)
+                # Если текст не изменился - просто игнорируем
+                if "Message is not modified" in error_str:
+                    return
+                # Если сообщение не найдено или нельзя редактировать - продолжаем
+                elif "Message can't be edited" in error_str or "message to edit not found" in error_str.lower():
+                    pass
+                else:
+                    logging.warning(f"⚠️ {error_str}")
+        
+        # Пробуем найти закреплённое сообщение в чате
         chat = await context.bot.get_chat(chat_id=CHAT_ID)
         
-        # Проверяем закреплённое сообщение
         if chat.pinned_message:
             try:
                 await context.bot.edit_message_text(
@@ -217,42 +239,31 @@ async def update_list_message(context):
                     text=full_text
                 )
                 save_message_id(chat.pinned_message.message_id)
-                logging.info("✅ Закреплённое сообщение обновлено")
                 return
             except Exception as e:
-                logging.warning(f"⚠️ Не удалось отредактировать закреплённое: {e}")
+                if "Message is not modified" in str(e):
+                    save_message_id(chat.pinned_message.message_id)
+                    return
+                # Игнорируем остальные ошибки
         
-        # Пробуем использовать сохранённый ID
-        saved_id = load_message_id()
-        if saved_id:
-            try:
-                await context.bot.edit_message_text(
-                    chat_id=CHAT_ID,
-                    message_id=saved_id,
-                    text=full_text
-                )
-                logging.info("✅ Сообщение обновлено по сохранённому ID")
-                return
-            except:
-                pass
-        
-        # Создаём новое сообщение
+        # Если ничего не помогло - создаём новое сообщение
         sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
         
+        # Пробуем закрепить
         try:
             await context.bot.pin_chat_message(
                 chat_id=CHAT_ID,
                 message_id=sent_message.message_id,
                 disable_notification=True
             )
-            logging.info("📌 Новое сообщение создано и закреплено")
         except:
-            logging.warning("⚠️ Не удалось закрепить сообщение")
+            pass
         
         save_message_id(sent_message.message_id)
         
     except Exception as e:
-        logging.error(f"❌ Ошибка: {e}")
+        if "Message is not modified" not in str(e):
+            logging.error(f"❌ Ошибка: {e}")
 
 # ========== КОМАНДА START ==========
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
