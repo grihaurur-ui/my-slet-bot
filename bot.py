@@ -57,7 +57,7 @@ SYNONYMS = {
     "ПИНК": "PINK", "РОЗОВЫЙ": "PINK", "ПИНК": "PINK", "ПИНКК": "PINK",
     
     # BLACK - все варианты (ИСПРАВЛЕНО: блек, блэк, блэack)
-    "БЛЭК": "BLACK", "ЧЕРНЫЙ": "BLACK", "БЛЕК": "BLACK", "БЛЭКК": "BLACK", "БЛЭК": "BLACK", "БЛЭКК": "BLACK",
+    "BLACK", "ЧЕРНЫЙ": "BLACK", "БЛЕК": "BLACK", "БЛЭКК": "BLACK", "БЛЭК": "BLACK", "БЛЭКК": "BLACK",
     
     # RED - все варианты
     "РЭД": "RED", "РЕД": "RED", "КРАСНЫЙ": "RED", "РЭДД": "RED", "РЕДД": "RED",
@@ -500,3 +500,4 @@ if __name__ == "__main__":
     flask_thread.start()
     
     asyncio.run(run_bot())
+
