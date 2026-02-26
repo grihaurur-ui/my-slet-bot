@@ -177,15 +177,12 @@ def add_log(user_id, user_name, action, details):
 # ========== ПРОВЕРКА ДОСТУПА В ЛИЧНЫХ СООБЩЕНИЯХ ==========
 async def check_private_access(update: Update):
     """Проверяет, имеет ли пользователь доступ в личных сообщениях"""
-    # Если это не личное сообщение - пропускаем
     if update.message.chat.type != "private":
         return True
     
-    # Если личное сообщение - проверяем, владелец ли это
     if update.effective_user.id == OWNER_ID:
         return True
     
-    # Если не владелец в личке - отправляем сообщение и блокируем
     await update.message.reply_text("⛔ Бот доступен только в группе")
     return False
 
@@ -267,7 +264,6 @@ async def update_list_message(context):
 # ========== КОМАНДА START ==========
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Отправляет приветственное сообщение"""
-    # Проверяем доступ в личных сообщениях
     if not await check_private_access(update):
         return
     
@@ -279,7 +275,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ========== КОМАНДА ДОБАВЛЕНИЯ СЛЁТА ==========
 async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Проверяем доступ в личных сообщениях
+    """Добавляет запись на сервер"""
     if not await check_private_access(update):
         return
     
@@ -308,12 +304,15 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
         details=f"{server}: {text}"
     )
     
+    # Только подтверждение, без отправки списка
     await update.message.reply_text(f"✅ Записано на {server}: {text}")
+    
+    # Обновляем закреплённое сообщение (без отправки в текущий чат)
     await update_list_message(context)
 
 # ========== КОМАНДА ПОКАЗАТЬ СПИСОК ==========
 async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Проверяем доступ в личных сообщениях
+    """Показывает текущий список"""
     if not await check_private_access(update):
         return
     
@@ -327,6 +326,7 @@ async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ========== КОМАНДА ОЧИСТКИ ВСЕХ ЗАПИСЕЙ ==========
 async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Очищает все записи (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -349,6 +349,7 @@ async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ========== КОМАНДА ПРОСМОТРА ЛОГОВ ==========
 async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Показывает логи действий (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -375,6 +376,7 @@ async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ========== КОМАНДА ОЧИСТКИ ЛОГОВ ==========
 async def clear_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Очищает все логи (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -384,6 +386,7 @@ async def clear_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ========== КОМАНДА НОВОГО СПИСКА ==========
 async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Создаёт новый чистый список (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
