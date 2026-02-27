@@ -741,13 +741,11 @@ async def run_bot():
     application.add_handler(CommandHandler("logstats", log_stats))
     application.add_handler(CommandHandler("clear_logs", clear_logs))
     
-    job_queue = application.job_queue
+        job_queue = application.job_queue
     if job_queue:
-        # 00:00 MSK = 21:00 UTC (предыдущего дня)
-        job_queue.run_daily(auto_newlist, time=datetime.time(hour=21, minute=0, tzinfo=datetime.timezone.utc))
-        # 05:00 MSK = 02:00 UTC
-        job_queue.run_daily(auto_newlist, time=datetime.time(hour=2, minute=0, tzinfo=datetime.timezone.utc))
-        logging.info("✅ Автоматический newlist запланирован на 00:00 и 05:00 МСК")
+        # ТЕСТ: 20:25 MSK = 17:25 UTC
+        job_queue.run_daily(auto_newlist, time=datetime.time(hour=17, minute=25, tzinfo=datetime.timezone.utc))
+        logging.info("✅ ТЕСТ: Автоматический newlist запланирован на 20:25 МСК")
     
     logging.info("🚀 Бот запущен!")
     
@@ -766,5 +764,6 @@ if __name__ == "__main__":
     flask_thread.start()
     
     asyncio.run(run_bot())
+
 
 
