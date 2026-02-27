@@ -407,20 +407,56 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка при создании списка: {e}")
 
+# ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ АВТОМАТИЧЕСКОГО NEWLIST ==========
 async def auto_newlist(context: ContextTypes.DEFAULT_TYPE):
-    class FakeMessage:
-        def __init__(self):
-            self.chat_id = CHAT_ID
-            self.chat = type('obj', (object,), {'type': 'group'})
-        async def reply_text(self, text):
-            logging.info(f"🤖 Автоматический newlist: {text}")
+    """Автоматически создает новый список (без вызова команды)"""
+    logging.info("🤖 Запуск автоматического создания нового списка")
     
-    class FakeUpdate:
-        def __init__(self):
-            self.message = FakeMessage()
-            self.effective_user = type('obj', (object,), {'id': OWNER_ID})
+    # Очищаем все записи
+    for server in SERVERS:
+        servers_data[server] = ""
+    save_data()
     
-    await new_list(FakeUpdate(), context)
+    # Удаляем старый ID сообщения
+    if os.path.exists(MESSAGE_ID_FILE):
+        os.remove(MESSAGE_ID_FILE)
+    
+    # Форматируем новый список
+    full_text = format_list()
+    
+    try:
+        # Отправляем новое сообщение
+        sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
+        
+        # Открепляем старое закреплённое сообщение
+        try:
+            chat = await context.bot.get_chat(chat_id=CHAT_ID)
+            if chat.pinned_message:
+                await context.bot.unpin_chat_message(
+                    chat_id=CHAT_ID,
+                    message_id=chat.pinned_message.message_id
+                )
+                logging.info("📌 Старое сообщение откреплено")
+        except Exception as e:
+            logging.warning(f"⚠️ Не удалось открепить старое сообщение: {e}")
+        
+        # Закрепляем новое сообщение
+        try:
+            await context.bot.pin_chat_message(
+                chat_id=CHAT_ID,
+                message_id=sent_message.message_id,
+                disable_notification=True
+            )
+            logging.info(f"✅ Новое сообщение {sent_message.message_id} закреплено")
+        except Exception as e:
+            logging.warning(f"⚠️ Не удалось закрепить новое сообщение: {e}")
+        
+        # Сохраняем новый ID
+        save_message_id(sent_message.message_id)
+        logging.info("✅ Автоматический новый список создан успешно")
+        
+    except Exception as e:
+        logging.error(f"❌ Ошибка при автоматическом создании списка: {e}")
 
 app_flask = Flask(__name__)
 
