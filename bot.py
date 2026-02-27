@@ -40,70 +40,27 @@ SERVERS = [
 
 # ========== РАСШИРЕННЫЕ СИНОНИМЫ ==========
 SYNONYMS = {
-    # WHITE
     "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE", "ВЙТ": "WHITE", "УАЙТ": "WHITE",
-    
-    # BLUE
     "БЛУ": "BLUE", "СИНИЙ": "BLUE", "БЛЮ": "BLUE", "БЛУУ": "BLUE", "СИН": "BLUE",
-    
-    # GREEN
     "ГРИН": "GREEN", "ЗЕЛЕНЫЙ": "GREEN", "ГРИНН": "GREEN", "ЗЕЛ": "GREEN",
-    
-    # GOLD
     "ГОЛД": "GOLD", "ЗОЛОТО": "GOLD", "ГОЛДД": "GOLD", "ЗОЛ": "GOLD",
-    
-    # PINK
     "ПИНК": "PINK", "РОЗОВЫЙ": "PINK", "ПИНКК": "PINK", "РОЗ": "PINK",
-    
-    # BLACK
     "БЛЕК": "BLACK", "ЧЕРНЫЙ": "BLACK", "ЧЁРНЫЙ": "BLACK", "БЛЕКК": "BLACK", "ЧЕРН": "BLACK",
-    
-    # RED
     "РЭД": "RED", "РЕД": "RED", "КРАСНЫЙ": "RED", "РЭДД": "RED", "КРАСН": "RED",
-    
-    # ORANGE
     "ОРАНЖ": "ORANGE", "ОРАНЖЕВЫЙ": "ORANGE", "ОРАНЖЖ": "ORANGE",
-    
-    # PURPLE
     "ПЁРПЛ": "PURPLE", "ПУРПЛ": "PURPLE", "ФИОЛЕТОВЫЙ": "PURPLE", "ПУРПУР": "PURPLE",
-    
-    # LIME
     "ЛАЙМ": "LIME", "ЛАЙММ": "LIME",
-    
-    # CHERRY
     "ЧЕРРИ": "CHERRY", "ВИШНЯ": "CHERRY", "ЧЕРИ": "CHERRY",
-    
-    # INDIGO
     "ИНДИГО": "INDIGO",
-    
-    # MAGENTA
     "МАДЖЕНТА": "MAGENTA", "МАДЖЕНТТА": "MAGENTA",
-    
-    # CRIMSON
     "КРИМСОН": "CRIMSON", "КРИМЗОН": "CRIMSON",
-    
-    # AQUA
     "АКВА": "AQUA", "АКВВА": "AQUA",
-    
-    # GRAY
     "ГРЕЙ": "GRAY", "СЕРЫЙ": "GRAY", "ГРЭЙ": "GRAY",
-    
-    # LCE
     "ЛЦЕ": "LCE", "ЛСЕ": "LCE",
-    
-    # CHILLI
     "ЧИЛЛИ": "CHILLI", "ЧИЛИ": "CHILLI",
-    
-    # COCO
     "КОКО": "COCO", "КОКОС": "COCO", "ЧОКО": "COCO", "CHOCO": "COCO",
-    
-    # PLATINUM
     "ПЛАТИНУМ": "PLATINUM", "ПЛАТИНА": "PLATINUM",
-    
-    # AQURE
     "АКУРЕ": "AQURE", "АКУРЭ": "AQURE", "АЗУР": "AQURE", "AZUR": "AQURE",
-    
-    # Города
     "МОСКВА": "MOSCOW", "МСК": "MOSCOW", "МОС": "MOSCOW",
     "ПИТЕР": "SPB", "СПБ": "SPB", "САНКТ-ПЕТЕРБУРГ": "SPB", "ЛЕНИНГРАД": "SPB",
     "КАЗАНЬ": "KAZAN", "КАЗАН": "KAZAN", "КАЗ": "KAZAN",
@@ -187,7 +144,6 @@ def save_data():
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(servers_data, f, ensure_ascii=False, indent=2)
 
-# ========== ЛОГИРОВАНИЕ ==========
 def load_logs():
     if os.path.exists(LOG_FILE):
         with open(LOG_FILE, 'r', encoding='utf-8') as f:
@@ -212,7 +168,6 @@ def add_log(user_id, user_name, action, details):
         logs = logs[-MAX_LOGS:]
     save_logs(logs)
 
-# ========== ПРОВЕРКА ДОСТУПА ==========
 async def check_private_access(update: Update):
     if update.message.chat.type != "private":
         return True
@@ -221,7 +176,6 @@ async def check_private_access(update: Update):
     await update.message.reply_text("⛔ Бот доступен только в группе")
     return False
 
-# ========== ФОРМАТИРОВАНИЕ СПИСКА ==========
 def format_list():
     lines = []
     for server in SERVERS:
@@ -231,7 +185,6 @@ def format_list():
             lines.append(server)
     return '\n'.join(lines)
 
-# ========== ПОИСК СЕРВЕРА ==========
 def find_server(query):
     query = query.upper().strip()
     if query in SYNONYMS:
@@ -246,7 +199,6 @@ def find_server(query):
             return server
     return None
 
-# ========== РАБОТА С ID СООБЩЕНИЯ ==========
 def save_message_id(message_id):
     with open(MESSAGE_ID_FILE, 'w') as f:
         f.write(str(message_id))
@@ -257,7 +209,6 @@ def load_message_id():
             return int(f.read().strip())
     return None
 
-# ========== ФУНКЦИЯ ОБНОВЛЕНИЯ СПИСКА ==========
 async def update_list_message(context):
     full_text = format_list()
     current_message_id = load_message_id()
@@ -313,7 +264,6 @@ async def update_list_message(context):
         if "Message is not modified" not in str(e):
             logging.error(f"❌ Ошибка: {e}")
 
-# ========== КОМАНДА START ==========
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_private_access(update):
         return
@@ -324,7 +274,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     await update_list_message(context)
 
-# ========== КОМАНДА ДОБАВЛЕНИЯ ==========
 async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_private_access(update):
         return
@@ -357,7 +306,6 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"✅ Записано на {server}: {text}")
     await update_list_message(context)
 
-# ========== КОМАНДА СПИСОК ==========
 async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_private_access(update):
         return
@@ -369,7 +317,6 @@ async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text(full_list)
 
-# ========== КОМАНДА ОЧИСТКИ ==========
 async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
@@ -391,7 +338,6 @@ async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🗑 Все записи удалены")
     await update_list_message(context)
 
-# ========== КОМАНДА ЛОГИ ==========
 async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
@@ -417,7 +363,6 @@ async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text(text)
 
-# ========== КОМАНДА НОВОГО СПИСКА ==========
 async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
@@ -462,9 +407,7 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка при создании списка: {e}")
 
-# ========== АВТОМАТИЧЕСКИЙ NEWLIST (ТЕСТ НА 20:32 МСК) ==========
 async def auto_newlist(context: ContextTypes.DEFAULT_TYPE):
-    """Автоматически вызывает команду newlist (тест на 20:32 МСК)"""
     class FakeMessage:
         def __init__(self):
             self.chat_id = CHAT_ID
@@ -479,7 +422,6 @@ async def auto_newlist(context: ContextTypes.DEFAULT_TYPE):
     
     await new_list(FakeUpdate(), context)
 
-# ========== Flask ==========
 app_flask = Flask(__name__)
 
 @app_flask.route('/')
@@ -490,7 +432,6 @@ def home():
 def health():
     return "OK"
 
-# ========== ЗАПУСК ==========
 async def run_bot():
     logging.basicConfig(level=logging.INFO)
     
@@ -508,9 +449,12 @@ async def run_bot():
     
     job_queue = application.job_queue
     if job_queue:
-        # ТЕСТ: 20:32 MSK = 17:32 UTC
-        job_queue.run_daily(auto_newlist, time=datetime.time(hour=17, minute=32, tzinfo=datetime.timezone.utc))
-        logging.info("✅ ТЕСТ: Автоматический newlist запланирован на 20:32 МСК")
+        # ТЕСТ: запуск через 1 минуту после старта
+        import datetime
+        now = datetime.datetime.now()
+        run_time = now + datetime.timedelta(minutes=1)
+        job_queue.run_once(auto_newlist, when=run_time)
+        logging.info(f"✅ ТЕСТ: Автоматический newlist запланирован через 1 минуту в {run_time.strftime('%H:%M:%S')} МСК")
     
     logging.info("🚀 Бот запущен!")
     
