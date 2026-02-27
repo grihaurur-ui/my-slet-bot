@@ -14,7 +14,7 @@ OWNER_ID = int(os.environ.get("OWNER_ID", "0"))
 DATA_FILE = "data.json"
 MESSAGE_ID_FILE = "message_id.txt"
 LOG_FILE = "logs.json"
-MAX_LOGS = 1000  # Увеличил до 1000 записей
+MAX_LOGS = 1000
 
 # ========== ТВОЙ ПОЛНЫЙ СПИСОК СЕРВЕРОВ ==========
 SERVERS = [
@@ -39,250 +39,139 @@ SERVERS = [
 ]
 
 # ========== РАСШИРЕННЫЕ СИНОНИМЫ ==========
-# ========== РАСШИРЕННЫЕ СИНОНИМЫ (ПОЛНАЯ ВЕРСИЯ) ==========
 SYNONYMS = {
-    # ===== ЦВЕТА =====
-    "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE", "ВЙТ": "WHITE", "УАЙТ": "WHITE", "УАЙТ": "WHITE", "ВАЙТ": "WHITE",
+    # WHITE
+    "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE", "ВЙТ": "WHITE", "УАЙТ": "WHITE",
     
+    # BLUE
     "БЛУ": "BLUE", "СИНИЙ": "BLUE", "БЛЮ": "BLUE", "БЛУУ": "BLUE", "СИН": "BLUE",
     
-    "ГРИН": "GREEN", "ЗЕЛЕНЫЙ": "GREEN", "ГРИНН": "GREEN", "ЗЕЛ": "GREEN", "ЗЕЛЕН": "GREEN",
+    # GREEN
+    "ГРИН": "GREEN", "ЗЕЛЕНЫЙ": "GREEN", "ГРИНН": "GREEN", "ЗЕЛ": "GREEN",
     
-    "ГОЛД": "GOLD", "ЗОЛОТО": "GOLD", "ГОЛДД": "GOLD", "ЗОЛ": "GOLD", "ЗОЛОТ": "GOLD",
+    # GOLD
+    "ГОЛД": "GOLD", "ЗОЛОТО": "GOLD", "ГОЛДД": "GOLD", "ЗОЛ": "GOLD",
     
-    "ПИНК": "PINK", "РОЗОВЫЙ": "PINK", "ПИНКК": "PINK", "РОЗ": "PINK", "РОЗОВ": "PINK",
+    # PINK
+    "ПИНК": "PINK", "РОЗОВЫЙ": "PINK", "ПИНКК": "PINK", "РОЗ": "PINK",
     
+    # BLACK
     "БЛЕК": "BLACK", "ЧЕРНЫЙ": "BLACK", "ЧЁРНЫЙ": "BLACK", "БЛЕКК": "BLACK", "ЧЕРН": "BLACK",
     
-    "РЭД": "RED", "РЕД": "RED", "КРАСНЫЙ": "RED", "РЭДД": "RED", "КРАСН": "RED", "КРАС": "RED",
+    # RED
+    "РЭД": "RED", "РЕД": "RED", "КРАСНЫЙ": "RED", "РЭДД": "RED", "КРАСН": "RED",
     
-    "ОРАНЖ": "ORANGE", "ОРАНЖЕВЫЙ": "ORANGE", "ОРАНЖЖ": "ORANGE", "ОРАН": "ORANGE",
+    # ORANGE
+    "ОРАНЖ": "ORANGE", "ОРАНЖЕВЫЙ": "ORANGE", "ОРАНЖЖ": "ORANGE",
     
-    "ПЁРПЛ": "PURPLE", "ПУРПЛ": "PURPLE", "ФИОЛЕТОВЫЙ": "PURPLE", "ПУРПУР": "PURPLE", 
-    "ФИОЛ": "PURPLE", "ФИОЛЕТ": "PURPLE",
+    # PURPLE
+    "ПЁРПЛ": "PURPLE", "ПУРПЛ": "PURPLE", "ФИОЛЕТОВЫЙ": "PURPLE", "ПУРПУР": "PURPLE",
     
-    "ЛАЙМ": "LIME", "ЛАЙММ": "LIME", "ЛАЙМ": "LIME",
+    # LIME
+    "ЛАЙМ": "LIME", "ЛАЙММ": "LIME",
     
-    "ЧЕРРИ": "CHERRY", "ВИШНЯ": "CHERRY", "ЧЕРИ": "CHERRY", "ВИШ": "CHERRY", "ВИШН": "CHERRY",
+    # CHERRY
+    "ЧЕРРИ": "CHERRY", "ВИШНЯ": "CHERRY", "ЧЕРИ": "CHERRY",
     
-    "ИНДИГО": "INDIGO", "ИНД": "INDIGO",
+    # INDIGO
+    "ИНДИГО": "INDIGO",
     
-    "МАДЖЕНТА": "MAGENTA", "МАДЖЕНТТА": "MAGENTA", "МАДЖ": "MAGENTA",
+    # MAGENTA
+    "МАДЖЕНТА": "MAGENTA", "МАДЖЕНТТА": "MAGENTA",
     
-    "КРИМСОН": "CRIMSON", "КРИМЗОН": "CRIMSON", "КРИМ": "CRIMSON",
+    # CRIMSON
+    "КРИМСОН": "CRIMSON", "КРИМЗОН": "CRIMSON",
     
-    "АКВА": "AQUA", "АКВВА": "AQUA", "АКВ": "AQUA",
+    # AQUA
+    "АКВА": "AQUA", "АКВВА": "AQUA",
     
-    "ГРЕЙ": "GRAY", "СЕРЫЙ": "GRAY", "ГРЭЙ": "GRAY", "СЕР": "GRAY",
+    # GRAY
+    "ГРЕЙ": "GRAY", "СЕРЫЙ": "GRAY", "ГРЭЙ": "GRAY",
     
+    # LCE
     "ЛЦЕ": "LCE", "ЛСЕ": "LCE",
     
-    "ЧИЛЛИ": "CHILLI", "ЧИЛИ": "CHILLI", "ЧИЛ": "CHILLI",
+    # CHILLI
+    "ЧИЛЛИ": "CHILLI", "ЧИЛИ": "CHILLI",
     
-    "КОКО": "COCO", "КОКОС": "COCO", "ЧОКО": "COCO", "CHOCO": "COCO", "ШОКО": "COCO",
+    # COCO
+    "КОКО": "COCO", "КОКОС": "COCO", "ЧОКО": "COCO", "CHOCO": "COCO",
     
-    "ПЛАТИНУМ": "PLATINUM", "ПЛАТИНА": "PLATINUM", "ПЛАТ": "PLATINUM",
+    # PLATINUM
+    "ПЛАТИНУМ": "PLATINUM", "ПЛАТИНА": "PLATINUM",
     
-    "АКУРЕ": "AQURE", "АКУРЭ": "AQURE", "АКУР": "AQURE", "АЗУР": "AQURE", "AZUR": "AQURE",
-
-    # ===== ГОРОДА (ПОЛНЫЙ СПИСОК) =====
-    # NORILSK
-    "НОРИЛЬСК": "NORILSK", "НОРИЛ": "NORILSK", "НОР": "NORILSK",
+    # AQURE
+    "АКУРЕ": "AQURE", "АКУРЭ": "AQURE", "АЗУР": "AQURE", "AZUR": "AQURE",
     
-    # CHEREPOVETS
-    "ЧЕРЕПОВЕЦ": "CHEREPOVETS", "ЧЕРЕП": "CHEREPOVETS", "ЧЕРЕПА": "CHEREPOVETS", 
-    "ЧЕР": "CHEREPOVETS",
-    
-    # MAGADAN
-    "МАГАДАН": "MAGADAN", "МАГА": "MAGADAN", "МАГ": "MAGADAN",
-    
-    # PODOLSK
-    "ПОДОЛЬСК": "PODOLSK", "ПОДОЛ": "PODOLSK", "ПОД": "PODOLSK",
-    
-    # SURGUT
-    "СУРГУТ": "SURGUT", "СУР": "SURGUT", "СУРГ": "SURGUT",
-    
-    # IZHEVSK
-    "ИЖЕВСК": "IZHEVSK", "ИЖ": "IZHEVSK", "ИЖЕВ": "IZHEVSK",
-    
-    # TOMSK
-    "ТОМСК": "TOMSK", "ТОМ": "TOMSK", "ТОМС": "TOMSK",
-    
-    # TVER
-    "ТВЕРЬ": "TVER", "ТВЕР": "TVER", "ТВЬ": "TVER",
-    
-    # VOLOGDA
-    "ВОЛОГДА": "VOLOGDA", "ВОЛО": "VOLOGDA", "ВОЛ": "VOLOGDA",
-    
-    # TAGANROG
-    "ТАГАНРОГ": "TAGANROG", "ТАГАН": "TAGANROG", "ТАГ": "TAGANROG",
-    
-    # NOVGOROD
-    "НОВГОРОД": "NOVGOROD", "НОВГОР": "NOVGOROD", "НОВ": "NOVGOROD",
-    "ВЕЛИКИЙ НОВГОРОД": "NOVGOROD", "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НН": "NOVGOROD",
-    "НИЖНИЙ": "NOVGOROD",
-    
-    # KALUGA
-    "КАЛУГА": "KALUGA", "КАЛ": "KALUGA", "КАЛУ": "KALUGA",
-    
-    # VLADIMIR
-    "ВЛАДИМИР": "VLADIMIR", "ВЛАД": "VLADIMIR", "ВЛАДИ": "VLADIMIR",
-    
-    # KOSTROMA
-    "КОСТРОМА": "KOSTROMA", "КОСТР": "KOSTROMA", "КОСТЯ": "KOSTROMA", "КОС": "KOSTROMA",
-    
-    # CHITA
-    "ЧИТА": "CHITA", "ЧИТ": "CHITA", "ЧИТА": "CHITA",
-    
-    # ASTRAKHAN
-    "АСТРАХАНЬ": "ASTRAKHAN", "АСТРА": "ASTRAKHAN", "АСТ": "ASTRAKHAN", "АСТР": "ASTRAKHAN",
-    
-    # BRATSK
-    "БРАТСК": "BRATSK", "БРАТ": "BRATSK", "БРАТС": "BRATSK",
-    
-    # TAMBOV
-    "ТАМБОВ": "TAMBOV", "ТАМ": "TAMBOV", "ТАМБ": "TAMBOV",
-    
-    # YAKUTSK
-    "ЯКУТСК": "YAKUTSK", "ЯКУТ": "YAKUTSK", "ЯК": "YAKUTSK",
-    
-    # ULYANOVSK
-    "УЛЬЯНОВСК": "ULYANOVSK", "УЛЬЯ": "ULYANOVSK", "УЛЬ": "ULYANOVSK",
-    
-    # LIPETSK
-    "ЛИПЕЦК": "LIPETSK", "ЛИП": "LIPETSK", "ЛИПЕ": "LIPETSK",
-    
-    # BARNAUL
-    "БАРНАУЛ": "BARNAUL", "БАРН": "BARNAUL", "БАР": "BARNAUL",
-    
-    # YAROSLAVL
-    "ЯРОСЛАВЛЬ": "YAROSLAVL", "ЯРОС": "YAROSLAVL", "ЯР": "YAROSLAVL", "ЯРИК": "YAROSLAVL",
-    
-    # OREL
-    "ОРЕЛ": "OREL", "ОРЁЛ": "OREL", "ОРЕ": "OREL",
-    
-    # BRYANSK
-    "БРЯНСК": "BRYANSK", "БРЯ": "BRYANSK", "БРЯН": "BRYANSK",
-    
-    # PSKOV
-    "ПСКОВ": "PSKOV", "ПСК": "PSKOV", "ПСКОВ": "PSKOV",
-    
-    # SMOLENSK
-    "СМОЛЕНСК": "SMOLENSK", "СМОЛ": "SMOLENSK", "СМО": "SMOLENSK",
-    
-    # STAVROPOL
-    "СТАВРОПОЛЬ": "STAVROPOL", "СТАВР": "STAVROPOL", "СТАВ": "STAVROPOL",
-    
-    # IVANOVO
-    "ИВАНОВО": "IVANOVO", "ИВАН": "IVANOVO", "ИВАН": "IVANOVO",
-    
-    # TOLYATTI
-    "ТОЛЬЯТТИ": "TOLYATTI", "ТОЛЬ": "TOLYATTI", "ТОЛ": "TOLYATTI", "ТОЛИК": "TOLYATTI",
-    
-    # TYUMEN
-    "ТЮМЕНЬ": "TYUMEN", "ТЮМ": "TYUMEN", "ТЮМЯ": "TYUMEN",
-    
-    # KEMEROVO
-    "КЕМЕРОВО": "KEMEROVO", "КЕМ": "KEMEROVO", "КЕМЕР": "KEMEROVO",
-    
-    # KIROV
-    "КИРОВ": "KIROV", "КИР": "KIROV", "КИРА": "KIROV",
-    
-    # ORENBURG
-    "ОРЕНБУРГ": "ORENBURG", "ОРЕН": "ORENBURG", "ОР": "ORENBURG", "ОРБ": "ORENBURG",
-    
-    # ARKHANGELSK
-    "АРХАНГЕЛЬСК": "ARKHANGELSK", "АРХ": "ARKHANGELSK", "АРХАН": "ARKHANGELSK",
-    
-    # KURSK
-    "КУРСК": "KURSK", "КУР": "KURSK", "КУРС": "KURSK",
-    
-    # MURMANSK
-    "МУРМАНСК": "MURMANSK", "МУР": "MURMANSK", "МУРМАН": "MURMANSK",
-    
-    # PENZA
-    "ПЕНЗА": "PENZA", "ПЕН": "PENZA", "ПЕНЗ": "PENZA",
-    
-    # RYAZAN
-    "РЯЗАНЬ": "RYAZAN", "РЯЗ": "RYAZAN", "РЯЗА": "RYAZAN",
-    
-    # TULA
-    "ТУЛА": "TULA", "ТУЛ": "TULA", "ТУЛЬ": "TULA",
-    
-    # PERM
-    "ПЕРМЬ": "PERM", "ПЕР": "PERM", "ПЕРМ": "PERM",
-    
-    # KHABAROVSK
-    "ХАБАРОВСК": "KHABAROVSK", "ХАБ": "KHABAROVSK", "ХАБАР": "KHABAROVSK",
-    
-    # CHEBOKSARY
-    "ЧЕБОКСАРЫ": "CHEBOKSARY", "ЧЕБ": "CHEBOKSARY", "ЧЕБО": "CHEBOKSARY",
-    
-    # KRASNOYARSK
-    "КРАСНОЯРСК": "KRASNOYARSK", "КРАСНОЯР": "KRASNOYARSK", "КРАС": "KRASNOYARSK", "КРС": "KRASNOYARSK",
-    
-    # CHELYABINSK
-    "ЧЕЛЯБИНСК": "CHELYABINSK", "ЧЕЛ": "CHELYABINSK", "ЧЕЛЯ": "CHELYABINSK", "ЧЕЛЯБ": "CHELYABINSK",
-    
-    # KALININGRAD
-    "КАЛИНИНГРАД": "KALININGRAD", "КАЛИ": "KALININGRAD", "КАЛ": "KALININGRAD", "КЁНИГ": "KALININGRAD",
-    
-    # VLADIVOSTOK
-    "ВЛАДИВОСТОК": "VLADIVOSTOK", "ВЛАДИК": "VLADIVOSTOK", "ВЛАД": "VLADIVOSTOK", "ВЛ": "VLADIVOSTOK",
-    
-    # VLADIKAVKAZ
-    "ВЛАДИКАВКАЗ": "VLADIKAVKAZ", "ВЛАДИК": "VLADIKAVKAZ", "ВЛАД": "VLADIKAVKAZ",
-    
-    # MAKHACHKALA - добавлены варианты МХЧ
-    "МАХАЧКАЛА": "MAKHACHKALA", "МАХА": "MAKHACHKALA", "МАХ": "MAKHACHKALA", "МХЧ": "MAKHACHKALA", "МАХАЧ": "MAKHACHKALA",
-    
-    # BELGOROD
-    "БЕЛГОРОД": "BELGOROD", "БЕЛ": "BELGOROD", "БЕЛГО": "BELGOROD",
-    
-    # VORONEZH
-    "ВОРОНЕЖ": "VORONEZH", "ВОРОН": "VORONEZH", "ВОР": "VORONEZH",
-    
-    # VOLGOGRAD
-    "ВОЛГОГРАД": "VOLGOGRAD", "ВОЛГ": "VOLGOGRAD", "ВОЛГА": "VOLGOGRAD",
-    
-    # IRKUTSK
-    "ИРКУТСК": "IRKUTSK", "ИРК": "IRKUTSK", "ИРКУТ": "IRKUTSK",
-    
-    # OMSK
-    "ОМСК": "OMSK", "ОМ": "OMSK", "ОМС": "OMSK",
-    
-    # SARATOV
-    "САРАТОВ": "SARATOV", "САР": "SARATOV", "САРА": "SARATOV",
-    
-    # GROZNY
-    "ГРОЗНЫЙ": "GROZNY", "ГРОЗ": "GROZNY", "ГРОЗН": "GROZNY",
-    
-    # ARZAMAS
-    "АРЗАМАС": "ARZAMAS", "АРЗ": "ARZAMAS", "АРЗА": "ARZAMAS",
-    
-    # ===== ПОПУЛЯРНЫЕ ГОРОДА =====
-    "МОСКВА": "MOSCOW", "МСК": "MOSCOW", "МОС": "MOSCOW", "МОСК": "MOSCOW",
-    
-    "ПИТЕР": "SPB", "СПБ": "SPB", "САНКТ-ПЕТЕРБУРГ": "SPB", "ЛЕНИНГРАД": "SPB", 
-    "ПЕТЕРБУРГ": "SPB", "ЛЕГ": "SPB",
-    
+    # Города
+    "МОСКВА": "MOSCOW", "МСК": "MOSCOW", "МОС": "MOSCOW",
+    "ПИТЕР": "SPB", "СПБ": "SPB", "САНКТ-ПЕТЕРБУРГ": "SPB", "ЛЕНИНГРАД": "SPB",
     "КАЗАНЬ": "KAZAN", "КАЗАН": "KAZAN", "КАЗ": "KAZAN",
-    
-    "ЕКБ": "EKB", "ЕКАТЕРИНБУРГ": "EKB", "ЕКАТ": "EKB", "ЕКА": "EKB",
-    
+    "ЕКБ": "EKB", "ЕКАТЕРИНБУРГ": "EKB", "ЕКАТ": "EKB",
     "НОВОСИБ": "NOVOSIB", "НОВОСИБИРСК": "NOVOSIB", "НОВОС": "NOVOSIB",
-    
-    "КРАСНОДАР": "KRASNODAR", "КРД": "KRASNODAR", "КРАСНО": "KRASNODAR",
-    
-    "СОЧИ": "SOCHI", "СОЧ": "SOCHI", "СОЧИ": "SOCHI",
-    
-    "УФА": "UFA", "УФ": "UFA", "УФА": "UFA",
-    
-    "РОСТОВ": "ROSTOV", "РОСТОВ-НА-ДОНУ": "ROSTOV", "РНД": "ROSTOV", "РОСТ": "ROSTOV",
-    
-    "САМАРА": "SAMARA", "САМ": "SAMARA", "САМА": "SAMARA",
-    
-    "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НОВГОРОД": "NOVGOROD", "НИЖНИЙ": "NOVGOROD",
+    "КРАСНОДАР": "KRASNODAR", "КРД": "KRASNODAR",
+    "СОЧИ": "SOCHI",
+    "УФА": "UFA",
+    "РОСТОВ": "ROSTOV", "РОСТОВ-НА-ДОНУ": "ROSTOV", "РНД": "ROSTOV",
+    "САМАРА": "SAMARA",
+    "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НН": "NOVGOROD", "НИЖНИЙ": "NOVGOROD",
+    "НОРИЛЬСК": "NORILSK", "НОР": "NORILSK",
+    "ЧЕРЕПОВЕЦ": "CHEREPOVETS", "ЧЕРЕП": "CHEREPOVETS",
+    "МАГАДАН": "MAGADAN",
+    "ПОДОЛЬСК": "PODOLSK",
+    "СУРГУТ": "SURGUT",
+    "ИЖЕВСК": "IZHEVSK",
+    "ТОМСК": "TOMSK",
+    "ТВЕРЬ": "TVER",
+    "ВОЛОГДА": "VOLOGDA",
+    "ТАГАНРОГ": "TAGANROG",
+    "НОВГОРОД": "NOVGOROD",
+    "КАЛУГА": "KALUGA",
+    "ВЛАДИМИР": "VLADIMIR",
+    "КОСТРОМА": "KOSTROMA",
+    "ЧИТА": "CHITA",
+    "АСТРАХАНЬ": "ASTRAKHAN",
+    "БРАТСК": "BRATSK",
+    "ТАМБОВ": "TAMBOV",
+    "ЯКУТСК": "YAKUTSK",
+    "УЛЬЯНОВСК": "ULYANOVSK",
+    "ЛИПЕЦК": "LIPETSK",
+    "БАРНАУЛ": "BARNAUL",
+    "ЯРОСЛАВЛЬ": "YAROSLAVL",
+    "ОРЕЛ": "OREL", "ОРЁЛ": "OREL",
+    "БРЯНСК": "BRYANSK",
+    "ПСКОВ": "PSKOV",
+    "СМОЛЕНСК": "SMOLENSK",
+    "СТАВРОПОЛЬ": "STAVROPOL",
+    "ИВАНОВО": "IVANOVO",
+    "ТОЛЬЯТТИ": "TOLYATTI",
+    "ТЮМЕНЬ": "TYUMEN",
+    "КЕМЕРОВО": "KEMEROVO",
+    "КИРОВ": "KIROV",
+    "ОРЕНБУРГ": "ORENBURG",
+    "АРХАНГЕЛЬСК": "ARKHANGELSK",
+    "КУРСК": "KURSK",
+    "МУРМАНСК": "MURMANSK",
+    "ПЕНЗА": "PENZA",
+    "РЯЗАНЬ": "RYAZAN",
+    "ТУЛА": "TULA",
+    "ПЕРМЬ": "PERM",
+    "ХАБАРОВСК": "KHABAROVSK",
+    "ЧЕБОКСАРЫ": "CHEBOKSARY",
+    "КРАСНОЯРСК": "KRASNOYARSK",
+    "ЧЕЛЯБИНСК": "CHELYABINSK",
+    "КАЛИНИНГРАД": "KALININGRAD",
+    "ВЛАДИВОСТОК": "VLADIVOSTOK",
+    "ВЛАДИКАВКАЗ": "VLADIKAVKAZ",
+    "МАХАЧКАЛА": "MAKHACHKALA", "МХЧ": "MAKHACHKALA",
+    "БЕЛГОРОД": "BELGOROD",
+    "ВОРОНЕЖ": "VORONEZH",
+    "ВОЛГОГРАД": "VOLGOGRAD",
+    "ИРКУТСК": "IRKUTSK",
+    "ОМСК": "OMSK",
+    "САРАТОВ": "SARATOV",
+    "ГРОЗНЫЙ": "GROZNY",
+    "АРЗАМАС": "ARZAMAS",
 }
 
 # ========== ЗАГРУЗКА ДАННЫХ ==========
@@ -322,20 +211,6 @@ def add_log(user_id, user_name, action, details):
     if len(logs) > MAX_LOGS:
         logs = logs[-MAX_LOGS:]
     save_logs(logs)
-
-def get_logs_count():
-    """Возвращает количество записей в логах"""
-    return len(load_logs())
-
-def get_logs_by_date(date_str):
-    """Возвращает логи за конкретную дату"""
-    logs = load_logs()
-    return [log for log in logs if log['timestamp'].startswith(date_str)]
-
-def get_logs_by_user(user_id):
-    """Возвращает логи конкретного пользователя"""
-    logs = load_logs()
-    return [log for log in logs if log['user_id'] == user_id]
 
 # ========== ПРОВЕРКА ДОСТУПА ==========
 async def check_private_access(update: Update):
@@ -384,12 +259,10 @@ def load_message_id():
 
 # ========== ФУНКЦИЯ ОБНОВЛЕНИЯ СПИСКА ==========
 async def update_list_message(context):
-    """Обновляет закреплённое сообщение со списком"""
     full_text = format_list()
     current_message_id = load_message_id()
     
     try:
-        # Сначала пробуем отредактировать по сохранённому ID
         if current_message_id:
             try:
                 await context.bot.edit_message_text(
@@ -407,7 +280,6 @@ async def update_list_message(context):
                 else:
                     logging.warning(f"⚠️ {error_str}")
         
-        # Пробуем найти закреплённое сообщение в чате
         chat = await context.bot.get_chat(chat_id=CHAT_ID)
         
         if chat.pinned_message:
@@ -424,7 +296,6 @@ async def update_list_message(context):
                     save_message_id(chat.pinned_message.message_id)
                     return
         
-        # Если ничего не помогло - создаём новое сообщение
         sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
         
         try:
@@ -520,9 +391,8 @@ async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🗑 Все записи удалены")
     await update_list_message(context)
 
-# ========== РАСШИРЕННАЯ КОМАНДА ЛОГИ ==========
+# ========== КОМАНДА ЛОГИ ==========
 async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Показывает логи действий с фильтрацией (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -532,44 +402,8 @@ async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("📭 Лог пуст")
         return
     
-    # Парсим аргументы команды
-    args = context.args
-    filtered_logs = logs
-    
-    if args:
-        if args[0] == "all":
-            # Показать все логи
-            filtered_logs = logs
-            await update.message.reply_text(f"📊 Всего записей: {len(logs)}")
-        elif args[0] == "today":
-            # Показать логи за сегодня
-            today = datetime.datetime.now().strftime("%Y-%m-%d")
-            filtered_logs = [log for log in logs if log['timestamp'].startswith(today)]
-            await update.message.reply_text(f"📊 Записей за сегодня: {len(filtered_logs)}")
-        elif args[0] == "user" and len(args) > 1:
-            # Показать логи конкретного пользователя
-            try:
-                user_id = int(args[1])
-                filtered_logs = [log for log in logs if log['user_id'] == user_id]
-                await update.message.reply_text(f"📊 Записей пользователя {user_id}: {len(filtered_logs)}")
-            except:
-                await update.message.reply_text("❌ Неверный ID пользователя")
-                return
-        elif args[0].startswith("20"):
-            # Показать логи за конкретную дату (например, /logs 2026-02-26)
-            filtered_logs = [log for log in logs if log['timestamp'].startswith(args[0])]
-            await update.message.reply_text(f"📊 Записей за {args[0]}: {len(filtered_logs)}")
-    
-    # Показываем логи (по умолчанию последние 50, если не all)
-    if not args or args[0] != "all":
-        filtered_logs = filtered_logs[-50:]
-    
-    if not filtered_logs:
-        await update.message.reply_text("📭 Нет записей по вашему запросу")
-        return
-    
-    lines = ["📋 **Журнал действий:**\n"]
-    for log in filtered_logs:
+    lines = ["📋 **Последние действия:**\n"]
+    for log in logs[-20:]:
         lines.append(
             f"[{log['timestamp']}] "
             f"@{log['user_name']} (ID: {log['user_id']})\n"
@@ -577,96 +411,33 @@ async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     
     text = '\n'.join(lines)
-    
-    # Разбиваем на части если слишком длинный
     if len(text) > 4096:
         for i in range(0, len(text), 4096):
             await update.message.reply_text(text[i:i+4096])
     else:
         await update.message.reply_text(text)
 
-# ========== КОМАНДА СТАТИСТИКА ЛОГОВ ==========
-async def log_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Показывает статистику логов (только для владельца)"""
-    if update.effective_user.id != OWNER_ID:
-        await update.message.reply_text("⛔ Только для владельца")
-        return
-    
-    logs = load_logs()
-    if not logs:
-        await update.message.reply_text("📭 Лог пуст")
-        return
-    
-    # Общая статистика
-    total = len(logs)
-    
-    # Статистика по дням
-    days = {}
-    for log in logs:
-        date = log['timestamp'][:10]
-        days[date] = days.get(date, 0) + 1
-    
-    # Статистика по пользователям
-    users = {}
-    for log in logs:
-        user_name = log['user_name']
-        users[user_name] = users.get(user_name, 0) + 1
-    
-    # Формируем ответ
-    lines = ["📊 **Статистика логов:**\n"]
-    lines.append(f"📝 Всего записей: {total}")
-    lines.append(f"📅 Дней с активностью: {len(days)}")
-    lines.append(f"👥 Пользователей: {len(users)}\n")
-    
-    lines.append("**По дням:**")
-    for date, count in sorted(days.items(), reverse=True)[:10]:
-        lines.append(f"  {date}: {count} записей")
-    
-    lines.append("\n**По пользователям:**")
-    for user, count in sorted(users.items(), key=lambda x: x[1], reverse=True)[:10]:
-        lines.append(f"  {user}: {count} записей")
-    
-    text = '\n'.join(lines)
-    await update.message.reply_text(text)
-
-# ========== КОМАНДА ОЧИСТКИ ЛОГОВ ==========
-async def clear_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Очищает все логи (только для владельца)"""
-    if update.effective_user.id != OWNER_ID:
-        await update.message.reply_text("⛔ Только для владельца")
-        return
-    
-    save_logs([])
-    await update.message.reply_text("🗑 Все логи очищены")
-
 # ========== КОМАНДА НОВОГО СПИСКА ==========
 async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Создаёт новый чистый список и закрепляет его (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
     
-    # Очищаем все записи
     for server in SERVERS:
         servers_data[server] = ""
     save_data()
     
-    # Удаляем старый ID сообщения
     if os.path.exists(MESSAGE_ID_FILE):
         os.remove(MESSAGE_ID_FILE)
     
     await update.message.reply_text("📋 Создаю новый чистый список...")
     
-    # Форматируем новый пустой список
     full_text = format_list()
     
     try:
-        # Отправляем новое сообщение
         sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
         
-        # Закрепляем новое сообщение
         try:
-            # Сначала открепляем предыдущее закреплённое (если есть)
             chat = await context.bot.get_chat(chat_id=CHAT_ID)
             if chat.pinned_message:
                 await context.bot.unpin_chat_message(
@@ -674,9 +445,8 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     message_id=chat.pinned_message.message_id
                 )
         except:
-            pass  # Если не получилось открепить - игнорируем
+            pass
         
-        # Закрепляем новое сообщение
         try:
             await context.bot.pin_chat_message(
                 chat_id=CHAT_ID,
@@ -687,21 +457,19 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except Exception as e:
             await update.message.reply_text(f"✅ Новый список создан, но не удалось закрепить: {e}")
         
-        # Сохраняем новый ID
         save_message_id(sent_message.message_id)
         
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка при создании списка: {e}")
 
-# ========== АВТОМАТИЧЕСКИЙ NEWLIST ==========
+# ========== АВТОМАТИЧЕСКИЙ NEWLIST (ТЕСТ НА 20:32 МСК) ==========
 async def auto_newlist(context: ContextTypes.DEFAULT_TYPE):
-    """Автоматически вызывает команду newlist в 00:00 и 05:00 МСК"""
+    """Автоматически вызывает команду newlist (тест на 20:32 МСК)"""
     class FakeMessage:
         def __init__(self):
             self.chat_id = CHAT_ID
             self.chat = type('obj', (object,), {'type': 'group'})
         async def reply_text(self, text):
-            # Просто логируем, но не отправляем в чат
             logging.info(f"🤖 Автоматический newlist: {text}")
     
     class FakeUpdate:
@@ -709,7 +477,6 @@ async def auto_newlist(context: ContextTypes.DEFAULT_TYPE):
             self.message = FakeMessage()
             self.effective_user = type('obj', (object,), {'id': OWNER_ID})
     
-    # Вызываем команду newlist
     await new_list(FakeUpdate(), context)
 
 # ========== Flask ==========
@@ -738,14 +505,12 @@ async def run_bot():
     application.add_handler(CommandHandler("clear", clear_data))
     application.add_handler(CommandHandler("newlist", new_list))
     application.add_handler(CommandHandler("logs", show_logs))
-    application.add_handler(CommandHandler("logstats", log_stats))
-    application.add_handler(CommandHandler("clear_logs", clear_logs))
     
-        job_queue = application.job_queue
+    job_queue = application.job_queue
     if job_queue:
-        # ТЕСТ: 20:25 MSK = 17:25 UTC
-        job_queue.run_daily(auto_newlist, time=datetime.time(hour=17, minute=25, tzinfo=datetime.timezone.utc))
-        logging.info("✅ ТЕСТ: Автоматический newlist запланирован на 20:25 МСК")
+        # ТЕСТ: 20:32 MSK = 17:32 UTC
+        job_queue.run_daily(auto_newlist, time=datetime.time(hour=17, minute=32, tzinfo=datetime.timezone.utc))
+        logging.info("✅ ТЕСТ: Автоматический newlist запланирован на 20:32 МСК")
     
     logging.info("🚀 Бот запущен!")
     
@@ -764,6 +529,3 @@ if __name__ == "__main__":
     flask_thread.start()
     
     asyncio.run(run_bot())
-
-
-
