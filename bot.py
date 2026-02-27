@@ -38,250 +38,140 @@ SERVERS = [
     "🧡 ORANGE", "💛 YELLOW", "💙 BLUE", "💚 GREEN", "❤ RED"
 ]
 
-# ========== РАСШИРЕННЫЕ СИНОНИМЫ (ПОЛНАЯ ВЕРСИЯ) ==========
+# ========== РАСШИРЕННЫЕ СИНОНИМЫ ==========
 SYNONYMS = {
-    # ===== ЦВЕТА =====
-    "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE", "ВЙТ": "WHITE", "УАЙТ": "WHITE", "УАЙТ": "WHITE",
+    # WHITE
+    "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE", "ВЙТ": "WHITE", "УАЙТ": "WHITE",
     
+    # BLUE
     "БЛУ": "BLUE", "СИНИЙ": "BLUE", "БЛЮ": "BLUE", "БЛУУ": "BLUE", "СИН": "BLUE",
     
-    "ГРИН": "GREEN", "ЗЕЛЕНЫЙ": "GREEN", "ГРИНН": "GREEN", "ЗЕЛ": "GREEN", "ЗЕЛЕН": "GREEN",
+    # GREEN
+    "ГРИН": "GREEN", "ЗЕЛЕНЫЙ": "GREEN", "ГРИНН": "GREEN", "ЗЕЛ": "GREEN",
     
-    "ГОЛД": "GOLD", "ЗОЛОТО": "GOLD", "ГОЛДД": "GOLD", "ЗОЛ": "GOLD", "ЗОЛОТ": "GOLD",
+    # GOLD
+    "ГОЛД": "GOLD", "ЗОЛОТО": "GOLD", "ГОЛДД": "GOLD", "ЗОЛ": "GOLD",
     
-    "ПИНК": "PINK", "РОЗОВЫЙ": "PINK", "ПИНКК": "PINK", "РОЗ": "PINK", "РОЗОВ": "PINK",
+    # PINK
+    "ПИНК": "PINK", "РОЗОВЫЙ": "PINK", "ПИНКК": "PINK", "РОЗ": "PINK",
     
+    # BLACK
     "БЛЕК": "BLACK", "ЧЕРНЫЙ": "BLACK", "ЧЁРНЫЙ": "BLACK", "БЛЕКК": "BLACK", "ЧЕРН": "BLACK",
     
-    "РЭД": "RED", "РЕД": "RED", "КРАСНЫЙ": "RED", "РЭДД": "RED", "КРАСН": "RED", "КРАС": "RED",
+    # RED
+    "РЭД": "RED", "РЕД": "RED", "КРАСНЫЙ": "RED", "РЭДД": "RED", "КРАСН": "RED",
     
-    "ОРАНЖ": "ORANGE", "ОРАНЖЕВЫЙ": "ORANGE", "ОРАНЖЖ": "ORANGE", "ОРАН": "ORANGE",
+    # ORANGE
+    "ОРАНЖ": "ORANGE", "ОРАНЖЕВЫЙ": "ORANGE", "ОРАНЖЖ": "ORANGE",
     
-    "ПЁРПЛ": "PURPLE", "ПУРПЛ": "PURPLE", "ФИОЛЕТОВЫЙ": "PURPLE", "ПУРПУР": "PURPLE", 
-    "ФИОЛ": "PURPLE", "ФИОЛЕТ": "PURPLE",
+    # PURPLE
+    "ПЁРПЛ": "PURPLE", "ПУРПЛ": "PURPLE", "ФИОЛЕТОВЫЙ": "PURPLE", "ПУРПУР": "PURPLE",
     
-    "ЛАЙМ": "LIME", "ЛАЙММ": "LIME", "ЛАЙМ": "LIME",
+    # LIME
+    "ЛАЙМ": "LIME", "ЛАЙММ": "LIME",
     
-    "ЧЕРРИ": "CHERRY", "ВИШНЯ": "CHERRY", "ЧЕРИ": "CHERRY", "ВИШ": "CHERRY", "ВИШН": "CHERRY",
+    # CHERRY
+    "ЧЕРРИ": "CHERRY", "ВИШНЯ": "CHERRY", "ЧЕРИ": "CHERRY",
     
-    "ИНДИГО": "INDIGO", "ИНД": "INDIGO",
+    # INDIGO
+    "ИНДИГО": "INDIGO",
     
-    "МАДЖЕНТА": "MAGENTA", "МАДЖЕНТТА": "MAGENTA", "МАДЖ": "MAGENTA",
+    # MAGENTA
+    "МАДЖЕНТА": "MAGENTA", "МАДЖЕНТТА": "MAGENTA",
     
-    "КРИМСОН": "CRIMSON", "КРИМЗОН": "CRIMSON", "КРИМ": "CRIMSON",
+    # CRIMSON
+    "КРИМСОН": "CRIMSON", "КРИМЗОН": "CRIMSON",
     
-    "АКВА": "AQUA", "АКВВА": "AQUA", "АКВ": "AQUA",
+    # AQUA
+    "АКВА": "AQUA", "АКВВА": "AQUA",
     
-    "ГРЕЙ": "GRAY", "СЕРЫЙ": "GRAY", "ГРЭЙ": "GRAY", "СЕР": "GRAY",
+    # GRAY
+    "ГРЕЙ": "GRAY", "СЕРЫЙ": "GRAY", "ГРЭЙ": "GRAY",
     
+    # LCE
     "ЛЦЕ": "LCE", "ЛСЕ": "LCE",
     
-    "ЧИЛЛИ": "CHILLI", "ЧИЛИ": "CHILLI", "ЧИЛ": "CHILLI",
+    # CHILLI
+    "ЧИЛЛИ": "CHILLI", "ЧИЛИ": "CHILLI",
     
-    "КОКО": "COCO", "КОКОС": "COCO",
+    # COCO
+    "КОКО": "COCO",
     
-    "ПЛАТИНУМ": "PLATINUM", "ПЛАТИНА": "PLATINUM", "ПЛАТ": "PLATINUM",
+    # PLATINUM
+    "ПЛАТИНУМ": "PLATINUM", "ПЛАТИНА": "PLATINUM",
     
-    "АКУРЕ": "AQURE", "АКУРЭ": "AQURE", "АКУР": "AQURE",
-
-    # ===== ГОРОДА (ПОЛНЫЙ СПИСОК) =====
-    # NORILSK
-    "НОРИЛЬСК": "NORILSK", "НОРИЛ": "NORILSK", "НОР": "NORILSK",
+    # AQURE
+    "АКУРЕ": "AQURE", "АКУРЭ": "AQURE",
     
-    # CHEREPOVETS
-    "ЧЕРЕПОВЕЦ": "CHEREPOVETS", "ЧЕРЕП": "CHEREPOVETS", "ЧЕРЕПА": "CHEREPOVETS", 
-    "ЧЕР": "CHEREPOVETS",
-    
-    # MAGADAN
-    "МАГАДАН": "MAGADAN", "МАГА": "MAGADAN", "МАГ": "MAGADAN",
-    
-    # PODOLSK
-    "ПОДОЛЬСК": "PODOLSK", "ПОДОЛ": "PODOLSK", "ПОД": "PODOLSK",
-    
-    # SURGUT
-    "СУРГУТ": "SURGUT", "СУР": "SURGUT", "СУРГ": "SURGUT",
-    
-    # IZHEVSK
-    "ИЖЕВСК": "IZHEVSK", "ИЖ": "IZHEVSK", "ИЖЕВ": "IZHEVSK",
-    
-    # TOMSK
-    "ТОМСК": "TOMSK", "ТОМ": "TOMSK", "ТОМС": "TOMSK",
-    
-    # TVER
-    "ТВЕРЬ": "TVER", "ТВЕР": "TVER", "ТВЬ": "TVER",
-    
-    # VOLOGDA
-    "ВОЛОГДА": "VOLOGDA", "ВОЛО": "VOLOGDA", "ВОЛ": "VOLOGDA",
-    
-    # TAGANROG
-    "ТАГАНРОГ": "TAGANROG", "ТАГАН": "TAGANROG", "ТАГ": "TAGANROG",
-    
-    # NOVGOROD
-    "НОВГОРОД": "NOVGOROD", "НОВГОР": "NOVGOROD", "НОВ": "NOVGOROD",
-    "ВЕЛИКИЙ НОВГОРОД": "NOVGOROD", "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НН": "NOVGOROD",
-    "НИЖНИЙ": "NOVGOROD",
-    
-    # KALUGA
-    "КАЛУГА": "KALUGA", "КАЛ": "KALUGA", "КАЛУ": "KALUGA",
-    
-    # VLADIMIR
-    "ВЛАДИМИР": "VLADIMIR", "ВЛАД": "VLADIMIR", "ВЛАДИ": "VLADIMIR",
-    
-    # KOSTROMA
-    "КОСТРОМА": "KOSTROMA", "КОСТР": "KOSTROMA", "КОСТЯ": "KOSTROMA", "КОС": "KOSTROMA",
-    
-    # CHITA
-    "ЧИТА": "CHITA", "ЧИТ": "CHITA", "ЧИТА": "CHITA",
-    
-    # ASTRAKHAN
-    "АСТРАХАНЬ": "ASTRAKHAN", "АСТРА": "ASTRAKHAN", "АСТ": "ASTRAKHAN", "АСТР": "ASTRAKHAN",
-    
-    # BRATSK
-    "БРАТСК": "BRATSK", "БРАТ": "BRATSK", "БРАТС": "BRATSK",
-    
-    # TAMBOV
-    "ТАМБОВ": "TAMBOV", "ТАМ": "TAMBOV", "ТАМБ": "TAMBOV",
-    
-    # YAKUTSK
-    "ЯКУТСК": "YAKUTSK", "ЯКУТ": "YAKUTSK", "ЯК": "YAKUTSK",
-    
-    # ULYANOVSK
-    "УЛЬЯНОВСК": "ULYANOVSK", "УЛЬЯ": "ULYANOVSK", "УЛЬ": "ULYANOVSK",
-    
-    # LIPETSK
-    "ЛИПЕЦК": "LIPETSK", "ЛИП": "LIPETSK", "ЛИПЕ": "LIPETSK",
-    
-    # BARNAUL
-    "БАРНАУЛ": "BARNAUL", "БАРН": "BARNAUL", "БАР": "BARNAUL",
-    
-    # YAROSLAVL
-    "ЯРОСЛАВЛЬ": "YAROSLAVL", "ЯРОС": "YAROSLAVL", "ЯР": "YAROSLAVL", "ЯРИК": "YAROSLAVL",
-    
-    # OREL
-    "ОРЕЛ": "OREL", "ОРЁЛ": "OREL", "ОРЕ": "OREL",
-    
-    # BRYANSK
-    "БРЯНСК": "BRYANSK", "БРЯ": "BRYANSK", "БРЯН": "BRYANSK",
-    
-    # PSKOV
-    "ПСКОВ": "PSKOV", "ПСК": "PSKOV", "ПСКОВ": "PSKOV",
-    
-    # SMOLENSK
-    "СМОЛЕНСК": "SMOLENSK", "СМОЛ": "SMOLENSK", "СМО": "SMOLENSK",
-    
-    # STAVROPOL
-    "СТАВРОПОЛЬ": "STAVROPOL", "СТАВР": "STAVROPOL", "СТАВ": "STAVROPOL",
-    
-    # IVANOVO
-    "ИВАНОВО": "IVANOVO", "ИВАН": "IVANOVO", "ИВАН": "IVANOVO",
-    
-    # TOLYATTI
-    "ТОЛЬЯТТИ": "TOLYATTI", "ТОЛЬ": "TOLYATTI", "ТОЛ": "TOLYATTI", "ТОЛИК": "TOLYATTI",
-    
-    # TYUMEN
-    "ТЮМЕНЬ": "TYUMEN", "ТЮМ": "TYUMEN", "ТЮМЯ": "TYUMEN",
-    
-    # KEMEROVO
-    "КЕМЕРОВО": "KEMEROVO", "КЕМ": "KEMEROVO", "КЕМЕР": "KEMEROVO",
-    
-    # KIROV
-    "КИРОВ": "KIROV", "КИР": "KIROV", "КИРА": "KIROV",
-    
-    # ORENBURG
-    "ОРЕНБУРГ": "ORENBURG", "ОРЕН": "ORENBURG", "ОР": "ORENBURG", "ОРБ": "ORENBURG",
-    
-    # ARKHANGELSK
-    "АРХАНГЕЛЬСК": "ARKHANGELSK", "АРХ": "ARKHANGELSK", "АРХАН": "ARKHANGELSK",
-    
-    # KURSK
-    "КУРСК": "KURSK", "КУР": "KURSK", "КУРС": "KURSK",
-    
-    # MURMANSK
-    "МУРМАНСК": "MURMANSK", "МУР": "MURMANSK", "МУРМАН": "MURMANSK",
-    
-    # PENZA
-    "ПЕНЗА": "PENZA", "ПЕН": "PENZA", "ПЕНЗ": "PENZA",
-    
-    # RYAZAN
-    "РЯЗАНЬ": "RYAZAN", "РЯЗ": "RYAZAN", "РЯЗА": "RYAZAN",
-    
-    # TULA
-    "ТУЛА": "TULA", "ТУЛ": "TULA", "ТУЛЬ": "TULA",
-    
-    # PERM
-    "ПЕРМЬ": "PERM", "ПЕР": "PERM", "ПЕРМ": "PERM",
-    
-    # KHABAROVSK
-    "ХАБАРОВСК": "KHABAROVSK", "ХАБ": "KHABAROVSK", "ХАБАР": "KHABAROVSK",
-    
-    # CHEBOKSARY
-    "ЧЕБОКСАРЫ": "CHEBOKSARY", "ЧЕБ": "CHEBOKSARY", "ЧЕБО": "CHEBOKSARY",
-    
-    # KRASNOYARSK
-    "КРАСНОЯРСК": "KRASNOYARSK", "КРАСНОЯР": "KRASNOYARSK", "КРАС": "KRASNOYARSK", "КРС": "KRASNOYARSK",
-    
-    # CHELYABINSK
-    "ЧЕЛЯБИНСК": "CHELYABINSK", "ЧЕЛ": "CHELYABINSK", "ЧЕЛЯ": "CHELYABINSK", "ЧЕЛЯБ": "CHELYABINSK",
-    
-    # KALININGRAD
-    "КАЛИНИНГРАД": "KALININGRAD", "КАЛИ": "KALININGRAD", "КАЛ": "KALININGRAD", "КЁНИГ": "KALININGRAD",
-    
-    # VLADIVOSTOK
-    "ВЛАДИВОСТОК": "VLADIVOSTOK", "ВЛАДИК": "VLADIVOSTOK", "ВЛАД": "VLADIVOSTOK", "ВЛ": "VLADIVOSTOK",
-    
-    # VLADIKAVKAZ
-    "ВЛАДИКАВКАЗ": "VLADIKAVKAZ", "ВЛАДИК": "VLADIKAVKAZ", "ВЛАД": "VLADIKAVKAZ",
-    
-    # MAKHACHKALA
-    "МАХАЧКАЛА": "MAKHACHKALA", "МАХА": "MAKHACHKALA", "МАХ": "MAKHACHKALA",
-    
-    # BELGOROD
-    "БЕЛГОРОД": "BELGOROD", "БЕЛ": "BELGOROD", "БЕЛГО": "BELGOROD",
-    
-    # VORONEZH
-    "ВОРОНЕЖ": "VORONEZH", "ВОРОН": "VORONEZH", "ВОР": "VORONEZH",
-    
-    # VOLGOGRAD
-    "ВОЛГОГРАД": "VOLGOGRAD", "ВОЛГ": "VOLGOGRAD", "ВОЛГА": "VOLGOGRAD",
-    
-    # IRKUTSK
-    "ИРКУТСК": "IRKUTSK", "ИРК": "IRKUTSK", "ИРКУТ": "IRKUTSK",
-    
-    # OMSK
-    "ОМСК": "OMSK", "ОМ": "OMSK", "ОМС": "OMSK",
-    
-    # SARATOV
-    "САРАТОВ": "SARATOV", "САР": "SARATOV", "САРА": "SARATOV",
-    
-    # GROZNY
-    "ГРОЗНЫЙ": "GROZNY", "ГРОЗ": "GROZNY", "ГРОЗН": "GROZNY",
-    
-    # ARZAMAS
-    "АРЗАМАС": "ARZAMAS", "АРЗ": "ARZAMAS", "АРЗА": "ARZAMAS",
-    
-    # ===== ПОПУЛЯРНЫЕ ГОРОДА =====
-    "МОСКВА": "MOSCOW", "МСК": "MOSCOW", "МОС": "MOSCOW", "МОСК": "MOSCOW",
-    
-    "ПИТЕР": "SPB", "СПБ": "SPB", "САНКТ-ПЕТЕРБУРГ": "SPB", "ЛЕНИНГРАД": "SPB", 
-    "ПЕТЕРБУРГ": "SPB", "ЛЕГ": "SPB",
-    
+    # Города
+    "МОСКВА": "MOSCOW", "МСК": "MOSCOW", "МОС": "MOSCOW",
+    "ПИТЕР": "SPB", "СПБ": "SPB", "САНКТ-ПЕТЕРБУРГ": "SPB", "ЛЕНИНГРАД": "SPB",
     "КАЗАНЬ": "KAZAN", "КАЗАН": "KAZAN", "КАЗ": "KAZAN",
-    
-    "ЕКБ": "EKB", "ЕКАТЕРИНБУРГ": "EKB", "ЕКАТ": "EKB", "ЕКА": "EKB",
-    
+    "ЕКБ": "EKB", "ЕКАТЕРИНБУРГ": "EKB", "ЕКАТ": "EKB",
     "НОВОСИБ": "NOVOSIB", "НОВОСИБИРСК": "NOVOSIB", "НОВОС": "NOVOSIB",
-    
-    "КРАСНОДАР": "KRASNODAR", "КРД": "KRASNODAR", "КРАСНО": "KRASNODAR",
-    
-    "СОЧИ": "SOCHI", "СОЧ": "SOCHI", "СОЧИ": "SOCHI",
-    
-    "УФА": "UFA", "УФ": "UFA", "УФА": "UFA",
-    
-    "РОСТОВ": "ROSTOV", "РОСТОВ-НА-ДОНУ": "ROSTOV", "РНД": "ROSTOV", "РОСТ": "ROSTOV",
-    
-    "САМАРА": "SAMARA", "САМ": "SAMARA", "САМА": "SAMARA",
-    
+    "КРАСНОДАР": "KRASNODAR", "КРД": "KRASNODAR",
+    "СОЧИ": "SOCHI",
+    "УФА": "UFA",
+    "РОСТОВ": "ROSTOV", "РОСТОВ-НА-ДОНУ": "ROSTOV", "РНД": "ROSTOV",
+    "САМАРА": "SAMARA",
     "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НН": "NOVGOROD", "НИЖНИЙ": "NOVGOROD",
+    "НОРИЛЬСК": "NORILSK", "НОР": "NORILSK",
+    "ЧЕРЕПОВЕЦ": "CHEREPOVETS", "ЧЕРЕП": "CHEREPOVETS",
+    "МАГАДАН": "MAGADAN",
+    "ПОДОЛЬСК": "PODOLSK",
+    "СУРГУТ": "SURGUT",
+    "ИЖЕВСК": "IZHEVSK",
+    "ТОМСК": "TOMSK",
+    "ТВЕРЬ": "TVER",
+    "ВОЛОГДА": "VOLOGDA",
+    "ТАГАНРОГ": "TAGANROG",
+    "НОВГОРОД": "NOVGOROD",
+    "КАЛУГА": "KALUGA",
+    "ВЛАДИМИР": "VLADIMIR",
+    "КОСТРОМА": "KOSTROMA",
+    "ЧИТА": "CHITA",
+    "АСТРАХАНЬ": "ASTRAKHAN",
+    "БРАТСК": "BRATSK",
+    "ТАМБОВ": "TAMBOV",
+    "ЯКУТСК": "YAKUTSK",
+    "УЛЬЯНОВСК": "ULYANOVSK",
+    "ЛИПЕЦК": "LIPETSK",
+    "БАРНАУЛ": "BARNAUL",
+    "ЯРОСЛАВЛЬ": "YAROSLAVL",
+    "ОРЕЛ": "OREL", "ОРЁЛ": "OREL",
+    "БРЯНСК": "BRYANSK",
+    "ПСКОВ": "PSKOV",
+    "СМОЛЕНСК": "SMOLENSK",
+    "СТАВРОПОЛЬ": "STAVROPOL",
+    "ИВАНОВО": "IVANOVO",
+    "ТОЛЬЯТТИ": "TOLYATTI",
+    "ТЮМЕНЬ": "TYUMEN",
+    "КЕМЕРОВО": "KEMEROVO",
+    "КИРОВ": "KIROV",
+    "ОРЕНБУРГ": "ORENBURG",
+    "АРХАНГЕЛЬСК": "ARKHANGELSK",
+    "КУРСК": "KURSK",
+    "МУРМАНСК": "MURMANSK",
+    "ПЕНЗА": "PENZA",
+    "РЯЗАНЬ": "RYAZAN",
+    "ТУЛА": "TULA",
+    "ПЕРМЬ": "PERM",
+    "ХАБАРОВСК": "KHABAROVSK",
+    "ЧЕБОКСАРЫ": "CHEBOKSARY",
+    "КРАСНОЯРСК": "KRASNOYARSK",
+    "ЧЕЛЯБИНСК": "CHELYABINSK",
+    "КАЛИНИНГРАД": "KALININGRAD",
+    "ВЛАДИВОСТОК": "VLADIVOSTOK",
+    "ВЛАДИКАВКАЗ": "VLADIKAVKAZ",
+    "МАХАЧКАЛА": "MAKHACHKALA",
+    "БЕЛГОРОД": "BELGOROD",
+    "ВОРОНЕЖ": "VORONEZH",
+    "ВОЛГОГРАД": "VOLGOGRAD",
+    "ИРКУТСК": "IRKUTSK",
+    "ОМСК": "OMSK",
+    "САРАТОВ": "SARATOV",
+    "ГРОЗНЫЙ": "GROZNY",
+    "АРЗАМАС": "ARZAMAS",
 }
 
 # ========== ЗАГРУЗКА ДАННЫХ ==========
@@ -367,7 +257,7 @@ def load_message_id():
             return int(f.read().strip())
     return None
 
-# ========== УЛУЧШЕННАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ СПИСКА ==========
+# ========== ФУНКЦИЯ ОБНОВЛЕНИЯ СПИСКА ==========
 async def update_list_message(context):
     """Обновляет закреплённое сообщение со списком"""
     full_text = format_list()
@@ -382,14 +272,11 @@ async def update_list_message(context):
                     message_id=current_message_id,
                     text=full_text
                 )
-                # Если дошли сюда - значит успешно отредактировали
                 return
             except Exception as e:
                 error_str = str(e)
-                # Если текст не изменился - просто игнорируем
                 if "Message is not modified" in error_str:
                     return
-                # Если сообщение не найдено или нельзя редактировать - продолжаем
                 elif "Message can't be edited" in error_str or "message to edit not found" in error_str.lower():
                     pass
                 else:
@@ -411,12 +298,10 @@ async def update_list_message(context):
                 if "Message is not modified" in str(e):
                     save_message_id(chat.pinned_message.message_id)
                     return
-                # Игнорируем остальные ошибки
         
         # Если ничего не помогло - создаём новое сообщение
         sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
         
-        # Пробуем закрепить
         try:
             await context.bot.pin_chat_message(
                 chat_id=CHAT_ID,
@@ -545,22 +430,59 @@ async def clear_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
     save_logs([])
     await update.message.reply_text("🗑 Логи очищены")
 
-# ========== КОМАНДА НОВОГО СПИСКА ==========
+# ========== ИСПРАВЛЕННАЯ КОМАНДА НОВОГО СПИСКА ==========
 async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Создаёт новый чистый список и закрепляет его (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
     
+    # Очищаем все записи
     for server in SERVERS:
         servers_data[server] = ""
     save_data()
     
+    # Удаляем старый ID сообщения
     if os.path.exists(MESSAGE_ID_FILE):
         os.remove(MESSAGE_ID_FILE)
     
     await update.message.reply_text("📋 Создаю новый чистый список...")
-    await update_list_message(context)
-    await update.message.reply_text("✅ Новый список готов!")
+    
+    # Форматируем новый пустой список
+    full_text = format_list()
+    
+    try:
+        # Отправляем новое сообщение
+        sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
+        
+        # Закрепляем новое сообщение
+        try:
+            # Сначала открепляем предыдущее закреплённое (если есть)
+            chat = await context.bot.get_chat(chat_id=CHAT_ID)
+            if chat.pinned_message:
+                await context.bot.unpin_chat_message(
+                    chat_id=CHAT_ID,
+                    message_id=chat.pinned_message.message_id
+                )
+        except:
+            pass  # Если не получилось открепить - игнорируем
+        
+        # Закрепляем новое сообщение
+        try:
+            await context.bot.pin_chat_message(
+                chat_id=CHAT_ID,
+                message_id=sent_message.message_id,
+                disable_notification=True
+            )
+            await update.message.reply_text(f"✅ Новый список создан и закреплён!")
+        except Exception as e:
+            await update.message.reply_text(f"✅ Новый список создан, но не удалось закрепить: {e}")
+        
+        # Сохраняем новый ID
+        save_message_id(sent_message.message_id)
+        
+    except Exception as e:
+        await update.message.reply_text(f"❌ Ошибка при создании списка: {e}")
 
 # ========== АВТОМАТИЧЕСКИЙ ПЕРЕЗАПУСК ==========
 async def auto_start(context: ContextTypes.DEFAULT_TYPE):
@@ -629,4 +551,3 @@ if __name__ == "__main__":
     flask_thread.start()
     
     asyncio.run(run_bot())
-
