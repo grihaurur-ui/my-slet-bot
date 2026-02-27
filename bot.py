@@ -89,33 +89,33 @@ SYNONYMS = {
     "ГРЕЙ": "GRAY", "СЕРЫЙ": "GRAY", "ГРЭЙ": "GRAY",
     
     # LCE
-    "ЛЦЕ": "LCE", "ЛСЕ": "LCE",
+    "АЙС": "ICE", "ЛСЕ": "LCE",
     
     # CHILLI
     "ЧИЛЛИ": "CHILLI", "ЧИЛИ": "CHILLI",
     
     # COCO
-    "КОКО": "COCO",
+    "ЧОКО": "CHOCO",
     
     # PLATINUM
     "ПЛАТИНУМ": "PLATINUM", "ПЛАТИНА": "PLATINUM",
     
     # AQURE
-    "АКУРЕ": "AQURE", "АКУРЭ": "AQURE",
+    "АЗУР": "AZURE", "AZUR": "AQURE",
     
     # Города
     "МОСКВА": "MOSCOW", "МСК": "MOSCOW", "МОС": "MOSCOW",
     "ПИТЕР": "SPB", "СПБ": "SPB", "САНКТ-ПЕТЕРБУРГ": "SPB", "ЛЕНИНГРАД": "SPB",
     "КАЗАНЬ": "KAZAN", "КАЗАН": "KAZAN", "КАЗ": "KAZAN",
     "ЕКБ": "EKB", "ЕКАТЕРИНБУРГ": "EKB", "ЕКАТ": "EKB",
-    "НОВОСИБ": "NOVOSIB", "НОВОСИБИРСК": "NOVOSIB", "НОВОС": "NOVOSIB",
+    "НОВОСИБ": "NOVOSIB", "НОВОСИБИРСК": "NOVOSIB", "НСК": "NOVOSIB",
     "КРАСНОДАР": "KRASNODAR", "КРД": "KRASNODAR",
     "СОЧИ": "SOCHI",
     "УФА": "UFA",
     "РОСТОВ": "ROSTOV", "РОСТОВ-НА-ДОНУ": "ROSTOV", "РНД": "ROSTOV",
     "САМАРА": "SAMARA",
-    "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НН": "NOVGOROD", "НИЖНИЙ": "NOVGOROD",
-    "НОРИЛЬСК": "NORILSK", "НОР": "NORILSK",
+    "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НВГ": "NOVGOROD", "НОВГОРОД": "NOVGOROD",
+    "НОРИЛЬСК": "NORILSK", "НОРИЛСК": "NORILSK",
     "ЧЕРЕПОВЕЦ": "CHEREPOVETS", "ЧЕРЕП": "CHEREPOVETS",
     "МАГАДАН": "MAGADAN",
     "ПОДОЛЬСК": "PODOLSK",
@@ -137,7 +137,7 @@ SYNONYMS = {
     "УЛЬЯНОВСК": "ULYANOVSK",
     "ЛИПЕЦК": "LIPETSK",
     "БАРНАУЛ": "BARNAUL",
-    "ЯРОСЛАВЛЬ": "YAROSLAVL",
+    "ЯРОСЛАВЛЬ" "ЯРО": "YAROSLAVL",
     "ОРЕЛ": "OREL", "ОРЁЛ": "OREL",
     "БРЯНСК": "BRYANSK",
     "ПСКОВ": "PSKOV",
@@ -161,8 +161,8 @@ SYNONYMS = {
     "КРАСНОЯРСК": "KRASNOYARSK",
     "ЧЕЛЯБИНСК": "CHELYABINSK",
     "КАЛИНИНГРАД": "KALININGRAD",
-    "ВЛАДИВОСТОК": "VLADIVOSTOK",
-    "ВЛАДИКАВКАЗ": "VLADIKAVKAZ",
+    "ВОСТОК": "VLADIVOSTOK",
+    "КАВКАЗ": "VLADIKAVKAZ",
     "МАХАЧКАЛА": "MAKHACHKALA",
     "БЕЛГОРОД": "BELGOROD",
     "ВОРОНЕЖ": "VORONEZH",
@@ -655,3 +655,4 @@ if __name__ == "__main__":
     flask_thread.start()
     
     asyncio.run(run_bot())
+
