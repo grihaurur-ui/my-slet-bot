@@ -14,7 +14,7 @@ OWNER_ID = int(os.environ.get("OWNER_ID", "0"))
 DATA_FILE = "data.json"
 MESSAGE_ID_FILE = "message_id.txt"
 LOG_FILE = "logs.json"
-MAX_LOGS = 100
+MAX_LOGS = 1000  # Увеличил до 1000 записей
 
 # ========== ТВОЙ ПОЛНЫЙ СПИСОК СЕРВЕРОВ ==========
 SERVERS = [
@@ -212,6 +212,20 @@ def add_log(user_id, user_name, action, details):
         logs = logs[-MAX_LOGS:]
     save_logs(logs)
 
+def get_logs_count():
+    """Возвращает количество записей в логах"""
+    return len(load_logs())
+
+def get_logs_by_date(date_str):
+    """Возвращает логи за конкретную дату"""
+    logs = load_logs()
+    return [log for log in logs if log['timestamp'].startswith(date_str)]
+
+def get_logs_by_user(user_id):
+    """Возвращает логи конкретного пользователя"""
+    logs = load_logs()
+    return [log for log in logs if log['user_id'] == user_id]
+
 # ========== ПРОВЕРКА ДОСТУПА ==========
 async def check_private_access(update: Update):
     if update.message.chat.type != "private":
@@ -395,8 +409,9 @@ async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🗑 Все записи удалены")
     await update_list_message(context)
 
-# ========== КОМАНДА ЛОГИ ==========
+# ========== РАСШИРЕННАЯ КОМАНДА ЛОГИ ==========
 async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Показывает логи действий с фильтрацией (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -406,8 +421,44 @@ async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("📭 Лог пуст")
         return
     
-    lines = ["📋 **Последние действия:**\n"]
-    for log in logs[-20:]:
+    # Парсим аргументы команды
+    args = context.args
+    filtered_logs = logs
+    
+    if args:
+        if args[0] == "all":
+            # Показать все логи
+            filtered_logs = logs
+            await update.message.reply_text(f"📊 Всего записей: {len(logs)}")
+        elif args[0] == "today":
+            # Показать логи за сегодня
+            today = datetime.datetime.now().strftime("%Y-%m-%d")
+            filtered_logs = [log for log in logs if log['timestamp'].startswith(today)]
+            await update.message.reply_text(f"📊 Записей за сегодня: {len(filtered_logs)}")
+        elif args[0] == "user" and len(args) > 1:
+            # Показать логи конкретного пользователя
+            try:
+                user_id = int(args[1])
+                filtered_logs = [log for log in logs if log['user_id'] == user_id]
+                await update.message.reply_text(f"📊 Записей пользователя {user_id}: {len(filtered_logs)}")
+            except:
+                await update.message.reply_text("❌ Неверный ID пользователя")
+                return
+        elif args[0].startswith("20"):
+            # Показать логи за конкретную дату (например, /logs 2026-02-26)
+            filtered_logs = [log for log in logs if log['timestamp'].startswith(args[0])]
+            await update.message.reply_text(f"📊 Записей за {args[0]}: {len(filtered_logs)}")
+    
+    # Показываем логи (по умолчанию последние 50, если не all)
+    if not args or args[0] != "all":
+        filtered_logs = filtered_logs[-50:]
+    
+    if not filtered_logs:
+        await update.message.reply_text("📭 Нет записей по вашему запросу")
+        return
+    
+    lines = ["📋 **Журнал действий:**\n"]
+    for log in filtered_logs:
         lines.append(
             f"[{log['timestamp']}] "
             f"@{log['user_name']} (ID: {log['user_id']})\n"
@@ -415,22 +466,69 @@ async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     
     text = '\n'.join(lines)
+    
+    # Разбиваем на части если слишком длинный
     if len(text) > 4096:
         for i in range(0, len(text), 4096):
             await update.message.reply_text(text[i:i+4096])
     else:
         await update.message.reply_text(text)
 
+# ========== КОМАНДА СТАТИСТИКА ЛОГОВ ==========
+async def log_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Показывает статистику логов (только для владельца)"""
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    logs = load_logs()
+    if not logs:
+        await update.message.reply_text("📭 Лог пуст")
+        return
+    
+    # Общая статистика
+    total = len(logs)
+    
+    # Статистика по дням
+    days = {}
+    for log in logs:
+        date = log['timestamp'][:10]
+        days[date] = days.get(date, 0) + 1
+    
+    # Статистика по пользователям
+    users = {}
+    for log in logs:
+        user_name = log['user_name']
+        users[user_name] = users.get(user_name, 0) + 1
+    
+    # Формируем ответ
+    lines = ["📊 **Статистика логов:**\n"]
+    lines.append(f"📝 Всего записей: {total}")
+    lines.append(f"📅 Дней с активностью: {len(days)}")
+    lines.append(f"👥 Пользователей: {len(users)}\n")
+    
+    lines.append("**По дням:**")
+    for date, count in sorted(days.items(), reverse=True)[:10]:
+        lines.append(f"  {date}: {count} записей")
+    
+    lines.append("\n**По пользователям:**")
+    for user, count in sorted(users.items(), key=lambda x: x[1], reverse=True)[:10]:
+        lines.append(f"  {user}: {count} записей")
+    
+    text = '\n'.join(lines)
+    await update.message.reply_text(text)
+
 # ========== КОМАНДА ОЧИСТКИ ЛОГОВ ==========
 async def clear_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Очищает все логи (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
     
     save_logs([])
-    await update.message.reply_text("🗑 Логи очищены")
+    await update.message.reply_text("🗑 Все логи очищены")
 
-# ========== ИСПРАВЛЕННАЯ КОМАНДА НОВОГО СПИСКА ==========
+# ========== КОМАНДА НОВОГО СПИСКА ==========
 async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Создаёт новый чистый список и закрепляет его (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
@@ -484,21 +582,24 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка при создании списка: {e}")
 
-# ========== АВТОМАТИЧЕСКИЙ ПЕРЕЗАПУСК ==========
-async def auto_start(context: ContextTypes.DEFAULT_TYPE):
+# ========== АВТОМАТИЧЕСКИЙ NEWLIST ==========
+async def auto_newlist(context: ContextTypes.DEFAULT_TYPE):
+    """Автоматически вызывает команду newlist в 00:00 и 05:00 МСК"""
     class FakeMessage:
         def __init__(self):
             self.chat_id = CHAT_ID
             self.chat = type('obj', (object,), {'type': 'group'})
         async def reply_text(self, text):
-            await context.bot.send_message(chat_id=CHAT_ID, text=text)
+            # Просто логируем, но не отправляем в чат
+            logging.info(f"🤖 Автоматический newlist: {text}")
     
     class FakeUpdate:
         def __init__(self):
             self.message = FakeMessage()
             self.effective_user = type('obj', (object,), {'id': OWNER_ID})
     
-    await start(FakeUpdate(), context)
+    # Вызываем команду newlist
+    await new_list(FakeUpdate(), context)
 
 # ========== Flask ==========
 app_flask = Flask(__name__)
@@ -526,13 +627,16 @@ async def run_bot():
     application.add_handler(CommandHandler("clear", clear_data))
     application.add_handler(CommandHandler("newlist", new_list))
     application.add_handler(CommandHandler("logs", show_logs))
+    application.add_handler(CommandHandler("logstats", log_stats))
     application.add_handler(CommandHandler("clear_logs", clear_logs))
     
     job_queue = application.job_queue
     if job_queue:
-        job_queue.run_daily(auto_start, time=datetime.time(hour=21, minute=0, tzinfo=datetime.timezone.utc))
-        job_queue.run_daily(auto_start, time=datetime.time(hour=3, minute=0, tzinfo=datetime.timezone.utc))
-        logging.info("✅ Автоматический перезапуск запланирован")
+        # 00:00 MSK = 21:00 UTC (предыдущего дня)
+        job_queue.run_daily(auto_newlist, time=datetime.time(hour=21, minute=0, tzinfo=datetime.timezone.utc))
+        # 05:00 MSK = 02:00 UTC
+        job_queue.run_daily(auto_newlist, time=datetime.time(hour=2, minute=0, tzinfo=datetime.timezone.utc))
+        logging.info("✅ Автоматический newlist запланирован на 00:00 и 05:00 МСК")
     
     logging.info("🚀 Бот запущен!")
     
