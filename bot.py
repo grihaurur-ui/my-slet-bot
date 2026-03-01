@@ -15,6 +15,7 @@ DATA_FILE = "data.json"
 MESSAGE_ID_FILE = "message_id.txt"
 LOG_FILE = "logs.json"
 USERS_FILE = "users.json"
+LIST_STATS_FILE = "list_stats.json"  # новый файл для статистики по текущему списку
 MAX_LOGS = 1000
 
 # ========== ТВОЙ ПОЛНЫЙ СПИСОК СЕРВЕРОВ ==========
@@ -155,6 +156,43 @@ def save_user(user):
     
     with open(USERS_FILE, 'w', encoding='utf-8') as f:
         json.dump(users, f, ensure_ascii=False, indent=2)
+
+# ========== СТАТИСТИКА ПО ТЕКУЩЕМУ СПИСКУ ==========
+def load_list_stats():
+    """Загружает статистику по текущему списку"""
+    if os.path.exists(LIST_STATS_FILE):
+        with open(LIST_STATS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {
+        "created_at": None,
+        "created_by": None,
+        "active_users": [],  # кто записывал в этот список
+        "entries_count": 0
+    }
+
+def save_list_stats(stats):
+    """Сохраняет статистику по текущему списку"""
+    with open(LIST_STATS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(stats, f, ensure_ascii=False, indent=2)
+
+def reset_list_stats(creator_id=None):
+    """Сбрасывает статистику для нового списка"""
+    stats = {
+        "created_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "created_by": creator_id,
+        "active_users": [],
+        "entries_count": 0
+    }
+    save_list_stats(stats)
+    return stats
+
+def add_to_list_stats(user_id):
+    """Добавляет пользователя в статистику текущего списка"""
+    stats = load_list_stats()
+    if user_id not in stats["active_users"]:
+        stats["active_users"].append(user_id)
+    stats["entries_count"] += 1
+    save_list_stats(stats)
 
 # ========== ЗАГРУЗКА ДАННЫХ ==========
 if os.path.exists(DATA_FILE):
@@ -331,12 +369,17 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     user = update.effective_user
     user_name = user.username or user.first_name or str(user.id)
+    
+    # Добавляем в логи
     add_log(
         user_id=user.id,
         user_name=user_name,
         action="Добавление слёта",
         details=f"{server}: {text}"
     )
+    
+    # Добавляем в статистику текущего списка
+    add_to_list_stats(user.id)
     
     await update.message.reply_text(f"✅ Записано на {server}: {text}")
     await update_list_message(context)
@@ -414,6 +457,9 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if os.path.exists(MESSAGE_ID_FILE):
         os.remove(MESSAGE_ID_FILE)
     
+    # Сбрасываем статистику для нового списка
+    reset_list_stats(update.effective_user.id)
+    
     await update.message.reply_text("📋 Создаю новый чистый список...")
     
     full_text = format_list()
@@ -446,90 +492,72 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка при создании списка: {e}")
 
-# ========== ИСПРАВЛЕННАЯ КОМАНДА INACTIVE ==========
-async def inactive_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Показывает неактивных пользователей по двум критериям (только для владельца)"""
+# ========== НОВАЯ КОМАНДА STATS ==========
+async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Показывает статистику по текущему закреплённому списку (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
-
-    # Загружаем всех известных пользователей
+    
+    stats = load_list_stats()
     all_users = load_users()
-    if not all_users:
-        await update.message.reply_text("📭 База пользователей пуста. Нужно подождать, пока бот соберёт данные (кто-то должен написать в группу).")
+    
+    if not stats.get("created_at"):
+        await update.message.reply_text("📭 Статистика по текущему списку отсутствует. Создайте новый список через /newlist")
         return
-
-    # Загружаем логи
-    logs = load_logs()
     
-    # Кто хоть раз записывал слёт
-    ever_active = set()
-    user_last_entries = {}
+    # Получаем информацию о создателе
+    creator_info = "Неизвестно"
+    if stats["created_by"]:
+        for user_id, user_data in all_users.items():
+            if int(user_id) == stats["created_by"]:
+                creator_info = f"@{user_data['username']}" if user_data['username'] else f"{user_data['first_name']}"
+                break
     
-    for log in logs:
-        if log['action'] == "Добавление слёта":
-            user_id = log['user_id']
-            ever_active.add(user_id)
-            
-            timestamp = log['timestamp']
-            if user_id not in user_last_entries or timestamp > user_last_entries[user_id][0]:
-                user_last_entries[user_id] = (timestamp, log['details'])
-
-    # Кто сейчас в актуальном списке (последние записи на серверах)
-    active_in_current_list = set()
-    # Проходим по всем серверам с записями
-    for server, entry in servers_data.items():
-        if entry:  # если на сервере есть запись
-            # Ищем в логах, кто последний записал этот сервер
-            for user_id, (timestamp, details) in user_last_entries.items():
-                # Проверяем, содержит ли детали название сервера
-                server_name = server.split(' ')[1] if ' ' in server else server
-                if server_name in details:
-                    active_in_current_list.add(user_id)
-
-    # Разделяем по критериям
-    never_active = []
-    not_in_current = []
-
-    for user_id, user_data in all_users.items():
-        user_id_int = int(user_id)
-        if user_id_int == context.bot.id:
-            continue
-            
-        if user_id_int not in ever_active:
-            never_active.append(user_data)
-        elif user_id_int not in active_in_current_list:
-            not_in_current.append(user_data)
-
     # Формируем ответ
-    lines = ["📊 **Статистика активности (по всем известным пользователям):**\n"]
+    lines = ["📊 **Статистика текущего списка:**\n"]
+    lines.append(f"📅 Создан: {stats['created_at']}")
+    lines.append(f"👤 Создал: {creator_info}")
+    lines.append(f"📝 Всего записей: {stats['entries_count']}")
+    lines.append(f"👥 Активных пользователей: {len(stats['active_users'])}\n")
     
-    lines.append(f"👥 Всего известно пользователей: {len(all_users)}")
-    lines.append(f"📝 Записывали слёты: {len(ever_active)}")
-    lines.append(f"📌 Сейчас в списке: {len(active_in_current_list)}\n")
-    
-    lines.append("🔴 **Никогда не записывали слёты:**")
-    if never_active:
-        for user in never_active[:20]:  # показываем первых 20
-            name = f"@{user['username']}" if user['username'] else f"{user['first_name']} {user['last_name'] or ''}".strip()
-            lines.append(f"  • {name} (ID: {user['id']})")
-        if len(never_active) > 20:
-            lines.append(f"  ... и ещё {len(never_active) - 20} пользователей")
+    # Кто записывал
+    lines.append("✅ **Записывали в этот список:**")
+    if stats['active_users']:
+        active_names = []
+        for user_id in stats['active_users']:
+            user_id_str = str(user_id)
+            if user_id_str in all_users:
+                user = all_users[user_id_str]
+                name = f"@{user['username']}" if user['username'] else f"{user['first_name']}"
+                active_names.append(name)
+            else:
+                active_names.append(f"ID {user_id}")
+        
+        for name in active_names:
+            lines.append(f"  • {name}")
     else:
-        lines.append("  ✅ Все записывали хотя бы раз")
+        lines.append("  • Пока никто не записывал")
     
     lines.append("")
     
-    lines.append("🟡 **Записывали, но сейчас не в актуальном списке (перезаписано):**")
-    if not_in_current:
-        for user in not_in_current[:20]:
-            name = f"@{user['username']}" if user['username'] else f"{user['first_name']} {user['last_name'] or ''}".strip()
-            last_entry = user_last_entries.get(user['id'], ("", ""))[1]
-            lines.append(f"  • {name} — последняя запись: {last_entry}")
-        if len(not_in_current) > 20:
-            lines.append(f"  ... и ещё {len(not_in_current) - 20} пользователей")
+    # Кто не записывал (из всех известных пользователей)
+    lines.append("❌ **Не записывали в этот список:**")
+    inactive_users = []
+    
+    for user_id, user_data in all_users.items():
+        user_id_int = int(user_id)
+        if user_id_int != context.bot.id and user_id_int not in stats['active_users']:
+            name = f"@{user_data['username']}" if user_data['username'] else f"{user_data['first_name']}"
+            inactive_users.append(name)
+    
+    if inactive_users:
+        for name in inactive_users[:20]:  # показываем первых 20
+            lines.append(f"  • {name}")
+        if len(inactive_users) > 20:
+            lines.append(f"  ... и ещё {len(inactive_users) - 20} пользователей")
     else:
-        lines.append("  ✅ Все активные пользователи в текущем списке")
+        lines.append("  • Все пользователи записали слёт! 🎉")
     
     text = '\n'.join(lines)
     
@@ -550,6 +578,9 @@ async def auto_newlist(context: ContextTypes.DEFAULT_TYPE):
     
     if os.path.exists(MESSAGE_ID_FILE):
         os.remove(MESSAGE_ID_FILE)
+    
+    # Сбрасываем статистику для нового списка
+    reset_list_stats(None)
     
     full_text = format_list()
     
@@ -607,7 +638,7 @@ async def run_bot():
     application.add_handler(CommandHandler("clear", clear_data))
     application.add_handler(CommandHandler("newlist", new_list))
     application.add_handler(CommandHandler("logs", show_logs))
-    application.add_handler(CommandHandler("inactive", inactive_users))
+    application.add_handler(CommandHandler("stats", list_stats))  # Новая команда для статистики по списку
     
     job_queue = application.job_queue
     if job_queue:
