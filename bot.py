@@ -5,7 +5,7 @@ import asyncio
 import datetime
 from flask import Flask
 from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 
 # ========== НАСТРОЙКИ ==========
 TOKEN = os.environ.get("BOT_TOKEN")
@@ -14,6 +14,7 @@ OWNER_ID = int(os.environ.get("OWNER_ID", "0"))
 DATA_FILE = "data.json"
 MESSAGE_ID_FILE = "message_id.txt"
 LOG_FILE = "logs.json"
+USERS_FILE = "users.json"
 MAX_LOGS = 1000
 
 # ========== ТВОЙ ПОЛНЫЙ СПИСОК СЕРВЕРОВ ==========
@@ -130,6 +131,30 @@ SYNONYMS = {
     "ГРОЗНЫЙ": "GROZNY",
     "АРЗАМАС": "ARZAMAS",
 }
+
+# ========== РАБОТА С ПОЛЬЗОВАТЕЛЯМИ ==========
+def load_users():
+    """Загружает список всех пользователей, которые писали в группу"""
+    if os.path.exists(USERS_FILE):
+        with open(USERS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {}
+
+def save_user(user):
+    """Сохраняет или обновляет информацию о пользователе"""
+    users = load_users()
+    user_id = str(user.id)
+    
+    users[user_id] = {
+        "id": user.id,
+        "username": user.username,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "last_seen": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    
+    with open(USERS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(users, f, ensure_ascii=False, indent=2)
 
 # ========== ЗАГРУЗКА ДАННЫХ ==========
 if os.path.exists(DATA_FILE):
@@ -264,6 +289,15 @@ async def update_list_message(context):
         if "Message is not modified" not in str(e):
             logging.error(f"❌ Ошибка: {e}")
 
+# ========== ОБРАБОТЧИК ВСЕХ СООБЩЕНИЙ (СБОР ПОЛЬЗОВАТЕЛЕЙ) ==========
+async def track_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Отслеживает всех пользователей, которые пишут в группу"""
+    if update.message and update.message.chat.type in ["group", "supergroup"]:
+        user = update.effective_user
+        if user and not user.is_bot:
+            save_user(user)
+
+# ========== КОМАНДА START ==========
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_private_access(update):
         return
@@ -274,6 +308,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     await update_list_message(context)
 
+# ========== КОМАНДА ДОБАВЛЕНИЯ ==========
 async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_private_access(update):
         return
@@ -306,6 +341,7 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"✅ Записано на {server}: {text}")
     await update_list_message(context)
 
+# ========== КОМАНДА СПИСОК ==========
 async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_private_access(update):
         return
@@ -317,6 +353,7 @@ async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text(full_list)
 
+# ========== КОМАНДА ОЧИСТКИ ==========
 async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
@@ -338,6 +375,7 @@ async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🗑 Все записи удалены")
     await update_list_message(context)
 
+# ========== КОМАНДА ЛОГИ ==========
 async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
@@ -363,6 +401,7 @@ async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text(text)
 
+# ========== КОМАНДА НОВОГО СПИСКА ==========
 async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
@@ -407,20 +446,25 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка при создании списка: {e}")
 
-# ========== НОВАЯ КОМАНДА INACTIVE ==========
+# ========== ИСПРАВЛЕННАЯ КОМАНДА INACTIVE ==========
 async def inactive_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Показывает неактивных пользователей по двум критериям (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
 
-    # 1. Загружаем логи
+    # Загружаем всех известных пользователей
+    all_users = load_users()
+    if not all_users:
+        await update.message.reply_text("📭 База пользователей пуста. Нужно подождать, пока бот соберёт данные (кто-то должен написать в группу).")
+        return
+
+    # Загружаем логи
     logs = load_logs()
     
-    # 2. Собираем всех, кто хоть раз записывал слёт
+    # Кто хоть раз записывал слёт
     ever_active = set()
-    # 3. Собираем последние записи каждого пользователя
-    user_last_entries = {}  # user_id -> (timestamp, details)
+    user_last_entries = {}
     
     for log in logs:
         if log['action'] == "Добавление слёта":
@@ -431,45 +475,46 @@ async def inactive_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if user_id not in user_last_entries or timestamp > user_last_entries[user_id][0]:
                 user_last_entries[user_id] = (timestamp, log['details'])
 
-    # 4. Кто сейчас в актуальном списке (последние записи на серверах)
+    # Кто сейчас в актуальном списке (последние записи на серверах)
     active_in_current_list = set()
+    # Проходим по всем серверам с записями
     for server, entry in servers_data.items():
         if entry:  # если на сервере есть запись
             # Ищем в логах, кто последний записал этот сервер
             for user_id, (timestamp, details) in user_last_entries.items():
-                if server in details:  # если детали содержат название сервера
+                # Проверяем, содержит ли детали название сервера
+                server_name = server.split(' ')[1] if ' ' in server else server
+                if server_name in details:
                     active_in_current_list.add(user_id)
 
-    # 5. Получаем список администраторов группы (как пример участников)
-    try:
-        chat = await context.bot.get_chat(chat_id=CHAT_ID)
-        administrators = await chat.get_administrators()
-        all_members = [admin.user for admin in administrators]
-    except Exception as e:
-        await update.message.reply_text(f"❌ Ошибка получения участников: {e}")
-        return
+    # Разделяем по критериям
+    never_active = []
+    not_in_current = []
 
-    # 6. Разделяем по критериям
-    never_active = []  # никогда не записывали
-    not_in_current = []  # записывали, но сейчас не в списке
-
-    for user in all_members:
-        if user.id == context.bot.id:
-            continue  # пропускаем самого бота
+    for user_id, user_data in all_users.items():
+        user_id_int = int(user_id)
+        if user_id_int == context.bot.id:
+            continue
             
-        if user.id not in ever_active:
-            never_active.append(user)
-        elif user.id not in active_in_current_list:
-            not_in_current.append(user)
+        if user_id_int not in ever_active:
+            never_active.append(user_data)
+        elif user_id_int not in active_in_current_list:
+            not_in_current.append(user_data)
 
-    # 7. Формируем ответ
-    lines = ["📊 **Статистика активности:**\n"]
+    # Формируем ответ
+    lines = ["📊 **Статистика активности (по всем известным пользователям):**\n"]
+    
+    lines.append(f"👥 Всего известно пользователей: {len(all_users)}")
+    lines.append(f"📝 Записывали слёты: {len(ever_active)}")
+    lines.append(f"📌 Сейчас в списке: {len(active_in_current_list)}\n")
     
     lines.append("🔴 **Никогда не записывали слёты:**")
     if never_active:
-        for user in never_active:
-            name = f"@{user.username}" if user.username else user.full_name
-            lines.append(f"  • {name} (ID: {user.id})")
+        for user in never_active[:20]:  # показываем первых 20
+            name = f"@{user['username']}" if user['username'] else f"{user['first_name']} {user['last_name'] or ''}".strip()
+            lines.append(f"  • {name} (ID: {user['id']})")
+        if len(never_active) > 20:
+            lines.append(f"  ... и ещё {len(never_active) - 20} пользователей")
     else:
         lines.append("  ✅ Все записывали хотя бы раз")
     
@@ -477,10 +522,12 @@ async def inactive_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     lines.append("🟡 **Записывали, но сейчас не в актуальном списке (перезаписано):**")
     if not_in_current:
-        for user in not_in_current:
-            name = f"@{user.username}" if user.username else user.full_name
-            last_entry = user_last_entries.get(user.id, ("", ""))[1]
+        for user in not_in_current[:20]:
+            name = f"@{user['username']}" if user['username'] else f"{user['first_name']} {user['last_name'] or ''}".strip()
+            last_entry = user_last_entries.get(user['id'], ("", ""))[1]
             lines.append(f"  • {name} — последняя запись: {last_entry}")
+        if len(not_in_current) > 20:
+            lines.append(f"  ... и ещё {len(not_in_current) - 20} пользователей")
     else:
         lines.append("  ✅ Все активные пользователи в текущем списке")
     
@@ -531,6 +578,7 @@ async def auto_newlist(context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logging.error(f"❌ Ошибка: {e}")
 
+# ========== Flask ==========
 app_flask = Flask(__name__)
 
 @app_flask.route('/')
@@ -541,6 +589,7 @@ def home():
 def health():
     return "OK"
 
+# ========== ЗАПУСК ==========
 async def run_bot():
     logging.basicConfig(level=logging.INFO)
     
@@ -549,13 +598,16 @@ async def run_bot():
     
     application = Application.builder().token(TOKEN).build()
     
+    # Добавляем обработчик для отслеживания пользователей (самый высокий приоритет)
+    application.add_handler(MessageHandler(filters.ALL, track_users), group=-1)
+    
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("i", add_entry))
     application.add_handler(CommandHandler("list", list_entries))
     application.add_handler(CommandHandler("clear", clear_data))
     application.add_handler(CommandHandler("newlist", new_list))
     application.add_handler(CommandHandler("logs", show_logs))
-    application.add_handler(CommandHandler("inactive", inactive_users))  # Новая команда
+    application.add_handler(CommandHandler("inactive", inactive_users))
     
     job_queue = application.job_queue
     if job_queue:
