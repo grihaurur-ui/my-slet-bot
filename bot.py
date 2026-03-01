@@ -349,7 +349,7 @@ async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     
     lines = ["📋 **Последние действия:**\n"]
-    for log in logs[-20:]:
+    for log in logs[-50:]:
         lines.append(
             f"[{log['timestamp']}] "
             f"@{log['user_name']} (ID: {log['user_id']})\n"
@@ -407,28 +407,108 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка при создании списка: {e}")
 
-# ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ АВТОМАТИЧЕСКОГО NEWLIST ==========
+# ========== НОВАЯ КОМАНДА INACTIVE ==========
+async def inactive_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Показывает неактивных пользователей по двум критериям (только для владельца)"""
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+
+    # 1. Загружаем логи
+    logs = load_logs()
+    
+    # 2. Собираем всех, кто хоть раз записывал слёт
+    ever_active = set()
+    # 3. Собираем последние записи каждого пользователя
+    user_last_entries = {}  # user_id -> (timestamp, details)
+    
+    for log in logs:
+        if log['action'] == "Добавление слёта":
+            user_id = log['user_id']
+            ever_active.add(user_id)
+            
+            timestamp = log['timestamp']
+            if user_id not in user_last_entries or timestamp > user_last_entries[user_id][0]:
+                user_last_entries[user_id] = (timestamp, log['details'])
+
+    # 4. Кто сейчас в актуальном списке (последние записи на серверах)
+    active_in_current_list = set()
+    for server, entry in servers_data.items():
+        if entry:  # если на сервере есть запись
+            # Ищем в логах, кто последний записал этот сервер
+            for user_id, (timestamp, details) in user_last_entries.items():
+                if server in details:  # если детали содержат название сервера
+                    active_in_current_list.add(user_id)
+
+    # 5. Получаем список администраторов группы (как пример участников)
+    try:
+        chat = await context.bot.get_chat(chat_id=CHAT_ID)
+        administrators = await chat.get_administrators()
+        all_members = [admin.user for admin in administrators]
+    except Exception as e:
+        await update.message.reply_text(f"❌ Ошибка получения участников: {e}")
+        return
+
+    # 6. Разделяем по критериям
+    never_active = []  # никогда не записывали
+    not_in_current = []  # записывали, но сейчас не в списке
+
+    for user in all_members:
+        if user.id == context.bot.id:
+            continue  # пропускаем самого бота
+            
+        if user.id not in ever_active:
+            never_active.append(user)
+        elif user.id not in active_in_current_list:
+            not_in_current.append(user)
+
+    # 7. Формируем ответ
+    lines = ["📊 **Статистика активности:**\n"]
+    
+    lines.append("🔴 **Никогда не записывали слёты:**")
+    if never_active:
+        for user in never_active:
+            name = f"@{user.username}" if user.username else user.full_name
+            lines.append(f"  • {name} (ID: {user.id})")
+    else:
+        lines.append("  ✅ Все записывали хотя бы раз")
+    
+    lines.append("")
+    
+    lines.append("🟡 **Записывали, но сейчас не в актуальном списке (перезаписано):**")
+    if not_in_current:
+        for user in not_in_current:
+            name = f"@{user.username}" if user.username else user.full_name
+            last_entry = user_last_entries.get(user.id, ("", ""))[1]
+            lines.append(f"  • {name} — последняя запись: {last_entry}")
+    else:
+        lines.append("  ✅ Все активные пользователи в текущем списке")
+    
+    text = '\n'.join(lines)
+    
+    if len(text) > 4096:
+        for i in range(0, len(text), 4096):
+            await update.message.reply_text(text[i:i+4096])
+    else:
+        await update.message.reply_text(text)
+
+# ========== АВТОМАТИЧЕСКИЙ NEWLIST ==========
 async def auto_newlist(context: ContextTypes.DEFAULT_TYPE):
-    """Автоматически создает новый список (без вызова команды)"""
+    """Автоматически создает новый список"""
     logging.info("🤖 Запуск автоматического создания нового списка")
     
-    # Очищаем все записи
     for server in SERVERS:
         servers_data[server] = ""
     save_data()
     
-    # Удаляем старый ID сообщения
     if os.path.exists(MESSAGE_ID_FILE):
         os.remove(MESSAGE_ID_FILE)
     
-    # Форматируем новый список
     full_text = format_list()
     
     try:
-        # Отправляем новое сообщение
         sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
         
-        # Открепляем старое закреплённое сообщение
         try:
             chat = await context.bot.get_chat(chat_id=CHAT_ID)
             if chat.pinned_message:
@@ -436,27 +516,20 @@ async def auto_newlist(context: ContextTypes.DEFAULT_TYPE):
                     chat_id=CHAT_ID,
                     message_id=chat.pinned_message.message_id
                 )
-                logging.info("📌 Старое сообщение откреплено")
-        except Exception as e:
-            logging.warning(f"⚠️ Не удалось открепить старое сообщение: {e}")
+        except:
+            pass
         
-        # Закрепляем новое сообщение
-        try:
-            await context.bot.pin_chat_message(
-                chat_id=CHAT_ID,
-                message_id=sent_message.message_id,
-                disable_notification=True
-            )
-            logging.info(f"✅ Новое сообщение {sent_message.message_id} закреплено")
-        except Exception as e:
-            logging.warning(f"⚠️ Не удалось закрепить новое сообщение: {e}")
+        await context.bot.pin_chat_message(
+            chat_id=CHAT_ID,
+            message_id=sent_message.message_id,
+            disable_notification=True
+        )
         
-        # Сохраняем новый ID
         save_message_id(sent_message.message_id)
-        logging.info("✅ Автоматический новый список создан успешно")
+        logging.info("✅ Автоматический новый список создан")
         
     except Exception as e:
-        logging.error(f"❌ Ошибка при автоматическом создании списка: {e}")
+        logging.error(f"❌ Ошибка: {e}")
 
 app_flask = Flask(__name__)
 
@@ -482,15 +555,15 @@ async def run_bot():
     application.add_handler(CommandHandler("clear", clear_data))
     application.add_handler(CommandHandler("newlist", new_list))
     application.add_handler(CommandHandler("logs", show_logs))
+    application.add_handler(CommandHandler("inactive", inactive_users))  # Новая команда
     
     job_queue = application.job_queue
     if job_queue:
-        # ТЕСТ: запуск через 1 минуту после старта
-        import datetime
-        now = datetime.datetime.now()
-        run_time = now + datetime.timedelta(minutes=1)
-        job_queue.run_once(auto_newlist, when=run_time)
-        logging.info(f"✅ ТЕСТ: Автоматический newlist запланирован через 1 минуту в {run_time.strftime('%H:%M:%S')} МСК")
+        # 00:00 MSK = 21:00 UTC
+        job_queue.run_daily(auto_newlist, time=datetime.time(hour=21, minute=0, tzinfo=datetime.timezone.utc))
+        # 05:00 MSK = 02:00 UTC
+        job_queue.run_daily(auto_newlist, time=datetime.time(hour=2, minute=0, tzinfo=datetime.timezone.utc))
+        logging.info("✅ Автоматический newlist запланирован на 00:00 и 05:00 МСК")
     
     logging.info("🚀 Бот запущен!")
     
