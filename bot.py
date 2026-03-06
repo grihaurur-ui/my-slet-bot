@@ -15,7 +15,7 @@ DATA_FILE = "data.json"
 MESSAGE_ID_FILE = "message_id.txt"
 LOG_FILE = "logs.json"
 USERS_FILE = "users.json"
-LIST_STATS_FILE = "list_stats.json"  # новый файл для статистики по текущему списку
+LIST_STATS_FILE = "list_stats.json"
 MAX_LOGS = 1000
 
 # ========== ТВОЙ ПОЛНЫЙ СПИСОК СЕРВЕРОВ ==========
@@ -370,7 +370,6 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     user_name = user.username or user.first_name or str(user.id)
     
-    # Добавляем в логи
     add_log(
         user_id=user.id,
         user_name=user_name,
@@ -378,7 +377,6 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
         details=f"{server}: {text}"
     )
     
-    # Добавляем в статистику текущего списка
     add_to_list_stats(user.id)
     
     await update.message.reply_text(f"✅ Записано на {server}: {text}")
@@ -444,16 +442,19 @@ async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text(text)
 
-# ========== КОМАНДА НОВОГО СПИСКА ==========
+# ========== ИСПРАВЛЕННАЯ КОМАНДА НОВОГО СПИСКА (СТАРЫЙ СПИСОК ОСТАЁТСЯ) ==========
 async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Создаёт новый чистый список и закрепляет его (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
     
+    # Очищаем все записи
     for server in SERVERS:
         servers_data[server] = ""
     save_data()
     
+    # Удаляем старый ID сообщения
     if os.path.exists(MESSAGE_ID_FILE):
         os.remove(MESSAGE_ID_FILE)
     
@@ -465,34 +466,27 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     full_text = format_list()
     
     try:
+        # Отправляем новое сообщение
         sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
         
-        try:
-            chat = await context.bot.get_chat(chat_id=CHAT_ID)
-            if chat.pinned_message:
-                await context.bot.unpin_chat_message(
-                    chat_id=CHAT_ID,
-                    message_id=chat.pinned_message.message_id
-                )
-        except:
-            pass
-        
+        # Закрепляем новое сообщение (старое открепится автоматически)
         try:
             await context.bot.pin_chat_message(
                 chat_id=CHAT_ID,
                 message_id=sent_message.message_id,
                 disable_notification=True
             )
-            await update.message.reply_text(f"✅ Новый список создан и закреплён!")
+            await update.message.reply_text(f"✅ Новый список создан и закреплён! Старый список остался в чате.")
         except Exception as e:
             await update.message.reply_text(f"✅ Новый список создан, но не удалось закрепить: {e}")
         
+        # Сохраняем новый ID
         save_message_id(sent_message.message_id)
         
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка при создании списка: {e}")
 
-# ========== НОВАЯ КОМАНДА STATS ==========
+# ========== КОМАНДА СТАТИСТИКИ ==========
 async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Показывает статистику по текущему закреплённому списку (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
@@ -506,20 +500,35 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("📭 Статистика по текущему списку отсутствует. Создайте новый список через /newlist")
         return
     
+    # Получаем реальное количество участников в группе
+    total_members = 0
+    try:
+        total_members = await context.bot.get_chat_member_count(chat_id=CHAT_ID)
+    except Exception as e:
+        logging.warning(f"Не удалось получить количество участников: {e}")
+    
     # Получаем информацию о создателе
     creator_info = "Неизвестно"
     if stats["created_by"]:
-        for user_id, user_data in all_users.items():
-            if int(user_id) == stats["created_by"]:
-                creator_info = f"@{user_data['username']}" if user_data['username'] else f"{user_data['first_name']}"
-                break
+        user_id_str = str(stats["created_by"])
+        if user_id_str in all_users:
+            user = all_users[user_id_str]
+            creator_info = f"@{user['username']}" if user['username'] else user['first_name']
+        else:
+            creator_info = f"ID {stats['created_by']}"
     
     # Формируем ответ
     lines = ["📊 **Статистика текущего списка:**\n"]
     lines.append(f"📅 Создан: {stats['created_at']}")
     lines.append(f"👤 Создал: {creator_info}")
     lines.append(f"📝 Всего записей: {stats['entries_count']}")
-    lines.append(f"👥 Активных пользователей: {len(stats['active_users'])}\n")
+    lines.append(f"👥 Активных пользователей: {len(stats['active_users'])}")
+    
+    if total_members > 0:
+        lines.append(f"👥 Всего в группе: {total_members} участников")
+        lines.append(f"📊 Известно пользователей: {len(all_users)}\n")
+    else:
+        lines.append(f"👥 Известно пользователей: {len(all_users)}\n")
     
     # Кто записывал
     lines.append("✅ **Записывали в этот список:**")
@@ -529,7 +538,7 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
             user_id_str = str(user_id)
             if user_id_str in all_users:
                 user = all_users[user_id_str]
-                name = f"@{user['username']}" if user['username'] else f"{user['first_name']}"
+                name = f"@{user['username']}" if user['username'] else user['first_name']
                 active_names.append(name)
             else:
                 active_names.append(f"ID {user_id}")
@@ -541,21 +550,21 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     lines.append("")
     
-    # Кто не записывал (из всех известных пользователей)
+    # Кто не записывал
     lines.append("❌ **Не записывали в этот список:**")
     inactive_users = []
     
     for user_id, user_data in all_users.items():
         user_id_int = int(user_id)
         if user_id_int != context.bot.id and user_id_int not in stats['active_users']:
-            name = f"@{user_data['username']}" if user_data['username'] else f"{user_data['first_name']}"
+            name = f"@{user_data['username']}" if user_data['username'] else user_data['first_name']
             inactive_users.append(name)
     
     if inactive_users:
-        for name in inactive_users[:20]:  # показываем первых 20
+        for name in inactive_users[:30]:
             lines.append(f"  • {name}")
-        if len(inactive_users) > 20:
-            lines.append(f"  ... и ещё {len(inactive_users) - 20} пользователей")
+        if len(inactive_users) > 30:
+            lines.append(f"  ... и ещё {len(inactive_users) - 30} пользователей")
     else:
         lines.append("  • Все пользователи записали слёт! 🎉")
     
@@ -566,6 +575,56 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(text[i:i+4096])
     else:
         await update.message.reply_text(text)
+
+# ========== КОМАНДА СКАНИРОВАНИЯ ==========
+async def scan_members(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Активно собирает информацию об участниках (только для владельца)"""
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    await update.message.reply_text("🔍 Начинаю сбор информации об участниках...")
+    
+    try:
+        total = await context.bot.get_chat_member_count(chat_id=CHAT_ID)
+        
+        chat = await context.bot.get_chat(chat_id=CHAT_ID)
+        administrators = await chat.get_administrators()
+        
+        users_before = len(load_users())
+        admins_added = 0
+        
+        all_users = load_users()
+        for admin in administrators:
+            if not admin.user.is_bot:
+                user_id = str(admin.user.id)
+                if user_id not in all_users:
+                    all_users[user_id] = {
+                        "id": admin.user.id,
+                        "username": admin.user.username,
+                        "first_name": admin.user.first_name,
+                        "last_name": admin.user.last_name,
+                        "last_seen": "администратор"
+                    }
+                    admins_added += 1
+        
+        with open(USERS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(all_users, f, ensure_ascii=False, indent=2)
+        
+        users_after = len(all_users)
+        
+        await update.message.reply_text(
+            f"✅ **Результаты сканирования:**\n"
+            f"• Всего в группе: {total} участников\n"
+            f"• Было в базе: {users_before}\n"
+            f"• Добавлено администраторов: {admins_added}\n"
+            f"• Стало в базе: {users_after}\n"
+            f"• Осталось собрать: {total - users_after}\n\n"
+            f"💡 Чтобы собрать остальных, попросите их написать в чат"
+        )
+        
+    except Exception as e:
+        await update.message.reply_text(f"❌ Ошибка при сканировании: {e}")
 
 # ========== АВТОМАТИЧЕСКИЙ NEWLIST ==========
 async def auto_newlist(context: ContextTypes.DEFAULT_TYPE):
@@ -579,23 +638,12 @@ async def auto_newlist(context: ContextTypes.DEFAULT_TYPE):
     if os.path.exists(MESSAGE_ID_FILE):
         os.remove(MESSAGE_ID_FILE)
     
-    # Сбрасываем статистику для нового списка
     reset_list_stats(None)
     
     full_text = format_list()
     
     try:
         sent_message = await context.bot.send_message(chat_id=CHAT_ID, text=full_text)
-        
-        try:
-            chat = await context.bot.get_chat(chat_id=CHAT_ID)
-            if chat.pinned_message:
-                await context.bot.unpin_chat_message(
-                    chat_id=CHAT_ID,
-                    message_id=chat.pinned_message.message_id
-                )
-        except:
-            pass
         
         await context.bot.pin_chat_message(
             chat_id=CHAT_ID,
@@ -604,7 +652,7 @@ async def auto_newlist(context: ContextTypes.DEFAULT_TYPE):
         )
         
         save_message_id(sent_message.message_id)
-        logging.info("✅ Автоматический новый список создан")
+        logging.info("✅ Автоматический новый список создан и закреплён")
         
     except Exception as e:
         logging.error(f"❌ Ошибка: {e}")
@@ -629,7 +677,6 @@ async def run_bot():
     
     application = Application.builder().token(TOKEN).build()
     
-    # Добавляем обработчик для отслеживания пользователей (самый высокий приоритет)
     application.add_handler(MessageHandler(filters.ALL, track_users), group=-1)
     
     application.add_handler(CommandHandler("start", start))
@@ -638,13 +685,12 @@ async def run_bot():
     application.add_handler(CommandHandler("clear", clear_data))
     application.add_handler(CommandHandler("newlist", new_list))
     application.add_handler(CommandHandler("logs", show_logs))
-    application.add_handler(CommandHandler("stats", list_stats))  # Новая команда для статистики по списку
+    application.add_handler(CommandHandler("stats", list_stats))
+    application.add_handler(CommandHandler("scan", scan_members))
     
     job_queue = application.job_queue
     if job_queue:
-        # 00:00 MSK = 21:00 UTC
         job_queue.run_daily(auto_newlist, time=datetime.time(hour=21, minute=0, tzinfo=datetime.timezone.utc))
-        # 05:00 MSK = 02:00 UTC
         job_queue.run_daily(auto_newlist, time=datetime.time(hour=2, minute=0, tzinfo=datetime.timezone.utc))
         logging.info("✅ Автоматический newlist запланирован на 00:00 и 05:00 МСК")
     
