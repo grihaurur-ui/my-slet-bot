@@ -40,99 +40,376 @@ SERVERS = [
     "🧡 ORANGE", "💛 YELLOW", "💙 BLUE", "💚 GREEN", "❤ RED"
 ]
 
-# ========== РАСШИРЕННЫЕ СИНОНИМЫ ==========
+# ========== ПОЛНЫЕ СИНОНИМЫ ДЛЯ ВСЕХ СЕРВЕРОВ И ЦВЕТОВ ==========
 SYNONYMS = {
-    "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE", "ВЙТ": "WHITE", "УАЙТ": "WHITE",
-    "БЛУ": "BLUE", "СИНИЙ": "BLUE", "БЛЮ": "BLUE", "БЛУУ": "BLUE", "СИН": "BLUE",
-    "ГРИН": "GREEN", "ЗЕЛЕНЫЙ": "GREEN", "ГРИНН": "GREEN", "ЗЕЛ": "GREEN",
-    "ГОЛД": "GOLD", "ЗОЛОТО": "GOLD", "ГОЛДД": "GOLD", "ЗОЛ": "GOLD",
-    "ПИНК": "PINK", "РОЗОВЫЙ": "PINK", "ПИНКК": "PINK", "РОЗ": "PINK",
-    "БЛЕК": "BLACK", "ЧЕРНЫЙ": "BLACK", "ЧЁРНЫЙ": "BLACK", "БЛЕКК": "BLACK", "ЧЕРН": "BLACK",
-    "РЭД": "RED", "РЕД": "RED", "КРАСНЫЙ": "RED", "РЭДД": "RED", "КРАСН": "RED",
-    "ОРАНЖ": "ORANGE", "ОРАНЖЕВЫЙ": "ORANGE", "ОРАНЖЖ": "ORANGE",
-    "ПЁРПЛ": "PURPLE", "ПУРПЛ": "PURPLE", "ФИОЛЕТОВЫЙ": "PURPLE", "ПУРПУР": "PURPLE",
-    "ЛАЙМ": "LIME", "ЛАЙММ": "LIME",
-    "ЧЕРРИ": "CHERRY", "ВИШНЯ": "CHERRY", "ЧЕРИ": "CHERRY",
-    "ИНДИГО": "INDIGO",
-    "МАДЖЕНТА": "MAGENTA", "МАДЖЕНТТА": "MAGENTA",
-    "КРИМСОН": "CRIMSON", "КРИМЗОН": "CRIMSON",
-    "АКВА": "AQUA", "АКВВА": "AQUA",
-    "ГРЕЙ": "GRAY", "СЕРЫЙ": "GRAY", "ГРЭЙ": "GRAY",
-    "ЛЦЕ": "LCE", "ЛСЕ": "LCE",
-    "ЧИЛЛИ": "CHILLI", "ЧИЛИ": "CHILLI",
-    "КОКО": "COCO", "КОКОС": "COCO", "ЧОКО": "COCO", "CHOCO": "COCO",
-    "ПЛАТИНУМ": "PLATINUM", "ПЛАТИНА": "PLATINUM",
-    "АКУРЕ": "AQURE", "АКУРЭ": "AQURE", "АЗУР": "AQURE", "AZUR": "AQURE",
-    "МОСКВА": "MOSCOW", "МСК": "MOSCOW", "МОС": "MOSCOW",
-    "ПИТЕР": "SPB", "СПБ": "SPB", "САНКТ-ПЕТЕРБУРГ": "SPB", "ЛЕНИНГРАД": "SPB",
-    "КАЗАНЬ": "KAZAN", "КАЗАН": "KAZAN", "КАЗ": "KAZAN",
-    "ЕКБ": "EKB", "ЕКАТЕРИНБУРГ": "EKB", "ЕКАТ": "EKB",
-    "НОВОСИБ": "NOVOSIB", "НОВОСИБИРСК": "NOVOSIB", "НОВОС": "NOVOSIB",
-    "КРАСНОДАР": "KRASNODAR", "КРД": "KRASNODAR",
-    "СОЧИ": "SOCHI",
-    "УФА": "UFA",
-    "РОСТОВ": "ROSTOV", "РОСТОВ-НА-ДОНУ": "ROSTOV", "РНД": "ROSTOV",
-    "САМАРА": "SAMARA",
-    "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НН": "NOVGOROD", "НИЖНИЙ": "NOVGOROD",
-    "НОРИЛЬСК": "NORILSK", "НОР": "NORILSK",
-    "ЧЕРЕПОВЕЦ": "CHEREPOVETS", "ЧЕРЕП": "CHEREPOVETS",
-    "МАГАДАН": "MAGADAN",
-    "ПОДОЛЬСК": "PODOLSK",
-    "СУРГУТ": "SURGUT",
-    "ИЖЕВСК": "IZHEVSK",
-    "ТОМСК": "TOMSK",
-    "ТВЕРЬ": "TVER",
-    "ВОЛОГДА": "VOLOGDA",
-    "ТАГАНРОГ": "TAGANROG",
-    "НОВГОРОД": "NOVGOROD",
-    "КАЛУГА": "KALUGA",
-    "ВЛАДИМИР": "VLADIMIR",
-    "КОСТРОМА": "KOSTROMA",
-    "ЧИТА": "CHITA",
-    "АСТРАХАНЬ": "ASTRAKHAN",
-    "БРАТСК": "BRATSK",
-    "ТАМБОВ": "TAMBOV",
-    "ЯКУТСК": "YAKUTSK",
-    "УЛЬЯНОВСК": "ULYANOVSK",
-    "ЛИПЕЦК": "LIPETSK",
-    "БАРНАУЛ": "BARNAUL",
-    "ЯРОСЛАВЛЬ": "YAROSLAVL",
-    "ОРЕЛ": "OREL", "ОРЁЛ": "OREL",
-    "БРЯНСК": "BRYANSK",
-    "ПСКОВ": "PSKOV",
-    "СМОЛЕНСК": "SMOLENSK",
-    "СТАВРОПОЛЬ": "STAVROPOL",
-    "ИВАНОВО": "IVANOVO",
-    "ТОЛЬЯТТИ": "TOLYATTI",
-    "ТЮМЕНЬ": "TYUMEN",
-    "КЕМЕРОВО": "KEMEROVO",
-    "КИРОВ": "KIROV",
-    "ОРЕНБУРГ": "ORENBURG",
-    "АРХАНГЕЛЬСК": "ARKHANGELSK",
-    "КУРСК": "KURSK",
-    "МУРМАНСК": "MURMANSK",
-    "ПЕНЗА": "PENZA",
-    "РЯЗАНЬ": "RYAZAN",
-    "ТУЛА": "TULA",
-    "ПЕРМЬ": "PERM",
-    "ХАБАРОВСК": "KHABAROVSK",
-    "ЧЕБОКСАРЫ": "CHEBOKSARY",
-    "КРАСНОЯРСК": "KRASNOYARSK",
-    "ЧЕЛЯБИНСК": "CHELYABINSK",
-    "КАЛИНИНГРАД": "KALININGRAD",
-    "ВЛАДИВОСТОК": "VLADIVOSTOK",
-    "ВЛАДИКАВКАЗ": "VLADIKAVKAZ",
-    "МАХАЧКАЛА": "MAKHACHKALA", "МХЧ": "MAKHACHKALA",
-    "БЕЛГОРОД": "BELGOROD",
-    "ВОРОНЕЖ": "VORONEZH",
-    "ВОЛГОГРАД": "VOLGOGRAD",
-    "ИРКУТСК": "IRKUTSK",
-    "ОМСК": "OMSK",
-    "САРАТОВ": "SARATOV",
-    "ГРОЗНЫЙ": "GROZNY",
-    "АРЗАМАС": "ARZAMAS",
-}
+    # ===== ЦВЕТА =====
+    # WHITE - белый
+    "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE", "ВЙТ": "WHITE", "УАЙТ": "WHITE", 
+    "БЕЛ": "WHITE", "БЕЛА": "WHITE", "БЕЛО": "WHITE", "БЕЛЕН": "WHITE",
+    "УАЙТ": "WHITE", "УАЙТИ": "WHITE", "БЕЛОСНЕЖНЫЙ": "WHITE",
+    
+    # BLUE - синий
+    "БЛУ": "BLUE", "СИНИЙ": "BLUE", "БЛЮ": "BLUE", "БЛУУ": "BLUE", 
+    "СИН": "BLUE", "СИНЬ": "BLUE", "СИНЯ": "BLUE", "БЛ": "BLUE",
+    "СИНИЙ": "BLUE", "СИНИЙ": "BLUE", "ЛАЗУРНЫЙ": "BLUE", "ГОЛУБОЙ": "BLUE",
+    
+    # GREEN - зеленый
+    "ГРИН": "GREEN", "ЗЕЛЕНЫЙ": "GREEN", "ГРИНН": "GREEN", "ЗЕЛ": "GREEN", 
+    "ЗЕЛЕН": "GREEN", "ЗЕЛЕНЬ": "GREEN", "ЗЕЛЕНА": "GREEN", "ГРН": "GREEN",
+    "ЗЕЛЕНЫЙ": "GREEN", "ЗЕЛЕНЫЙ": "GREEN", "ИЗУМРУД": "GREEN", "САЛАТОВЫЙ": "GREEN",
+    
+    # GOLD - золото
+    "ГОЛД": "GOLD", "ЗОЛОТО": "GOLD", "ГОЛДД": "GOLD", "ЗОЛ": "GOLD", 
+    "ЗОЛОТ": "GOLD", "ЗОЛОТА": "GOLD", "ЗЛТ": "GOLD", "ГОЛ": "GOLD",
+    "ЗОЛОТОЙ": "GOLD", "ЗОЛОТИСТЫЙ": "GOLD", "ГОЛДЕН": "GOLD",
+    
+    # PINK - розовый
+    "ПИНК": "PINK", "РОЗОВЫЙ": "PINK", "ПИНКК": "PINK", "РОЗ": "PINK", 
+    "РОЗОВ": "PINK", "РОЗОВА": "PINK", "РОЗА": "PINK", "ПНК": "PINK",
+    "РОЗОВЫЙ": "PINK", "РОЗОВЕН": "PINK", "РОЗА": "PINK", "ФУКСИЯ": "PINK",
+    
+    # BLACK - черный
+    "БЛЕК": "BLACK", "ЧЕРНЫЙ": "BLACK", "ЧЁРНЫЙ": "BLACK", "БЛЕКК": "BLACK", 
+    "ЧЕРН": "BLACK", "ЧЕРНА": "BLACK", "ЧОРНЫЙ": "BLACK", "БЛК": "BLACK",
+    "ЧЕРНЫЙ": "BLACK", "ЧЕРНЕН": "BLACK", "ЧЕРНОТА": "BLACK", "УГОЛЬ": "BLACK",
+    
+    # RED - красный
+    "РЭД": "RED", "РЕД": "RED", "КРАСНЫЙ": "RED", "РЭДД": "RED", 
+    "КРАСН": "RED", "КРАС": "RED", "КРАСНА": "RED", "КРСН": "RED",
+    "КРАСНЫЙ": "RED", "АЛЫЙ": "RED", "РУБИН": "RED", "БАГРОВЫЙ": "RED",
+    
+    # ORANGE - оранжевый
+    "ОРАНЖ": "ORANGE", "ОРАНЖЕВЫЙ": "ORANGE", "ОРАНЖЖ": "ORANGE", "ОРАН": "ORANGE", 
+    "АПЕЛЬСИН": "ORANGE", "ОРЕНЖ": "ORANGE", "ОРЕНДЖ": "ORANGE", "ОРАНДЖ": "ORANGE",
+    "ОРАНГ": "ORANGE", "ОРНЖ": "ORANGE", "ОРА": "ORANGE", "ОРАНЖИК": "ORANGE",
+    
+    # PURPLE - фиолетовый
+    "ПЁРПЛ": "PURPLE", "ПУРПЛ": "PURPLE", "ФИОЛЕТОВЫЙ": "PURPLE", "ПУРПУР": "PURPLE", 
+    "ФИОЛ": "PURPLE", "ФИОЛЕТ": "PURPLE", "ЛИЛОВЫЙ": "PURPLE", "ПРПЛ": "PURPLE",
+    "ФИОЛКА": "PURPLE", "ФИОЛЯ": "PURPLE", "СИРЕНЕВЫЙ": "PURPLE",
+    
+    # LIME - лайм
+    "ЛАЙМ": "LIME", "ЛАЙММ": "LIME", "ЛАЙМОВЫЙ": "LIME", "ЛАЙМА": "LIME",
+    "ЛАЙМ": "LIME", "ЛАЙМЧИК": "LIME", "ЛАЙМУС": "LIME", "САЛАТОВЫЙ": "LIME",
+    
+    # CHERRY - вишня
+    "ЧЕРРИ": "CHERRY", "ВИШНЯ": "CHERRY", "ЧЕРИ": "CHERRY", "ВИШ": "CHERRY", 
+    "ВИШН": "CHERRY", "ВИШНЕВЫЙ": "CHERRY", "ЧЕР": "CHERRY", "ВИШНЯК": "CHERRY",
+    
+    # INDIGO - индиго
+    "ИНДИГО": "INDIGO", "ИНД": "INDIGO", "ИНДИГА": "INDIGO", "ИНДИК": "INDIGO",
+    "ИНДИГО": "INDIGO", "ИНДИГОВЫЙ": "INDIGO", "СИНЕ-ФИОЛЕТОВЫЙ": "INDIGO",
+    
+    # MAGENTA - маджента
+    "МАДЖЕНТА": "MAGENTA", "МАДЖЕНТТА": "MAGENTA", "МАДЖ": "MAGENTA", "МАДЖА": "MAGENTA",
+    "МАДЖЕН": "MAGENTA", "МАГЕНТА": "MAGENTA", "МДЖН": "MAGENTA", "ПУРПУРНЫЙ": "MAGENTA",
+    
+    # CRIMSON - малиновый
+    "КРИМСОН": "CRIMSON", "КРИМЗОН": "CRIMSON", "КРИМ": "CRIMSON", "МАЛИНОВЫЙ": "CRIMSON",
+    "КРИМС": "CRIMSON", "КРИМСОН": "CRIMSON", "КРМСН": "CRIMSON", "БАГРОВЫЙ": "CRIMSON",
+    
+    # AQUA - аква
+    "АКВА": "AQUA", "АКВВА": "AQUA", "АКВ": "AQUA", "МОРСКОЙ": "AQUA",
+    "АКВАМАРИН": "AQUA", "АКВА": "AQUA", "АКВ": "AQUA", "БИРЮЗОВЫЙ": "AQUA",
+    
+    # GRAY - серый
+    "ГРЕЙ": "GRAY", "СЕРЫЙ": "GRAY", "ГРЭЙ": "GRAY", "СЕР": "GRAY",
+    "СЕРА": "GRAY", "СЕРО": "GRAY", "ГРЕЙ": "GRAY", "ГРЙ": "GRAY",
+    "СЕРЕБРО": "GRAY", "СЕРЕБРИСТЫЙ": "GRAY",
+    
+    # LCE - лёд/айс
+    "ЛЦЕ": "LCE", "ЛСЕ": "LCE", "АЙС": "LCE", "ICE": "LCE", 
+    "ЛЁД": "LCE", "ЛЕД": "LCE", "ЛЕДЯНОЙ": "LCE", "ЛЕДО": "LCE",
+    "ЛЬДИНКА": "LCE", "ЛЕДНИК": "LCE", "ХОЛОДНЫЙ": "LCE", "ФРОСТ": "LCE",
+    
+    # CHILLI - чили
+    "ЧИЛЛИ": "CHILLI", "ЧИЛИ": "CHILLI", "ЧИЛ": "CHILLI", "ПЕРЕЦ": "CHILLI",
+    "ЧИЛИЙ": "CHILLI", "ЧИЛЬ": "CHILLI", "ЧЛ": "CHILLI", "ОСТРЫЙ": "CHILLI",
+    
+    # COCO - коко
+    "КОКО": "COCO", "КОКОС": "COCO", "ЧОКО": "COCO", "CHOCO": "COCO", 
+    "ШОКО": "COCO", "КОКОСОВЫЙ": "COCO", "КОКОСИК": "COCO", "КОКОС": "COCO",
+    
+    # PLATINUM - платина
+    "ПЛАТИНУМ": "PLATINUM", "ПЛАТИНА": "PLATINUM", "ПЛАТ": "PLATINUM",
+    "ПЛАТИН": "PLATINUM", "ПЛТН": "PLATINUM", "ПЛАТИНОВЫЙ": "PLATINUM",
+    
+    # AQURE - азур
+    "АКУРЕ": "AQURE", "АКУРЭ": "AQURE", "АКУР": "AQURE", "АЗУР": "AQURE", 
+    "AZUR": "AQURE", "АЗУРНЫЙ": "AQURE", "АЗУР": "AQURE", "АКУР": "AQURE",
 
+    # ===== NORILSK =====
+    "НОРИЛЬСК": "NORILSK", "НОРИЛ": "NORILSK", "НОР": "NORILSK", "НРК": "NORILSK", 
+    "НОРИК": "NORILSK", "НОРЯ": "NORILSK", "НОРА": "NORILSK", "НОРИЛЬ": "NORILSK",
+    
+    # ===== CHEREPOVETS =====
+    "ЧЕРЕПОВЕЦ": "CHEREPOVETS", "ЧЕРЕП": "CHEREPOVETS", "ЧЕРЕПА": "CHEREPOVETS", 
+    "ЧЕР": "CHEREPOVETS", "ЧРП": "CHEREPOVETS", "ЧЕРЕПОВЕЦК": "CHEREPOVETS",
+    "ЧЕРЕПОК": "CHEREPOVETS", "ЧЕРА": "CHEREPOVETS", "ЧРПВ": "CHEREPOVETS",
+    
+    # ===== MAGADAN =====
+    "МАГАДАН": "MAGADAN", "МАГА": "MAGADAN", "МАГ": "MAGADAN", "МГД": "MAGADAN",
+    "МАГАД": "MAGADAN", "МАГД": "MAGADAN", "МАГАН": "MAGADAN", "МАГАДАНЧИК": "MAGADAN",
+    
+    # ===== PODOLSK =====
+    "ПОДОЛЬСК": "PODOLSK", "ПОДОЛ": "PODOLSK", "ПОД": "PODOLSK", "ПДЛ": "PODOLSK",
+    "ПОДО": "PODOLSK", "ПОДЬ": "PODOLSK", "ПОДЛ": "PODOLSK", "ПОДОЛЬ": "PODOLSK",
+    
+    # ===== SURGUT =====
+    "СУРГУТ": "SURGUT", "СУР": "SURGUT", "СУРГ": "SURGUT", "СРГ": "SURGUT",
+    "СУРГА": "SURGUT", "СУРУ": "SURGUT", "СУГ": "SURGUT", "СУРГУТИК": "SURGUT",
+    
+    # ===== IZHEVSK =====
+    "ИЖЕВСК": "IZHEVSK", "ИЖ": "IZHEVSK", "ИЖЕВ": "IZHEVSK", "ИЖВ": "IZHEVSK",
+    "ИЖА": "IZHEVSK", "ИЖЕ": "IZHEVSK", "ИЖОВ": "IZHEVSK", "ИЖЕВСКИЙ": "IZHEVSK",
+    
+    # ===== TOMSK =====
+    "ТОМСК": "TOMSK", "ТОМ": "TOMSK", "ТОМС": "TOMSK", "ТМС": "TOMSK",
+    "ТОМА": "TOMSK", "ТОМИ": "TOMSK", "ТОМК": "TOMSK", "ТОМИЧИ": "TOMSK",
+    
+    # ===== TVER =====
+    "ТВЕРЬ": "TVER", "ТВЕР": "TVER", "ТВЬ": "TVER", "ТВР": "TVER",
+    "ТВЕРА": "TVER", "ТВЕРЯ": "TVER", "ТВРЬ": "TVER", "ТВЕРИЧИ": "TVER",
+    
+    # ===== VOLOGDA =====
+    "ВОЛОГДА": "VOLOGDA", "ВОЛО": "VOLOGDA", "ВОЛ": "VOLOGDA", "ВЛГ": "VOLOGDA",
+    "ВОЛОГ": "VOLOGDA", "ВОЛГА": "VOLOGDA", "ВОЛДА": "VOLOGDA", "ВОЛОГЖАНЕ": "VOLOGDA",
+    
+    # ===== TAGANROG =====
+    "ТАГАНРОГ": "TAGANROG", "ТАГАН": "TAGANROG", "ТАГ": "TAGANROG", "ТГН": "TAGANROG",
+    "ТАГА": "TAGANROG", "ТАГРОГ": "TAGANROG", "ТГР": "TAGANROG", "ТАГАНРОЖАНЕ": "TAGANROG",
+    
+    # ===== NOVGOROD =====
+    "НОВГОРОД": "NOVGOROD", "НОВГОР": "NOVGOROD", "НОВ": "NOVGOROD", "НВГ": "NOVGOROD",
+    "ВЕЛИКИЙ НОВГОРОД": "NOVGOROD", "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НН": "NOVGOROD",
+    "НИЖНИЙ": "NOVGOROD", "НЖН": "NOVGOROD", "НОВГ": "NOVGOROD", "НОВОР": "NOVGOROD",
+    
+    # ===== KALUGA =====
+    "КАЛУГА": "KALUGA", "КАЛ": "KALUGA", "КАЛУ": "KALUGA", "КЛГ": "KALUGA",
+    "КАЛУГ": "KALUGA", "КАЛГА": "KALUGA", "КЛУ": "KALUGA", "КАЛУЖАНЕ": "KALUGA",
+    
+    # ===== VLADIMIR =====
+    "ВЛАДИМИР": "VLADIMIR", "ВЛАД": "VLADIMIR", "ВЛАДИ": "VLADIMIR", "ВЛД": "VLADIMIR",
+    "ВЛАДИК": "VLADIMIR", "ВЛАДИМ": "VLADIMIR", "ВЛАДЯ": "VLADIMIR", "ВЛАДИМИРЧИК": "VLADIMIR",
+    
+    # ===== KOSTROMA =====
+    "КОСТРОМА": "KOSTROMA", "КОСТР": "KOSTROMA", "КОСТЯ": "KOSTROMA", "КОС": "KOSTROMA", 
+    "КСТ": "KOSTROMA", "КОСТ": "KOSTROMA", "КОСТРО": "KOSTROMA", "КОСТРОМИЧИ": "KOSTROMA",
+    
+    # ===== CHITA =====
+    "ЧИТА": "CHITA", "ЧИТ": "CHITA", "ЧТА": "CHITA", "ЧИТА": "CHITA",
+    "ЧИТК": "CHITA", "ЧИТО": "CHITA", "ЧИ": "CHITA", "ЧИТИНЦЫ": "CHITA",
+    
+    # ===== ASTRAKHAN =====
+    "АСТРАХАНЬ": "ASTRAKHAN", "АСТРА": "ASTRAKHAN", "АСТ": "ASTRAKHAN", "АСТР": "ASTRAKHAN", 
+    "АСТХ": "ASTRAKHAN", "АСТРАХ": "ASTRAKHAN", "АСТРАХА": "ASTRAKHAN", "АСТХН": "ASTRAKHAN",
+    
+    # ===== BRATSK =====
+    "БРАТСК": "BRATSK", "БРАТ": "BRATSK", "БРАТС": "BRATSK", "БРТ": "BRATSK",
+    "БРАТА": "BRATSK", "БРАТК": "BRATSK", "БРАЦК": "BRATSK", "БРАТЧАНЕ": "BRATSK",
+    
+    # ===== TAMBOV =====
+    "ТАМБОВ": "TAMBOV", "ТАМ": "TAMBOV", "ТАМБ": "TAMBOV", "ТМБ": "TAMBOV",
+    "ТАМБА": "TAMBOV", "ТАМОВ": "TAMBOV", "ТАБ": "TAMBOV", "ТАМБОВЧАНЕ": "TAMBOV",
+    
+    # ===== YAKUTSK =====
+    "ЯКУТСК": "YAKUTSK", "ЯКУТ": "YAKUTSK", "ЯК": "YAKUTSK", "ЯКТ": "YAKUTSK",
+    "ЯКУТА": "YAKUTSK", "ЯКУЦК": "YAKUTSK", "ЯКУ": "YAKUTSK", "ЯКУТЯНЕ": "YAKUTSK",
+    
+    # ===== ULYANOVSK =====
+    "УЛЬЯНОВСК": "ULYANOVSK", "УЛЬЯ": "ULYANOVSK", "УЛЬ": "ULYANOVSK", "УЛБ": "ULYANOVSK",
+    "УЛЬЯН": "ULYANOVSK", "УЛЬЯНО": "ULYANOVSK", "УЛН": "ULYANOVSK", "УЛЬЯНОВЧАНЕ": "ULYANOVSK",
+    
+    # ===== LIPETSK =====
+    "ЛИПЕЦК": "LIPETSK", "ЛИП": "LIPETSK", "ЛИПЕ": "LIPETSK", "ЛПЦ": "LIPETSK",
+    "ЛИПА": "LIPETSK", "ЛИПЕК": "LIPETSK", "ЛИПЦ": "LIPETSK", "ЛИПЧАНЕ": "LIPETSK",
+    
+    # ===== BARNAUL =====
+    "БАРНАУЛ": "BARNAUL", "БАРН": "BARNAUL", "БАР": "BARNAUL", "БРН": "BARNAUL",
+    "БАРНА": "BARNAUL", "БАРНУЛ": "BARNAUL", "БАРНЛ": "BARNAUL", "БАРНАУЛЬЦЫ": "BARNAUL",
+    
+    # ===== YAROSLAVL =====
+    "ЯРОСЛАВЛЬ": "YAROSLAVL", "ЯРОС": "YAROSLAVL", "ЯР": "YAROSLAVL", "ЯРИК": "YAROSLAVL", 
+    "ЯРС": "YAROSLAVL", "ЯРОСЛ": "YAROSLAVL", "ЯРОСЛАВ": "YAROSLAVL", "ЯРЛ": "YAROSLAVL",
+    
+    # ===== OREL =====
+    "ОРЕЛ": "OREL", "ОРЁЛ": "OREL", "ОРЕ": "OREL", "ОРЛ": "OREL",
+    "ОРИК": "OREL", "ОРЛАН": "OREL", "ОРЕЛ": "OREL", "ОРЛОВЧАНЕ": "OREL",
+    
+    # ===== BRYANSK =====
+    "БРЯНСК": "BRYANSK", "БРЯ": "BRYANSK", "БРЯН": "BRYANSK", "БРН": "BRYANSK", "БРС": "BRYANSK",
+    "БРЯНА": "BRYANSK", "БРЯНК": "BRYANSK", "БРЯС": "BRYANSK", "БРЯНЧАНЕ": "BRYANSK",
+    
+    # ===== PSKOV =====
+    "ПСКОВ": "PSKOV", "ПСК": "PSKOV", "ПСКВ": "PSKOV", "ПСКО": "PSKOV",
+    "ПСКОВА": "PSKOV", "ПСКОВЬ": "PSKOV", "ПСКО": "PSKOV", "ПСКОВИЧИ": "PSKOV",
+    
+    # ===== SMOLENSK =====
+    "СМОЛЕНСК": "SMOLENSK", "СМОЛ": "SMOLENSK", "СМО": "SMOLENSK", "СМЛ": "SMOLENSK",
+    "СМОЛЕН": "SMOLENSK", "СМОЛЯ": "SMOLENSK", "СМЛН": "SMOLENSK", "СМОЛЯНЕ": "SMOLENSK",
+    
+    # ===== STAVROPOL =====
+    "СТАВРОПОЛЬ": "STAVROPOL", "СТАВР": "STAVROPOL", "СТАВ": "STAVROPOL", "СТВ": "STAVROPOL",
+    "СТАВРО": "STAVROPOL", "СТАВРОП": "STAVROPOL", "СТАВРП": "STAVROPOL", "СТАВРОПОЛЬЦЫ": "STAVROPOL",
+    
+    # ===== IVANOVO =====
+    "ИВАНОВО": "IVANOVO", "ИВАН": "IVANOVO", "ИВН": "IVANOVO", "ИВАНО": "IVANOVO",
+    "ИВАНЫЧ": "IVANOVO", "ИВАНЬ": "IVANOVO", "ИВНВ": "IVANOVO", "ИВАНОВЦЫ": "IVANOVO",
+    
+    # ===== TOLYATTI =====
+    "ТОЛЬЯТТИ": "TOLYATTI", "ТОЛЬ": "TOLYATTI", "ТОЛ": "TOLYATTI", "ТОЛИК": "TOLYATTI", 
+    "ТЛТ": "TOLYATTI", "ТОЛЬЯ": "TOLYATTI", "ТОЛЯ": "TOLYATTI", "ТЛЯ": "TOLYATTI",
+    
+    # ===== TYUMEN =====
+    "ТЮМЕНЬ": "TYUMEN", "ТЮМ": "TYUMEN", "ТЮМЯ": "TYUMEN", "ТМН": "TYUMEN",
+    "ТЮМЕН": "TYUMEN", "ТЮМА": "TYUMEN", "ТЮМН": "TYUMEN", "ТЮМЕНЦЫ": "TYUMEN",
+    
+    # ===== KEMEROVO =====
+    "КЕМЕРОВО": "KEMEROVO", "КЕМ": "KEMEROVO", "КЕМЕР": "KEMEROVO", "КМР": "KEMEROVO",
+    "КЕМЕРО": "KEMEROVO", "КЕМРОВ": "KEMEROVO", "КЕМЕР": "KEMEROVO", "КЕМЕРОВЧАНЕ": "KEMEROVO",
+    
+    # ===== KIROV =====
+    "КИРОВ": "KIROV", "КИР": "KIROV", "КИРА": "KIROV", "КРВ": "KIROV",
+    "КИРОВА": "KIROV", "КИРОВЕ": "KIROV", "КИРВ": "KIROV", "КИРОВЧАНЕ": "KIROV",
+    
+    # ===== ORENBURG =====
+    "ОРЕНБУРГ": "ORENBURG", "ОРЕН": "ORENBURG", "ОР": "ORENBURG", "ОРБ": "ORENBURG", 
+    "ОРН": "ORENBURG", "ОРЕНБ": "ORENBURG", "ОРЕНУРГ": "ORENBURG", "ОРНБ": "ORENBURG",
+    
+    # ===== ARKHANGELSK =====
+    "АРХАНГЕЛЬСК": "ARKHANGELSK", "АРХ": "ARKHANGELSK", "АРХАН": "ARKHANGELSK", 
+    "АРХГ": "ARKHANGELSK", "АРХАНГ": "ARKHANGELSK", "АРХА": "ARKHANGELSK", "АРХНГ": "ARKHANGELSK",
+    
+    # ===== KURSK =====
+    "КУРСК": "KURSK", "КУР": "KURSK", "КУРС": "KURSK", "КРС": "KURSK",
+    "КУРА": "KURSK", "КУРСКА": "KURSK", "КУРСЬ": "KURSK", "КУРЯНЕ": "KURSK",
+    
+    # ===== MURMANSK =====
+    "МУРМАНСК": "MURMANSK", "МУР": "MURMANSK", "МУРМАН": "MURMANSK", "МРМ": "MURMANSK",
+    "МУРМА": "MURMANSK", "МУРМАНЬ": "MURMANSK", "МУРМН": "MURMANSK", "МУРМАНЧАНЕ": "MURMANSK",
+    
+    # ===== PENZA =====
+    "ПЕНЗА": "PENZA", "ПЕН": "PENZA", "ПЕНЗ": "PENZA", "ПНЗ": "PENZA",
+    "ПЕНЗАК": "PENZA", "ПЕНЗЯ": "PENZA", "ПЕНЗЬ": "PENZA", "ПЕНЗЕНЦЫ": "PENZA",
+    
+    # ===== RYAZAN =====
+    "РЯЗАНЬ": "RYAZAN", "РЯЗ": "RYAZAN", "РЯЗА": "RYAZAN", "РЗН": "RYAZAN",
+    "РЯЗАН": "RYAZAN", "РЯЗЬ": "RYAZAN", "РЯЗН": "RYAZAN", "РЯЗАНЦЫ": "RYAZAN",
+    
+    # ===== TULA =====
+    "ТУЛА": "TULA", "ТУЛ": "TULA", "ТУЛЬ": "TULA", "ТЛ": "TULA",
+    "ТУЛЯ": "TULA", "ТУЛИК": "TULA", "ТУЛЬЯ": "TULA", "ТУЛЯКИ": "TULA",
+    
+    # ===== PERM =====
+    "ПЕРМЬ": "PERM", "ПЕР": "PERM", "ПЕРМ": "PERM", "ПРМ": "PERM",
+    "ПЕРМА": "PERM", "ПЕРМЯ": "PERM", "ПЕРМК": "PERM", "ПЕРМЯКИ": "PERM",
+    
+    # ===== KHABAROVSK =====
+    "ХАБАРОВСК": "KHABAROVSK", "ХАБ": "KHABAROVSK", "ХАБАР": "KHABAROVSK", "ХБР": "KHABAROVSK",
+    "ХАБАРОВ": "KHABAROVSK", "ХАБАРКА": "KHABAROVSK", "ХАБР": "KHABAROVSK", "ХАБАРОВЧАНЕ": "KHABAROVSK",
+    
+    # ===== CHEBOKSARY =====
+    "ЧЕБОКСАРЫ": "CHEBOKSARY", "ЧЕБ": "CHEBOKSARY", "ЧЕБО": "CHEBOKSARY", "ЧБК": "CHEBOKSARY",
+    "ЧЕБОК": "CHEBOKSARY", "ЧЕБОКСАР": "CHEBOKSARY", "ЧЕБК": "CHEBOKSARY", "ЧЕБОКСАРЦЫ": "CHEBOKSARY",
+    
+    # ===== KRASNOYARSK =====
+    "КРАСНОЯРСК": "KRASNOYARSK", "КРАСНОЯР": "KRASNOYARSK", "КРАС": "KRASNOYARSK", 
+    "КРС": "KRASNOYARSK", "КРСК": "KRASNOYARSK", "КРАСЯР": "KRASNOYARSK", "КРАЯР": "KRASNOYARSK",
+    
+    # ===== CHELYABINSK =====
+    "ЧЕЛЯБИНСК": "CHELYABINSK", "ЧЕЛ": "CHELYABINSK", "ЧЕЛЯ": "CHELYABINSK", 
+    "ЧЕЛЯБ": "CHELYABINSK", "ЧЛБ": "CHELYABINSK", "ЧЕЛЯБА": "CHELYABINSK", "ЧЕЛБ": "CHELYABINSK",
+    
+    # ===== KALININGRAD =====
+    "КАЛИНИНГРАД": "KALININGRAD", "КАЛИ": "KALININGRAD", "КАЛ": "KALININGRAD", 
+    "КЁНИГ": "KALININGRAD", "КЛН": "KALININGRAD", "КАЛИК": "KALININGRAD", "КАЛИН": "KALININGRAD",
+    
+    # ===== VLADIVOSTOK =====
+    "ВЛАДИВОСТОК": "VLADIVOSTOK", "ВЛАДИК": "VLADIVOSTOK", "ВЛАД": "VLADIVOSTOK", 
+    "ВЛ": "VLADIVOSTOK", "ВЛД": "VLADIVOSTOK", "ВЛАДИВО": "VLADIVOSTOK", "ВЛАДВ": "VLADIVOSTOK",
+    
+    # ===== VLADIKAVKAZ =====
+    "ВЛАДИКАВКАЗ": "VLADIKAVKAZ", "ВЛАДИК": "VLADIKAVKAZ", "ВЛАД": "VLADIKAVKAZ", 
+    "ВЛК": "VLADIKAVKAZ", "ВЛАДИКА": "VLADIKAVKAZ", "ВЛАДК": "VLADIKAVKAZ",
+    
+    # ===== MAKHACHKALA =====
+    "МАХАЧКАЛА": "MAKHACHKALA", "МАХА": "MAKHACHKALA", "МАХ": "MAKHACHKALA", 
+    "МХЧ": "MAKHACHKALA", "МАХАЧ": "MAKHACHKALA", "МАХАК": "MAKHACHKALA", "МАХЧ": "MAKHACHKALA",
+    
+    # ===== BELGOROD =====
+    "БЕЛГОРОД": "BELGOROD", "БЕЛ": "BELGOROD", "БЕЛГО": "BELGOROD", "БЛГ": "BELGOROD",
+    "БЕЛГА": "BELGOROD", "БЕЛГОР": "BELGOROD", "БЕЛГР": "BELGOROD", "БЕЛГОРОДЧАНЕ": "BELGOROD",
+    
+    # ===== VORONEZH =====
+    "ВОРОНЕЖ": "VORONEZH", "ВОРОН": "VORONEZH", "ВОР": "VORONEZH", "ВРН": "VORONEZH",
+    "ВОРОНА": "VORONEZH", "ВОРОНЕ": "VORONEZH", "ВРОН": "VORONEZH", "ВОРОНЕЖЦЫ": "VORONEZH",
+    
+    # ===== VOLGOGRAD =====
+    "ВОЛГОГРАД": "VOLGOGRAD", "ВОЛГ": "VOLGOGRAD", "ВОЛГА": "VOLGOGRAD", "ВЛГ": "VOLGOGRAD",
+    "ВОЛГО": "VOLGOGRAD", "ВОЛГОГР": "VOLGOGRAD", "ВОЛГД": "VOLGOGRAD", "ВОЛГОГРАДЦЫ": "VOLGOGRAD",
+    
+    # ===== IRKUTSK =====
+    "ИРКУТСК": "IRKUTSK", "ИРК": "IRKUTSK", "ИРКУТ": "IRKUTSK", "ИРК": "IRKUTSK", 
+    "ИРТ": "IRKUTSK", "ИРКУЦК": "IRKUTSK", "ИРКУ": "IRKUTSK", "ИРКУТЯНЕ": "IRKUTSK",
+    
+    # ===== OMSK =====
+    "ОМСК": "OMSK", "ОМ": "OMSK", "ОМС": "OMSK", "ОМК": "OMSK",
+    "ОМА": "OMSK", "ОМСКИЙ": "OMSK", "ОМЬ": "OMSK", "ОМИЧИ": "OMSK",
+    
+    # ===== SARATOV =====
+    "САРАТОВ": "SARATOV", "САР": "SARATOV", "САРА": "SARATOV", "СРТ": "SARATOV",
+    "САРАТ": "SARATOV", "САРАТО": "SARATOV", "САРВ": "SARATOV", "САРАТОВЦЫ": "SARATOV",
+    
+    # ===== GROZNY =====
+    "ГРОЗНЫЙ": "GROZNY", "ГРОЗ": "GROZNY", "ГРОЗН": "GROZNY", "ГРЗ": "GROZNY",
+    "ГРОЗА": "GROZNY", "ГРОЗНО": "GROZNY", "ГРОЗЬ": "GROZNY", "ГРОЗНЕНЦЫ": "GROZNY",
+    
+    # ===== ARZAMAS =====
+    "АРЗАМАС": "ARZAMAS", "АРЗ": "ARZAMAS", "АРЗА": "ARZAMAS", "АРЗМ": "ARZAMAS",
+    "АРЗАМ": "ARZAMAS", "АРЗАС": "ARZAMAS", "АРЗМС": "ARZAMAS", "АРЗАМАСЦЫ": "ARZAMAS",
+    
+    # ===== ANAPA =====
+    "АНАПА": "ANAPA", "АНП": "ANAPA", "АНА": "ANAPA", "АНАП": "ANAPA",
+    "АНАПКА": "ANAPA", "АНАПА": "ANAPA", "АНПА": "ANAPA", "АНАПЧАНЕ": "ANAPA",
+
+    # ===== POPULAR CITIES =====
+    "МОСКВА": "MOSCOW", "МСК": "MOSCOW", "МОС": "MOSCOW", "МО": "MOSCOW",
+    "МОСК": "MOSCOW", "МОСКОВ": "MOSCOW", "МСКВ": "MOSCOW", "МОСКВИЧИ": "MOSCOW",
+    
+    "ПИТЕР": "SPB", "СПБ": "SPB", "САНКТ-ПЕТЕРБУРГ": "SPB", "ЛЕНИНГРАД": "SPB", 
+    "ПЕТЕРБУРГ": "SPB", "ЛЕГ": "SPB", "СП": "SPB", "ПИТ": "SPB", "СПБУРГ": "SPB",
+    "ПИТЕРЦЫ": "SPB",
+    
+    "КАЗАНЬ": "KAZAN", "КАЗАН": "KAZAN", "КАЗ": "KAZAN", "КЗН": "KAZAN",
+    "КАЗА": "KAZAN", "КАЗАНЬ": "KAZAN", "КЗН": "KAZAN", "КАЗАНЦЫ": "KAZAN",
+    
+    "ЕКБ": "EKB", "ЕКАТЕРИНБУРГ": "EKB", "ЕКАТ": "EKB", "ЕКА": "EKB", 
+    "ЕК": "EKB", "ЕКАТЕР": "EKB", "ЕКАТЕРИН": "EKB", "ЕКБЦЫ": "EKB",
+    
+    "НОВОСИБ": "NOVOSIB", "НОВОСИБИРСК": "NOVOSIB", "НОВОС": "NOVOSIB", 
+    "НСК": "NOVOSIB", "НОВ": "NOVOSIB", "НОВОСИБЬ": "NOVOSIB", "НОВСИБ": "NOVOSIB",
+    "НОВОСИБИРЦЫ": "NOVOSIB",
+    
+    "КРАСНОДАР": "KRASNODAR", "КРД": "KRASNODAR", "КРАСНО": "KRASNODAR", 
+    "КР": "KRASNODAR", "КРАС": "KRASNODAR", "КРАСНОД": "KRASNODAR", "КРНД": "KRASNODAR",
+    "КРАСНОДАРЦЫ": "KRASNODAR",
+    
+    "СОЧИ": "SOCHI", "СОЧ": "SOCHI", "СЧ": "SOCHI", "СОЧА": "SOCHI",
+    "СОЧИНСК": "SOCHI", "СОЧЬ": "SOCHI", "СОЧИ": "SOCHI", "СОЧИНЦЫ": "SOCHI",
+    
+    "УФА": "UFA", "УФ": "UFA", "УФА": "UFA", "УФИК": "UFA",
+    "УФА": "UFA", "УФА": "UFA", "УФА": "UFA", "УФИМЦЫ": "UFA",
+    
+    "РОСТОВ": "ROSTOV", "РОСТОВ-НА-ДОНУ": "ROSTOV", "РНД": "ROSTOV", 
+    "РОСТ": "ROSTOV", "РСТ": "ROSTOV", "РОСТОВ": "ROSTOV", "РСВ": "ROSTOV",
+    "РОСТОВЧАНЕ": "ROSTOV",
+    
+    "САМАРА": "SAMARA", "САМ": "SAMARA", "САМА": "SAMARA", "СМР": "SAMARA",
+    "САМАР": "SAMARA", "САМРА": "SAMARA", "СМРА": "SAMARA", "САМАРЦЫ": "SAMARA",
+    
+    "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НН": "NOVGOROD", "НИЖНИЙ": "NOVGOROD", 
+    "НЖН": "NOVGOROD", "НИЖ": "NOVGOROD", "НИЖНОВ": "NOVGOROD", "ННОВ": "NOVGOROD",
+}
 # ========== РАБОТА С ПОЛЬЗОВАТЕЛЯМИ ==========
 def load_users():
     """Загружает список всех пользователей, которые писали в группу"""
@@ -711,3 +988,4 @@ if __name__ == "__main__":
     flask_thread.start()
     
     asyncio.run(run_bot())
+
