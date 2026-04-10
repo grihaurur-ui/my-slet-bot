@@ -20,6 +20,7 @@ MAX_LOGS = 1000
 
 # ========== ТВОЙ ПОЛНЫЙ СПИСОК СЕРВЕРОВ ==========
 SERVERS = [
+    "🏛️ ASTANA",  # <-- НОВЫЙ ГОРОД В САМОМ ВЕРХУ
     "🎉 NORILSK", "🦈 CHEREPOVETS", "💨 MAGADAN", "🏰 PODOLSK", "🏙 SURGUT",
     "🏍 IZHEVSK", "🎄 TOMSK", "🐿 TVER", "🐦‍🔥 VOLOGDA", "🦁 TAGANROG",
     "🌼 NOVGOROD", "🫐 KALUGA", "😹 VLADIMIR", "🐲 KOSTROMA", "🦎 CHITA",
@@ -33,11 +34,11 @@ SERVERS = [
     "👑 VORONEZH", "🎒 VOLGOGRAD", "🌪 IRKUTSK", "🪙 OMSK", "🐉 SARATOV",
     "🍙 GROZNY", "🍃 NOVOSIB", "🪿 ARZAMAS", "🪻 KRASNODAR", "📗 EKB",
     "🪺 ANAPA", "🍺 ROSTOV", "🎧 SAMARA", "🏛 KAZAN", "🌊 SOCHI",
-    "🌪 UFA", "🌉 SPB", "🌇 MOSCOW", "🤎 COCO", "📕 CHILLI",
-    "❄ LCE", "📓 GRAY", "📘 AQUA", "🩶 PLATINUM", "💙 AQURE",
-    "💛 GOLD", "❤‍🔥 CRIMSON", "🩷 MAGENTA", "🤍 WHITE", "💜 INDIGO",
-    "🖤 BLACK", "🍒 CHERRY", "💕 PINK", "🍋 LIME", "💜 PURPLE",
-    "🧡 ORANGE", "💛 YELLOW", "💙 BLUE", "💚 GREEN", "❤ RED"
+    "🌪 UFA", "🌉 SPB", "🌇 MOSCOW",
+    "🤎 COCO", "📕 CHILLI", "❄ LCE", "📓 GRAY", "📘 AQUA", "🩶 PLATINUM", "💙 AQURE",
+    "💛 GOLD", "❤‍🔥 CRIMSON", "🩷 MAGENTA", "🤍 WHITE", "💜 INDIGO", "🖤 BLACK",
+    "🍒 CHERRY", "💕 PINK", "🍋 LIME", "💜 PURPLE", "🧡 ORANGE", "💛 YELLOW",
+    "💙 BLUE", "💚 GREEN", "❤ RED"
 ]
 
 # ========== РАСШИРЕННЫЕ СИНОНИМЫ ==========
@@ -138,6 +139,14 @@ SYNONYMS = {
     "ГРОЗНЫЙ": "GROZNY",
     "АРЗАМАС": "ARZAMAS",
     "АНАПА": "ANAPA", "АНП": "ANAPA",
+    # ===== НОВЫЙ ГОРОД =====
+"АСТАНА": "ASTANA", "АСТА": "ASTANA", "ASTANA": "ASTANA", "АСТ": "ASTANA",
+
+# ===== ДОПОЛНИТЕЛЬНЫЕ СИНОНИМЫ =====
+"ТЛТ": "TOLYATTI",
+"ГРЗ": "GROZNY",
+"ИРКА": "IRKUTSK",
+"ИРК": "IRKUTSK",  # уже был, но продублирую для уверенности
 }
 
 # ========== ЗАГРУЗКА ДАННЫХ ==========
