@@ -146,14 +146,14 @@ SYNONYMS = {
     "АСТАНА": "ASTANA", "АСТА": "ASTANA", "ASTANA": "ASTANA", "АСТ": "ASTANA", "НУРСУЛТАН": "ASTANA",
 }
 
-# ========== ФОРМАТИРОВАНИЕ СПИСКА (HTML) ==========
+# ========== ФОРМАТИРОВАНИЕ СПИСКА (БЕЗ ФОРМАТИРОВАНИЯ) ==========
 def format_list():
     lines = []
     for server in SERVERS:
         if servers_data.get(server):
-            lines.append(f"<b>{server}</b> - {servers_data[server]}")
+            lines.append(f"{server} - {servers_data[server]}")
         else:
-            lines.append(f"<b>{server}</b>")
+            lines.append(server)
     return '\n'.join(lines)
 
 
@@ -255,17 +255,6 @@ async def check_private_access(update: Update):
     await update.message.reply_text("⛔ Бот доступен только в группе")
     return False
 
-# ========== ФОРМАТИРОВАНИЕ СПИСКА (ЖИРНЫЙ + КУРСИВ) ==========
-def format_list():
-    lines = []
-    for server in SERVERS:
-        if servers_data.get(server):
-            # Жирный сервер, запись курсивом, дефис
-            lines.append(f"*{server}* - _{servers_data[server]}_")
-        else:
-            lines.append(f"*{server}*")
-    return '\n'.join(lines)
-
 def find_server(query):
     query = query.upper().strip()
     if query in SYNONYMS:
@@ -300,8 +289,7 @@ async def update_list_message(context):
                 await context.bot.edit_message_text(
                     chat_id=CHAT_ID,
                     message_id=current_message_id,
-                    text=full_text,
-                    parse_mode='MarkdownV2'
+                    text=full_text
                 )
                 return
             except Exception as e:
@@ -320,8 +308,7 @@ async def update_list_message(context):
                 await context.bot.edit_message_text(
                     chat_id=CHAT_ID,
                     message_id=chat.pinned_message.message_id,
-                    text=full_text,
-                    parse_mode='MarkdownV2'
+                    text=full_text
                 )
                 save_message_id(chat.pinned_message.message_id)
                 return
@@ -332,8 +319,7 @@ async def update_list_message(context):
         
         sent_message = await context.bot.send_message(
             chat_id=CHAT_ID,
-            text=full_text,
-            parse_mode='MarkdownV2'
+            text=full_text
         )
         
         try:
@@ -409,9 +395,9 @@ async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
     full_list = format_list()
     if len(full_list) > 4096:
         for i in range(0, len(full_list), 4096):
-            await update.message.reply_text(full_list[i:i+4096], parse_mode='MarkdownV2')
+            await update.message.reply_text(full_list[i:i+4096])
     else:
-        await update.message.reply_text(full_list, parse_mode='MarkdownV2')
+        await update.message.reply_text(full_list)
 
 async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
@@ -480,8 +466,7 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         sent_message = await context.bot.send_message(
             chat_id=CHAT_ID,
-            text=full_text,
-            parse_mode='MarkdownV2'
+            text=full_text
         )
         
         try:
@@ -598,8 +583,7 @@ async def auto_newlist(context: ContextTypes.DEFAULT_TYPE):
     try:
         sent_message = await context.bot.send_message(
             chat_id=CHAT_ID,
-            text=full_text,
-            parse_mode='MarkdownV2'
+            text=full_text
         )
         
         await context.bot.pin_chat_message(
