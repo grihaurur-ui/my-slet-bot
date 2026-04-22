@@ -43,33 +43,31 @@ SERVERS = [
 
 # ========== ПОЛНЫЕ СИНОНИМЫ ==========
 SYNONYMS = {
-    # ===== ЦВЕТА =====
-    "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE", "ВЙТ": "WHITE", "УАЙТ": "WHITE", "БЕЛ": "WHITE", "БЕЛА": "WHITE", "БЕЛО": "WHITE",
-    "БЛУ": "BLUE", "СИНИЙ": "BLUE", "БЛЮ": "BLUE", "БЛУУ": "BLUE", "СИН": "BLUE", "СИНЬ": "BLUE",
-    "ГРИН": "GREEN", "ЗЕЛЕНЫЙ": "GREEN", "ГРИНН": "GREEN", "ЗЕЛ": "GREEN", "ЗЕЛЕН": "GREEN", "ЗЕЛЕНЬ": "GREEN",
+    "ВАЙТ": "WHITE", "БЕЛЫЙ": "WHITE", "ВЙТ": "WHITE", "УАЙТ": "WHITE", "БЕЛ": "WHITE",
+    "БЛУ": "BLUE", "СИНИЙ": "BLUE", "БЛЮ": "BLUE", "БЛУУ": "BLUE", "СИН": "BLUE",
+    "ГРИН": "GREEN", "ЗЕЛЕНЫЙ": "GREEN", "ГРИНН": "GREEN", "ЗЕЛ": "GREEN", "ЗЕЛЕН": "GREEN",
     "ГОЛД": "GOLD", "ЗОЛОТО": "GOLD", "ГОЛДД": "GOLD", "ЗОЛ": "GOLD", "ЗОЛОТ": "GOLD",
-    "ПИНК": "PINK", "РОЗОВЫЙ": "PINK", "ПИНКК": "PINK", "РОЗ": "PINK", "РОЗОВ": "PINK", "РОЗА": "PINK",
-    "БЛЕК": "BLACK", "ЧЕРНЫЙ": "BLACK", "ЧЁРНЫЙ": "BLACK", "БЛЕКК": "BLACK", "ЧЕРН": "BLACK", "ЧЕРНА": "BLACK",
-    "РЭД": "RED", "РЕД": "RED", "КРАСНЫЙ": "RED", "РЭДД": "RED", "КРАСН": "RED", "КРАС": "RED", "АЛЫЙ": "RED",
+    "ПИНК": "PINK", "РОЗОВЫЙ": "PINK", "ПИНКК": "PINK", "РОЗ": "PINK", "РОЗОВ": "PINK",
+    "БЛЕК": "BLACK", "ЧЕРНЫЙ": "BLACK", "ЧЁРНЫЙ": "BLACK", "БЛЕКК": "BLACK", "ЧЕРН": "BLACK",
+    "РЭД": "RED", "РЕД": "RED", "КРАСНЫЙ": "RED", "РЭДД": "RED", "КРАСН": "RED",
     "ОРАНЖ": "ORANGE", "ОРАНЖЕВЫЙ": "ORANGE", "ОРАНЖЖ": "ORANGE", "ОРАН": "ORANGE", "АПЕЛЬСИН": "ORANGE",
     "ПЁРПЛ": "PURPLE", "ПУРПЛ": "PURPLE", "ФИОЛЕТОВЫЙ": "PURPLE", "ПУРПУР": "PURPLE", 
-    "ФИОЛ": "PURPLE", "ФИОЛЕТ": "PURPLE", "ЛИЛОВЫЙ": "PURPLE", "СИРЕНЕВЫЙ": "PURPLE",
-    "ЛАЙМ": "LIME", "ЛАЙММ": "LIME", "ЛАЙМОВЫЙ": "LIME", "САЛАТОВЫЙ": "LIME",
-    "ЧЕРРИ": "CHERRY", "ВИШНЯ": "CHERRY", "ЧЕРИ": "CHERRY", "ВИШ": "CHERRY", "ВИШН": "CHERRY", "ВИШНЕВЫЙ": "CHERRY",
-    "ИНДИГО": "INDIGO", "ИНД": "INDIGO", "ИНДИГОВЫЙ": "INDIGO",
-    "МАДЖЕНТА": "MAGENTA", "МАДЖЕНТТА": "MAGENTA", "МАДЖ": "MAGENTA", "МАГЕНТА": "MAGENTA",
-    "КРИМСОН": "CRIMSON", "КРИМСА": "CRIMSON", "КРИМ": "CRIMSON", "МАЛИНОВЫЙ": "CRIMSON", "БАГРОВЫЙ": "CRIMSON",
-    "АКВА": "AQUA", "АКВВА": "AQUA", "АКВ": "AQUA", "МОРСКОЙ": "AQUA", "БИРЮЗОВЫЙ": "AQUA",
-    "ГРЕЙ": "GRAY", "СЕРЫЙ": "GRAY", "ГРЭЙ": "GRAY", "СЕР": "GRAY", "СЕРА": "GRAY", "СЕРЕБРО": "GRAY",
-    "ЛЦЕ": "LCE", "ЛСЕ": "LCE", "АЙС": "LCE", "ICE": "LCE", "ЛЁД": "LCE", "ЛЕД": "LCE", "ЛЕДЯНОЙ": "LCE",
-    "ЧИЛЛИ": "CHILLI", "ЧИЛИ": "CHILLI", "ЧИЛ": "CHILLI", "ПЕРЕЦ": "CHILLI",
-    "КОКО": "COCO", "КОКОС": "COCO", "ЧОКО": "COCO", "CHOCO": "COCO", "ШОКО": "COCO", "КОКОСОВЫЙ": "COCO",
-    "ПЛАТИНУМ": "PLATINUM", "ПЛАТИНА": "PLATINUM", "ПЛАТ": "PLATINUM", "ПЛАТИНОВЫЙ": "PLATINUM",
-    "АКУРЕ": "AQURE", "АКУРЭ": "AQURE", "АКУР": "AQURE", "АЗУР": "AQURE", "AZUR": "AQURE", "АЗУРНЫЙ": "AQURE",
-    "ЖЕЛТЫЙ": "YELLOW", "ЖЕЛТ": "YELLOW", "ЖЁЛТЫЙ": "YELLOW", "ЕЛЛОУ": "YELLOW", "ЕЛОУ": "YELLOW",
+    "ФИОЛ": "PURPLE", "ФИОЛЕТ": "PURPLE", "ЛИЛОВЫЙ": "PURPLE",
+    "ЛАЙМ": "LIME", "ЛАЙММ": "LIME",
+    "ЧЕРРИ": "CHERRY", "ВИШНЯ": "CHERRY", "ЧЕРИ": "CHERRY", "ВИШ": "CHERRY", "ВИШН": "CHERRY",
+    "ИНДИГО": "INDIGO", "ИНД": "INDIGO",
+    "МАДЖЕНТА": "MAGENTA", "МАДЖЕНТТА": "MAGENTA", "МАДЖ": "MAGENTA",
+    "КРИМСОН": "CRIMSON", "КРИМЗОН": "CRIMSON", "КРИМ": "CRIMSON", "МАЛИНОВЫЙ": "CRIMSON",
+    "АКВА": "AQUA", "АКВВА": "AQUA", "АКВ": "AQUA",
+    "ГРЕЙ": "GRAY", "СЕРЫЙ": "GRAY", "ГРЭЙ": "GRAY", "СЕР": "GRAY",
+    "ЛЦЕ": "LCE", "ЛСЕ": "LCE", "АЙС": "LCE", "ICE": "LCE", "ЛЁД": "LCE", "ЛЕД": "LCE",
+    "ЧИЛЛИ": "CHILLI", "ЧИЛИ": "CHILLI", "ЧИЛ": "CHILLI",
+    "КОКО": "COCO", "КОКОС": "COCO", "ЧОКО": "COCO", "CHOCO": "COCO", "ШОКО": "COCO",
+    "ПЛАТИНУМ": "PLATINUM", "ПЛАТИНА": "PLATINUM", "ПЛАТ": "PLATINUM",
+    "АКУРЕ": "AQURE", "АКУРЭ": "AQURE", "АКУР": "AQURE", "АЗУР": "AQURE", "AZUR": "AQURE",
+    "ЖЕЛТЫЙ": "YELLOW", "ЖЕЛТ": "YELLOW", "ЖЁЛТЫЙ": "YELLOW", "ЕЛЛОУ": "YELLOW",
 
-    # ===== ПОПУЛЯРНЫЕ ГОРОДА =====
-    "МОСКВА": "MOSCOW", "МСК": "MOSCOW", "МОС": "MOSCOW", "МО": "MOSCOW", "МОСК": "MOSCOW",
+    "МОСКВА": "MOSCOW", "МСК": "MOSCOW", "МОС": "MOSCOW", "МО": "MOSCOW",
     "ПИТЕР": "SPB", "СПБ": "SPB", "САНКТ-ПЕТЕРБУРГ": "SPB", "ЛЕНИНГРАД": "SPB", 
     "ПЕТЕРБУРГ": "SPB", "ЛЕГ": "SPB", "СП": "SPB",
     "КАЗАНЬ": "KAZAN", "КАЗАН": "KAZAN", "КАЗ": "KAZAN", "КЗН": "KAZAN",
@@ -81,8 +79,6 @@ SYNONYMS = {
     "РОСТОВ": "ROSTOV", "РОСТОВ-НА-ДОНУ": "ROSTOV", "РНД": "ROSTOV", "РОСТ": "ROSTOV", "РСТ": "ROSTOV",
     "САМАРА": "SAMARA", "САМ": "SAMARA", "САМА": "SAMARA", "СМР": "SAMARA",
     "НИЖНИЙ НОВГОРОД": "NOVGOROD", "НН": "NOVGOROD", "НИЖНИЙ": "NOVGOROD",
-
-    # ===== ОСТАЛЬНЫЕ ГОРОДА =====
     "НОРИЛЬСК": "NORILSK", "НОРИЛ": "NORILSK", "НОР": "NORILSK", "НРК": "NORILSK",
     "ЧЕРЕПОВЕЦ": "CHEREPOVETS", "ЧЕРЕП": "CHEREPOVETS", "ЧРП": "CHEREPOVETS",
     "МАГАДАН": "MAGADAN", "МАГА": "MAGADAN", "МГД": "MAGADAN",
@@ -116,37 +112,35 @@ SYNONYMS = {
     "ТЮМЕНЬ": "TYUMEN", "ТЮМ": "TYUMEN", "ТМН": "TYUMEN",
     "КЕМЕРОВО": "KEMEROVO", "КЕМ": "KEMEROVO", "КМР": "KEMEROVO",
     "КИРОВ": "KIROV", "КИР": "KIROV", "КРВ": "KIROV",
-    "ОРЕНБУРГ": "ORENBURG", "ОРЕНА": "ORENBURG", "ОРБ": "ORENBURG",
+    "ОРЕНБУРГ": "ORENBURG", "ОРЕН": "ORENBURG", "ОРБ": "ORENBURG",
     "АРХАНГЕЛЬСК": "ARKHANGELSK", "АРХ": "ARKHANGELSK", "АРХГ": "ARKHANGELSK",
     "КУРСК": "KURSK", "КУР": "KURSK", "КРС": "KURSK",
-    "МУРМАНСК": "MURMANSK", "МУР": "MURMANSK", "МУРМА": "MURMANSK",
+    "МУРМАНСК": "MURMANSK", "МУР": "MURMANSK", "МРМ": "MURMANSK",
     "ПЕНЗА": "PENZA", "ПЕН": "PENZA", "ПНЗ": "PENZA",
     "РЯЗАНЬ": "RYAZAN", "РЯЗ": "RYAZAN", "РЗН": "RYAZAN",
     "ТУЛА": "TULA", "ТУЛ": "TULA", "ТЛ": "TULA",
     "ПЕРМЬ": "PERM", "ПЕР": "PERM", "ПРМ": "PERM",
-    "ХАБАРОВСК": "KHABAROVSK", "ХАБ": "KHABAROVSK", "ХАБА": "KHABAROVSK",
-    "ЧЕБОКСАРЫ": "CHEBOKSARY", "ЧЕБЫ": "CHEBOKSARY", "ЧБК": "CHEBOKSARY",
-    "КРАСНОЯРСК": "KRASNOYARSK", "КРАСНО": "KRASNOYARSK", "КРС": "KRASNOYARSK", "КРСК": "KRASNOYARSK",
-    "ЧЕЛЯБИНСК": "CHELYABINSK", "ЧЕЛЯБ": "CHELYABINSK", "ЧЛБ": "CHELYABINSK",
-    "КАЛИНИНГРАД": "KALININGRAD", "КАЛИНА": "KALININGRAD", "КЛН": "KALININGRAD", "КЁНИГ": "KALININGRAD",
+    "ХАБАРОВСК": "KHABAROVSK", "ХАБ": "KHABAROVSK", "ХБР": "KHABAROVSK",
+    "ЧЕБОКСАРЫ": "CHEBOKSARY", "ЧЕБ": "CHEBOKSARY", "ЧБК": "CHEBOKSARY",
+    "КРАСНОЯРСК": "KRASNOYARSK", "КРАСНОЯР": "KRASNOYARSK", "КРС": "KRASNOYARSK", "КРСК": "KRASNOYARSK",
+    "ЧЕЛЯБИНСК": "CHELYABINSK", "ЧЕЛ": "CHELYABINSK", "ЧЛБ": "CHELYABINSK",
+    "КАЛИНИНГРАД": "KALININGRAD", "КАЛИ": "KALININGRAD", "КЛН": "KALININGRAD", "КЁНИГ": "KALININGRAD",
     "ВЛАДИВОСТОК": "VLADIVOSTOK", "ВОСТОК": "VLADIVOSTOK", "ВЛАДИК": "VLADIVOSTOK", "ВЛ": "VLADIVOSTOK",
     "ВЛАДИКАВКАЗ": "VLADIKAVKAZ", "КАВКАЗ": "VLADIKAVKAZ", "ВЛАДИК": "VLADIKAVKAZ", "ВЛК": "VLADIKAVKAZ",
     "МАХАЧКАЛА": "MAKHACHKALA", "МАХА": "MAKHACHKALA", "МХЧ": "MAKHACHKALA",
-    "БЕЛГОРОД": "BELGOROD", "БЕЛ": "BELGOROD", "БЕЛГА": "BELGOROD",
-    "ВОРОНЕЖ": "VORONEZH", "ВОРОНА": "VORONEZH", "ВРН": "VORONEZH",
+    "БЕЛГОРОД": "BELGOROD", "БЕЛ": "BELGOROD", "БЛГ": "BELGOROD",
+    "ВОРОНЕЖ": "VORONEZH", "ВОРОН": "VORONEZH", "ВРН": "VORONEZH",
     "ВОЛГОГРАД": "VOLGOGRAD", "ВОЛГ": "VOLGOGRAD", "ВЛГ": "VOLGOGRAD",
     "ИРКУТСК": "IRKUTSK", "ИРК": "IRKUTSK", "ИРКА": "IRKUTSK", "ИРТ": "IRKUTSK",
     "ОМСК": "OMSK", "ОМ": "OMSK", "ОМК": "OMSK",
-    "САРАТОВ": "SARATOV", "САР": "SARATOV", "САРИК": "SARATOV",
+    "САРАТОВ": "SARATOV", "САР": "SARATOV", "СРТ": "SARATOV",
     "ГРОЗНЫЙ": "GROZNY", "ГРОЗ": "GROZNY", "ГРЗ": "GROZNY",
     "АРЗАМАС": "ARZAMAS", "АРЗ": "ARZAMAS", "АРЗМ": "ARZAMAS",
     "АНАПА": "ANAPA", "АНП": "ANAPA",
-    
-    # ===== НОВЫЙ ГОРОД =====
     "АСТАНА": "ASTANA", "АСТА": "ASTANA", "ASTANA": "ASTANA", "АСТ": "ASTANA", "НУРСУЛТАН": "ASTANA",
 }
 
-# ========== ФОРМАТИРОВАНИЕ СПИСКА (БЕЗ ФОРМАТИРОВАНИЯ) ==========
+# ========== ФОРМАТИРОВАНИЕ СПИСКА ==========
 def format_list():
     lines = []
     for server in SERVERS:
@@ -155,7 +149,6 @@ def format_list():
         else:
             lines.append(server)
     return '\n'.join(lines)
-
 
 # ========== ЗАГРУЗКА ДАННЫХ ==========
 if os.path.exists(DATA_FILE):
@@ -484,6 +477,7 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка при создании списка: {e}")
 
+# ========== НОВАЯ РАСШИРЕННАЯ КОМАНДА STATS ==========
 async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
@@ -496,11 +490,28 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("📭 Статистика по текущему списку отсутствует. Создайте новый список через /newlist")
         return
     
-    total_members = 0
-    try:
-        total_members = await context.bot.get_chat_member_count(chat_id=CHAT_ID)
-    except Exception as e:
-        logging.warning(f"Не удалось получить количество участников: {e}")
+    # Собираем всех, кто записывал в этот список
+    active_in_current = set(stats['active_users'])
+    
+    # Формируем списки
+    active_users = []
+    inactive_users = []
+    
+    for user_id, user_data in all_users.items():
+        user_id_int = int(user_id)
+        if user_id_int == context.bot.id:
+            continue
+        
+        name = f"@{user_data['username']}" if user_data['username'] else user_data['first_name']
+        
+        if user_id_int in active_in_current:
+            active_users.append((user_id_int, name, user_data))
+        else:
+            inactive_users.append((user_id_int, name, user_data))
+    
+    # Сортируем по имени
+    active_users.sort(key=lambda x: x[1])
+    inactive_users.sort(key=lambda x: x[1])
     
     creator_info = "Неизвестно"
     if stats["created_by"]:
@@ -515,46 +526,23 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lines.append(f"📅 Создан: {stats['created_at']}")
     lines.append(f"👤 Создал: {creator_info}")
     lines.append(f"📝 Всего записей: {stats['entries_count']}")
-    lines.append(f"👥 Активных пользователей: {len(stats['active_users'])}")
+    lines.append(f"👥 Всего пользователей в базе: {len(all_users)}\n")
     
-    if total_members > 0:
-        lines.append(f"👥 Всего в группе: {total_members} участников")
-        lines.append(f"📊 Известно пользователей: {len(all_users)}\n")
-    else:
-        lines.append(f"👥 Известно пользователей: {len(all_users)}\n")
-    
-    lines.append("✅ **Записывали в этот список:**")
-    if stats['active_users']:
-        active_names = []
-        for user_id in stats['active_users']:
-            user_id_str = str(user_id)
-            if user_id_str in all_users:
-                user = all_users[user_id_str]
-                name = f"@{user['username']}" if user['username'] else user['first_name']
-                active_names.append(name)
-            else:
-                active_names.append(f"ID {user_id}")
-        
-        for name in active_names:
+    # Записывали
+    lines.append(f"✅ **Записывали в этот список ({len(active_users)}):**")
+    if active_users:
+        for user_id, name, _ in active_users:
             lines.append(f"  • {name}")
     else:
         lines.append("  • Пока никто не записывал")
     
     lines.append("")
-    lines.append("❌ **Не записывали в этот список:**")
-    inactive_users = []
     
-    for user_id, user_data in all_users.items():
-        user_id_int = int(user_id)
-        if user_id_int != context.bot.id and user_id_int not in stats['active_users']:
-            name = f"@{user_data['username']}" if user_data['username'] else user_data['first_name']
-            inactive_users.append(name)
-    
+    # Не записывали
+    lines.append(f"❌ **Не записывали в этот список ({len(inactive_users)}):**")
     if inactive_users:
-        for name in inactive_users[:30]:
+        for user_id, name, _ in inactive_users:
             lines.append(f"  • {name}")
-        if len(inactive_users) > 30:
-            lines.append(f"  ... и ещё {len(inactive_users) - 30} пользователей")
     else:
         lines.append("  • Все пользователи записали слёт! 🎉")
     
@@ -565,6 +553,96 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(text[i:i+4096])
     else:
         await update.message.reply_text(text)
+
+# ========== НОВЫЕ КОМАНДЫ ДЛЯ ВЛАДЕЛЬЦА ==========
+async def show_all_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Показывает всех известных пользователей (только для владельца)"""
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    all_users = load_users()
+    if not all_users:
+        await update.message.reply_text("📭 База пользователей пуста")
+        return
+    
+    lines = [f"📋 **Все известные пользователи ({len(all_users)}):**\n"]
+    
+    for user_id, user_data in all_users.items():
+        name = f"@{user_data['username']}" if user_data['username'] else user_data['first_name']
+        lines.append(f"• {name} (ID: {user_data['id']}) - последний раз: {user_data['last_seen']}")
+    
+    text = '\n'.join(lines)
+    
+    if len(text) > 4096:
+        for i in range(0, len(text), 4096):
+            await update.message.reply_text(text[i:i+4096])
+    else:
+        await update.message.reply_text(text)
+
+async def remove_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Удаляет пользователя из базы по ID (только для владельца)"""
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    if not context.args:
+        await update.message.reply_text("❓ Использование: /remove_user ID_пользователя")
+        return
+    
+    try:
+        user_id = int(context.args[0])
+    except ValueError:
+        await update.message.reply_text("❌ ID должен быть числом")
+        return
+    
+    all_users = load_users()
+    user_id_str = str(user_id)
+    
+    if user_id_str not in all_users:
+        await update.message.reply_text(f"❌ Пользователь с ID {user_id} не найден")
+        return
+    
+    user_name = all_users[user_id_str]['first_name']
+    del all_users[user_id_str]
+    
+    with open(USERS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(all_users, f, ensure_ascii=False, indent=2)
+    
+    await update.message.reply_text(f"✅ Пользователь {user_name} (ID: {user_id}) удалён из базы")
+
+async def reset_current_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Сбрасывает статистику текущего списка (оставляя записи)"""
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    reset_list_stats(update.effective_user.id)
+    await update.message.reply_text("✅ Статистика текущего списка сброшена")
+
+async def clean_old_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Удаляет пользователей, которые не писали более 30 дней"""
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    all_users = load_users()
+    now = datetime.datetime.now()
+    removed = 0
+    
+    for user_id, user_data in list(all_users.items()):
+        try:
+            last_seen = datetime.datetime.strptime(user_data['last_seen'], "%Y-%m-%d %H:%M:%S")
+            if (now - last_seen).days > 30:
+                del all_users[user_id]
+                removed += 1
+        except:
+            pass
+    
+    with open(USERS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(all_users, f, ensure_ascii=False, indent=2)
+    
+    await update.message.reply_text(f"🗑 Удалено {removed} неактивных пользователей (более 30 дней)")
 
 async def auto_newlist(context: ContextTypes.DEFAULT_TYPE):
     logging.info("🤖 Запуск автоматического создания нового списка")
@@ -625,6 +703,12 @@ async def run_bot():
     application.add_handler(CommandHandler("newlist", new_list))
     application.add_handler(CommandHandler("logs", show_logs))
     application.add_handler(CommandHandler("stats", list_stats))
+    
+    # Новые команды для владельца
+    application.add_handler(CommandHandler("users", show_all_users))
+    application.add_handler(CommandHandler("remove_user", remove_user))
+    application.add_handler(CommandHandler("reset_stats", reset_current_stats))
+    application.add_handler(CommandHandler("clean_users", clean_old_users))
     
     job_queue = application.job_queue
     if job_queue:
