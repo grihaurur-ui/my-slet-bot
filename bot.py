@@ -490,10 +490,8 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("📭 Статистика по текущему списку отсутствует. Создайте новый список через /newlist")
         return
     
-    # Собираем всех, кто записывал в этот список
     active_in_current = set(stats['active_users'])
     
-    # Формируем списки
     active_users = []
     inactive_users = []
     
@@ -509,7 +507,6 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             inactive_users.append((user_id_int, name, user_data))
     
-    # Сортируем по имени
     active_users.sort(key=lambda x: x[1])
     inactive_users.sort(key=lambda x: x[1])
     
@@ -528,7 +525,6 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lines.append(f"📝 Всего записей: {stats['entries_count']}")
     lines.append(f"👥 Всего пользователей в базе: {len(all_users)}\n")
     
-    # Записывали
     lines.append(f"✅ **Записывали в этот список ({len(active_users)}):**")
     if active_users:
         for user_id, name, _ in active_users:
@@ -538,7 +534,6 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     lines.append("")
     
-    # Не записывали
     lines.append(f"❌ **Не записывали в этот список ({len(inactive_users)}):**")
     if inactive_users:
         for user_id, name, _ in inactive_users:
@@ -554,7 +549,122 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text(text)
 
-# ========== НОВЫЕ КОМАНДЫ ДЛЯ ВЛАДЕЛЬЦА ==========
+# ========== НОВАЯ КОМАНДА TOP ==========
+async def top_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Показывает топ пользователей по количеству записей в текущем списке"""
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    stats = load_list_stats()
+    if not stats.get("active_users"):
+        await update.message.reply_text("📭 Пока никто не записывал слёты")
+        return
+    
+    # Собираем статистику по пользователям
+    user_stats = {}
+    for user_id in stats['active_users']:
+        user_stats[user_id] = user_stats.get(user_id, 0) + 1
+    
+    # Сортируем по убыванию
+    sorted_users = sorted(user_stats.items(), key=lambda x: x[1], reverse=True)
+    
+    all_users = load_users()
+    
+    lines = ["🏆 **Топ пользователей по записям в этом списке:**\n"]
+    
+    for i, (user_id, count) in enumerate(sorted_users[:10], 1):
+        user_id_str = str(user_id)
+        if user_id_str in all_users:
+            user = all_users[user_id_str]
+            name = f"@{user['username']}" if user['username'] else user['first_name']
+        else:
+            name = f"ID {user_id}"
+        
+        medal = ""
+        if i == 1:
+            medal = "🥇 "
+        elif i == 2:
+            medal = "🥈 "
+        elif i == 3:
+            medal = "🥉 "
+        else:
+            medal = f"{i}. "
+        
+        lines.append(f"{medal}{name} — {count} {'запись' if count == 1 else 'записей'}")
+    
+    text = '\n'.join(lines)
+    await update.message.reply_text(text)
+
+# ========== НОВАЯ КОМАНДА ADD_USER ==========
+async def add_user_by_username(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Добавляет пользователя в базу по username (только для владельца)"""
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    if not context.args:
+        await update.message.reply_text("❓ Использование: /add_user @username")
+        return
+    
+    username = context.args[0].strip().lstrip('@')
+    
+    try:
+        # Пытаемся получить информацию о пользователе
+        chat_member = await context.bot.get_chat_member(chat_id=CHAT_ID, user_id=f"@{username}")
+        user = chat_member.user
+        
+        if user.is_bot:
+            await update.message.reply_text("❌ Нельзя добавлять ботов")
+            return
+        
+        save_user(user)
+        
+        user_name = f"@{user.username}" if user.username else user.first_name
+        await update.message.reply_text(f"✅ Пользователь {user_name} (ID: {user.id}) добавлен в базу")
+        
+    except Exception as e:
+        await update.message.reply_text(f"❌ Не удалось найти пользователя @{username}\nПроверь, что он есть в группе и username правильный")
+
+# ========== НОВАЯ КОМАНДА SEARCH ==========
+async def search_in_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Ищет текст во всех слётах и показывает совпадения"""
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    if not context.args:
+        await update.message.reply_text("❓ Использование: /search текст")
+        return
+    
+    search_text = ' '.join(context.args).lower()
+    
+    results = []
+    for server, entry in servers_data.items():
+        if entry and search_text in entry.lower():
+            results.append((server, entry))
+    
+    if not results:
+        await update.message.reply_text(f"🔍 Ничего не найдено по запросу: {search_text}")
+        return
+    
+    lines = [f"🔍 **Результаты поиска: «{search_text}»**\n"]
+    
+    for i, (server, entry) in enumerate(results[:30], 1):
+        lines.append(f"{i}. {server} — {entry}")
+    
+    if len(results) > 30:
+        lines.append(f"\n... и ещё {len(results) - 30} результатов")
+    
+    text = '\n'.join(lines)
+    
+    if len(text) > 4096:
+        for i in range(0, len(text), 4096):
+            await update.message.reply_text(text[i:i+4096])
+    else:
+        await update.message.reply_text(text)
+
+# ========== НОВЫЕ КОМАНДЫ ДЛЯ ВЛАДЕЛЬЦА (ПОЛЬЗОВАТЕЛИ) ==========
 async def show_all_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Показывает всех известных пользователей (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
@@ -704,7 +814,10 @@ async def run_bot():
     application.add_handler(CommandHandler("logs", show_logs))
     application.add_handler(CommandHandler("stats", list_stats))
     
-    # Новые команды для владельца
+    # Новые команды
+    application.add_handler(CommandHandler("top", top_users))
+    application.add_handler(CommandHandler("add_user", add_user_by_username))
+    application.add_handler(CommandHandler("search", search_in_list))
     application.add_handler(CommandHandler("users", show_all_users))
     application.add_handler(CommandHandler("remove_user", remove_user))
     application.add_handler(CommandHandler("reset_stats", reset_current_stats))
