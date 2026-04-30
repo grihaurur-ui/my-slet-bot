@@ -3,6 +3,7 @@ import logging
 import os
 import asyncio
 import datetime
+import random
 from flask import Flask
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
@@ -146,15 +147,18 @@ def format_list():
     for server in SERVERS:
         entry = servers_data.get(server)
         if entry:
-            # Если есть запись
             if entry.strip() == "0":
                 lines.append(f"{server} - 0 ❌")
             else:
-                lines.append(f"{server} - {entry} ✅")
+                lines.append(f"{server} - {entry} ✔️")
         else:
-            # Если записи нет - просто название сервера
             lines.append(server)
     return '\n'.join(lines)
+
+# ========== ПРОВЕРКА БЛОКИРОВКИ ==========
+async def is_locked():
+    lock_file = "locked.txt"
+    return os.path.exists(lock_file)
 
 # ========== ЗАГРУЗКА ДАННЫХ ==========
 if os.path.exists(DATA_FILE):
@@ -196,7 +200,6 @@ def add_log(user_id, user_name, action, details):
 def load_users():
     if os.path.exists(USERS_FILE):
         with open(USERS_FILE, 'r', encoding='utf-8') as f:
-            # Конвертируем старый формат в новый счётчик записей
             users = json.load(f)
             for user_id, user_data in users.items():
                 if "entries_count" not in user_data:
@@ -226,7 +229,6 @@ def save_user(user):
         json.dump(users, f, ensure_ascii=False, indent=2)
 
 def increment_user_entries(user_id):
-    """Увеличивает счётчик записей пользователя"""
     users = load_users()
     user_id_str = str(user_id)
     if user_id_str in users:
@@ -367,13 +369,19 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     
     await update.message.reply_text(
-        "чтобы записать слет /i (сервер/\n"
+        "чтобы записать слет /i (сервер)\n"
         "пример /i блу бусс 22 или /i москва кор 20"
     )
     await update_list_message(context)
 
+# ========== ОСНОВНАЯ КОМАНДА ДОБАВЛЕНИЯ (С ПРОВЕРКОЙ БЛОКИРОВКИ) ==========
 async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_private_access(update):
+        return
+    
+    # Проверка блокировки
+    if await is_locked():
+        await update.message.reply_text("🔒 Запись слётов временно заблокирована владельцем")
         return
     
     if len(context.args) < 2:
@@ -402,10 +410,7 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
         details=f"{server}: {text}"
     )
     
-    # Увеличиваем счётчик записей пользователя
     increment_user_entries(user.id)
-    
-    # Добавляем в статистику текущего списка
     add_to_list_stats(user.id)
     
     await update.message.reply_text(f"✅ Записано на {server}: {text}")
@@ -507,7 +512,7 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка при создании списка: {e}")
 
-# ========== СТАТИСТИКА ТОЛЬКО ПО УЧАСТНИКАМ ГРУППЫ ==========
+# ========== КОМАНДА /stats ==========
 async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
@@ -520,20 +525,16 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("📭 Статистика по текущему списку отсутствует. Создайте новый список через /newlist")
         return
     
-    # Получаем реальных участников группы (админы и активные пользователи)
     group_members_ids = set()
     try:
-        # Получаем администраторов
         administrators = await context.bot.get_chat_administrators(chat_id=CHAT_ID)
         for admin in administrators:
             if not admin.user.is_bot:
                 group_members_ids.add(admin.user.id)
-                # Сохраняем админов в базу
                 save_user(admin.user)
     except Exception as e:
         logging.warning(f"Не удалось получить администраторов: {e}")
     
-    # Также добавляем всех, кто есть в базе (они писали в чат)
     for user_id in all_users.keys():
         group_members_ids.add(int(user_id))
     
@@ -600,16 +601,14 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text(text)
 
-# ========== КОМАНДА TOP (ПРАВИЛЬНЫЙ ПОДСЧЁТ) ==========
+# ========== КОМАНДА /top ==========
 async def top_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Показывает топ пользователей по количеству записей (всего)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
     
     all_users = load_users()
     
-    # Собираем статистику из базы пользователей
     user_stats = []
     for user_id, user_data in all_users.items():
         count = user_data.get("entries_count", 0)
@@ -621,7 +620,6 @@ async def top_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("📭 Пока никто не записывал слёты")
         return
     
-    # Сортируем по убыванию
     user_stats.sort(key=lambda x: x[1], reverse=True)
     
     lines = ["🏆 **Топ пользователей по количеству записей:**\n"]
@@ -642,9 +640,8 @@ async def top_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = '\n'.join(lines)
     await update.message.reply_text(text)
 
-# ========== КОМАНДА ADD_USER ПО USERNAME ==========
+# ========== КОМАНДА /add_user ==========
 async def add_user_by_username(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Добавляет пользователя в базу по username (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -669,11 +666,10 @@ async def add_user_by_username(update: Update, context: ContextTypes.DEFAULT_TYP
         await update.message.reply_text(f"✅ Пользователь {user_name} (ID: {user.id}) добавлен в базу")
         
     except Exception as e:
-        await update.message.reply_text(f"❌ Не удалось найти пользователя @{username}\nПроверь, что он есть в группе")
+        await update.message.reply_text(f"❌ Не удалось找到 пользователя @{username}\nПроверь, что он есть в группе")
 
-# ========== КОМАНДА SEARCH (ДЛЯ ВСЕХ) ==========
+# ========== КОМАНДА /search (ДЛЯ ВСЕХ) ==========
 async def search_in_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Ищет текст во всех слётах (доступно всем)"""
     if not context.args:
         await update.message.reply_text("❓ Использование: /search текст")
         return
@@ -704,6 +700,86 @@ async def search_in_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(text[i:i+4096])
     else:
         await update.message.reply_text(text)
+
+# ========== НОВЫЕ КОМАНДЫ ==========
+
+# /announce - объявление в чате
+async def announce(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    if not context.args:
+        await update.message.reply_text("❓ Использование: /announce текст объявления")
+        return
+    
+    text = ' '.join(context.args)
+    
+    try:
+        await context.bot.send_message(chat_id=CHAT_ID, text=f"📢 **ОБЪЯВЛЕНИЕ**\n\n{text}")
+        await update.message.reply_text("✅ Объявление отправлено в чат")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Ошибка: {e}")
+
+# /lottery - лотерея среди активных
+async def lottery(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    stats = load_list_stats()
+    all_users = load_users()
+    
+    if not stats.get("active_users"):
+        await update.message.reply_text("📭 Нет участников, которые записывали слёты в этом списке")
+        return
+    
+    active_users = []
+    for user_id in stats['active_users']:
+        user_id_str = str(user_id)
+        if user_id_str in all_users:
+            user = all_users[user_id_str]
+            name = f"@{user['username']}" if user['username'] else user['first_name']
+            active_users.append((user_id, name))
+    
+    if not active_users:
+        await update.message.reply_text("📭 Нет участников в базе")
+        return
+    
+    winner = random.choice(active_users)
+    winner_name = winner[1]
+    winner_id = winner[0]
+    
+    await update.message.reply_text(
+        f"🎲 **ЛОТЕРЕЯ СЛЁТОВ** 🎲\n\n"
+        f"Всего участников: {len(active_users)}\n\n"
+        f"🏆 **ПОБЕДИТЕЛЬ:** {winner_name} (ID: {winner_id}) 🏆\n\n"
+        f"Поздравляем! 🎉"
+    )
+
+# /lock - блокировка записи слётов
+async def lock_slets(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    lock_file = "locked.txt"
+    with open(lock_file, 'w') as f:
+        f.write("locked")
+    
+    await update.message.reply_text("🔒 **Запись слётов ЗАБЛОКИРОВАНА** 🔒\n\nНикто не может записывать слёты до команды /unlock")
+
+# /unlock - разблокировка записи слётов
+async def unlock_slets(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != OWNER_ID:
+        await update.message.reply_text("⛔ Только для владельца")
+        return
+    
+    lock_file = "locked.txt"
+    if os.path.exists(lock_file):
+        os.remove(lock_file)
+    
+    await update.message.reply_text("🔓 **Запись слётов РАЗБЛОКИРОВАНА** 🔓\n\nТеперь снова можно записывать слёты командой /i")
 
 # ========== КОМАНДЫ ДЛЯ ВЛАДЕЛЬЦА ПОЛЬЗОВАТЕЛИ ==========
 async def show_all_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -858,6 +934,12 @@ async def run_bot():
     application.add_handler(CommandHandler("remove_user", remove_user))
     application.add_handler(CommandHandler("reset_stats", reset_current_stats))
     application.add_handler(CommandHandler("clean_users", clean_old_users))
+    
+    # НОВЫЕ КОМАНДЫ
+    application.add_handler(CommandHandler("announce", announce))
+    application.add_handler(CommandHandler("lottery", lottery))
+    application.add_handler(CommandHandler("lock", lock_slets))
+    application.add_handler(CommandHandler("unlock", unlock_slets))
     
     job_queue = application.job_queue
     if job_queue:
