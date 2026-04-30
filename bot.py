@@ -150,7 +150,7 @@ def format_list():
             if entry.strip() == "0":
                 lines.append(f"{server} - 0 ❌")
             else:
-                lines.append(f"{server} - {entry} ✔️")
+                lines.append(f"{server} - {entry} ✅")
         else:
             # Если записи нет - просто название сервера
             lines.append(server)
