@@ -144,9 +144,15 @@ SYNONYMS = {
 def format_list():
     lines = []
     for server in SERVERS:
-        if servers_data.get(server):
-            lines.append(f"{server} - {servers_data[server]}")
+        entry = servers_data.get(server)
+        if entry:
+            # Если есть запись
+            if entry.strip() == "0":
+                lines.append(f"{server} - 0 ❌")
+            else:
+                lines.append(f"{server} - {entry} ✔️")
         else:
+            # Если записи нет - просто название сервера
             lines.append(server)
     return '\n'.join(lines)
 
@@ -190,23 +196,43 @@ def add_log(user_id, user_name, action, details):
 def load_users():
     if os.path.exists(USERS_FILE):
         with open(USERS_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
+            # Конвертируем старый формат в новый счётчик записей
+            users = json.load(f)
+            for user_id, user_data in users.items():
+                if "entries_count" not in user_data:
+                    user_data["entries_count"] = 0
+            return users
     return {}
 
 def save_user(user):
     users = load_users()
     user_id = str(user.id)
     
-    users[user_id] = {
-        "id": user.id,
-        "username": user.username,
-        "first_name": user.first_name,
-        "last_name": user.last_name,
-        "last_seen": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    }
+    if user_id not in users:
+        users[user_id] = {
+            "id": user.id,
+            "username": user.username,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "last_seen": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "entries_count": 0
+        }
+    else:
+        users[user_id]["last_seen"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        if "entries_count" not in users[user_id]:
+            users[user_id]["entries_count"] = 0
     
     with open(USERS_FILE, 'w', encoding='utf-8') as f:
         json.dump(users, f, ensure_ascii=False, indent=2)
+
+def increment_user_entries(user_id):
+    """Увеличивает счётчик записей пользователя"""
+    users = load_users()
+    user_id_str = str(user_id)
+    if user_id_str in users:
+        users[user_id_str]["entries_count"] = users[user_id_str].get("entries_count", 0) + 1
+        with open(USERS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(users, f, ensure_ascii=False, indent=2)
 
 def load_list_stats():
     if os.path.exists(LIST_STATS_FILE):
@@ -376,6 +402,10 @@ async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
         details=f"{server}: {text}"
     )
     
+    # Увеличиваем счётчик записей пользователя
+    increment_user_entries(user.id)
+    
+    # Добавляем в статистику текущего списка
     add_to_list_stats(user.id)
     
     await update.message.reply_text(f"✅ Записано на {server}: {text}")
@@ -477,7 +507,7 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка при создании списка: {e}")
 
-# ========== НОВАЯ РАСШИРЕННАЯ КОМАНДА STATS ==========
+# ========== СТАТИСТИКА ТОЛЬКО ПО УЧАСТНИКАМ ГРУППЫ ==========
 async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
@@ -490,22 +520,43 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("📭 Статистика по текущему списку отсутствует. Создайте новый список через /newlist")
         return
     
+    # Получаем реальных участников группы (админы и активные пользователи)
+    group_members_ids = set()
+    try:
+        # Получаем администраторов
+        administrators = await context.bot.get_chat_administrators(chat_id=CHAT_ID)
+        for admin in administrators:
+            if not admin.user.is_bot:
+                group_members_ids.add(admin.user.id)
+                # Сохраняем админов в базу
+                save_user(admin.user)
+    except Exception as e:
+        logging.warning(f"Не удалось получить администраторов: {e}")
+    
+    # Также добавляем всех, кто есть в базе (они писали в чат)
+    for user_id in all_users.keys():
+        group_members_ids.add(int(user_id))
+    
     active_in_current = set(stats['active_users'])
     
     active_users = []
     inactive_users = []
     
-    for user_id, user_data in all_users.items():
-        user_id_int = int(user_id)
-        if user_id_int == context.bot.id:
+    for user_id in group_members_ids:
+        if user_id == context.bot.id:
             continue
         
-        name = f"@{user_data['username']}" if user_data['username'] else user_data['first_name']
-        
-        if user_id_int in active_in_current:
-            active_users.append((user_id_int, name, user_data))
+        user_id_str = str(user_id)
+        if user_id_str in all_users:
+            user_data = all_users[user_id_str]
+            name = f"@{user_data['username']}" if user_data['username'] else user_data['first_name']
         else:
-            inactive_users.append((user_id_int, name, user_data))
+            name = f"ID {user_id}"
+        
+        if user_id in active_in_current:
+            active_users.append((user_id, name))
+        else:
+            inactive_users.append((user_id, name))
     
     active_users.sort(key=lambda x: x[1])
     inactive_users.sort(key=lambda x: x[1])
@@ -523,11 +574,11 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lines.append(f"📅 Создан: {stats['created_at']}")
     lines.append(f"👤 Создал: {creator_info}")
     lines.append(f"📝 Всего записей: {stats['entries_count']}")
-    lines.append(f"👥 Всего пользователей в базе: {len(all_users)}\n")
+    lines.append(f"👥 Участников в группе: {len(group_members_ids)}\n")
     
     lines.append(f"✅ **Записывали в этот список ({len(active_users)}):**")
     if active_users:
-        for user_id, name, _ in active_users:
+        for user_id, name in active_users:
             lines.append(f"  • {name}")
     else:
         lines.append("  • Пока никто не записывал")
@@ -536,7 +587,7 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     lines.append(f"❌ **Не записывали в этот список ({len(inactive_users)}):**")
     if inactive_users:
-        for user_id, name, _ in inactive_users:
+        for user_id, name in inactive_users:
             lines.append(f"  • {name}")
     else:
         lines.append("  • Все пользователи записали слёт! 🎉")
@@ -549,38 +600,33 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text(text)
 
-# ========== НОВАЯ КОМАНДА TOP ==========
+# ========== КОМАНДА TOP (ПРАВИЛЬНЫЙ ПОДСЧЁТ) ==========
 async def top_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Показывает топ пользователей по количеству записей в текущем списке"""
+    """Показывает топ пользователей по количеству записей (всего)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
     
-    stats = load_list_stats()
-    if not stats.get("active_users"):
+    all_users = load_users()
+    
+    # Собираем статистику из базы пользователей
+    user_stats = []
+    for user_id, user_data in all_users.items():
+        count = user_data.get("entries_count", 0)
+        if count > 0:
+            name = f"@{user_data['username']}" if user_data['username'] else user_data['first_name']
+            user_stats.append((name, count, user_id))
+    
+    if not user_stats:
         await update.message.reply_text("📭 Пока никто не записывал слёты")
         return
     
-    # Собираем статистику по пользователям
-    user_stats = {}
-    for user_id in stats['active_users']:
-        user_stats[user_id] = user_stats.get(user_id, 0) + 1
-    
     # Сортируем по убыванию
-    sorted_users = sorted(user_stats.items(), key=lambda x: x[1], reverse=True)
+    user_stats.sort(key=lambda x: x[1], reverse=True)
     
-    all_users = load_users()
+    lines = ["🏆 **Топ пользователей по количеству записей:**\n"]
     
-    lines = ["🏆 **Топ пользователей по записям в этом списке:**\n"]
-    
-    for i, (user_id, count) in enumerate(sorted_users[:10], 1):
-        user_id_str = str(user_id)
-        if user_id_str in all_users:
-            user = all_users[user_id_str]
-            name = f"@{user['username']}" if user['username'] else user['first_name']
-        else:
-            name = f"ID {user_id}"
-        
+    for i, (name, count, user_id) in enumerate(user_stats[:10], 1):
         medal = ""
         if i == 1:
             medal = "🥇 "
@@ -596,7 +642,7 @@ async def top_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = '\n'.join(lines)
     await update.message.reply_text(text)
 
-# ========== НОВАЯ КОМАНДА ADD_USER ==========
+# ========== КОМАНДА ADD_USER ПО USERNAME ==========
 async def add_user_by_username(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Добавляет пользователя в базу по username (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
@@ -610,7 +656,6 @@ async def add_user_by_username(update: Update, context: ContextTypes.DEFAULT_TYP
     username = context.args[0].strip().lstrip('@')
     
     try:
-        # Пытаемся получить информацию о пользователе
         chat_member = await context.bot.get_chat_member(chat_id=CHAT_ID, user_id=f"@{username}")
         user = chat_member.user
         
@@ -624,15 +669,11 @@ async def add_user_by_username(update: Update, context: ContextTypes.DEFAULT_TYP
         await update.message.reply_text(f"✅ Пользователь {user_name} (ID: {user.id}) добавлен в базу")
         
     except Exception as e:
-        await update.message.reply_text(f"❌ Не удалось найти пользователя @{username}\nПроверь, что он есть в группе и username правильный")
+        await update.message.reply_text(f"❌ Не удалось найти пользователя @{username}\nПроверь, что он есть в группе")
 
-# ========== НОВАЯ КОМАНДА SEARCH ==========
+# ========== КОМАНДА SEARCH (ДЛЯ ВСЕХ) ==========
 async def search_in_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Ищет текст во всех слётах и показывает совпадения"""
-    if update.effective_user.id != OWNER_ID:
-        await update.message.reply_text("⛔ Только для владельца")
-        return
-    
+    """Ищет текст во всех слётах (доступно всем)"""
     if not context.args:
         await update.message.reply_text("❓ Использование: /search текст")
         return
@@ -664,9 +705,8 @@ async def search_in_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text(text)
 
-# ========== НОВЫЕ КОМАНДЫ ДЛЯ ВЛАДЕЛЬЦА (ПОЛЬЗОВАТЕЛИ) ==========
+# ========== КОМАНДЫ ДЛЯ ВЛАДЕЛЬЦА ПОЛЬЗОВАТЕЛИ ==========
 async def show_all_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Показывает всех известных пользователей (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -680,7 +720,8 @@ async def show_all_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     for user_id, user_data in all_users.items():
         name = f"@{user_data['username']}" if user_data['username'] else user_data['first_name']
-        lines.append(f"• {name} (ID: {user_data['id']}) - последний раз: {user_data['last_seen']}")
+        entries = user_data.get('entries_count', 0)
+        lines.append(f"• {name} (ID: {user_data['id']}) — {entries} записей")
     
     text = '\n'.join(lines)
     
@@ -691,7 +732,6 @@ async def show_all_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(text)
 
 async def remove_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Удаляет пользователя из базы по ID (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -722,7 +762,6 @@ async def remove_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"✅ Пользователь {user_name} (ID: {user_id}) удалён из базы")
 
 async def reset_current_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Сбрасывает статистику текущего списка (оставляя записи)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -731,7 +770,6 @@ async def reset_current_stats(update: Update, context: ContextTypes.DEFAULT_TYPE
     await update.message.reply_text("✅ Статистика текущего списка сброшена")
 
 async def clean_old_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Удаляет пользователей, которые не писали более 30 дней"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -813,8 +851,6 @@ async def run_bot():
     application.add_handler(CommandHandler("newlist", new_list))
     application.add_handler(CommandHandler("logs", show_logs))
     application.add_handler(CommandHandler("stats", list_stats))
-    
-    # Новые команды
     application.add_handler(CommandHandler("top", top_users))
     application.add_handler(CommandHandler("add_user", add_user_by_username))
     application.add_handler(CommandHandler("search", search_in_list))
