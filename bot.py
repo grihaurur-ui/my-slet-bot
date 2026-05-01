@@ -703,21 +703,22 @@ async def search_in_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ========== НОВЫЕ КОМАНДЫ ==========
 
-# /announce - объявление в чате
+# ========== КОМАНДА /announce (без шапки) ==========
 async def announce(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Отправляет сообщение в чат от имени бота (только для владельца)"""
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
     
     if not context.args:
-        await update.message.reply_text("❓ Использование: /announce текст объявления")
+        await update.message.reply_text("❓ Использование: /announce текст сообщения")
         return
     
     text = ' '.join(context.args)
     
     try:
-        await context.bot.send_message(chat_id=CHAT_ID, text=f"📢 **ОБЪЯВЛЕНИЕ**\n\n{text}")
-        await update.message.reply_text("✅ Объявление отправлено в чат")
+        await context.bot.send_message(chat_id=CHAT_ID, text=text)
+        await update.message.reply_text("✅ Сообщение отправлено в чат")
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка: {e}")
 
