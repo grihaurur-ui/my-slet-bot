@@ -150,7 +150,7 @@ def format_list():
             if entry.strip() == "0":
                 lines.append(f"{server} - 0 ❌")
             else:
-                lines.append(f"{server} - {entry} ✅")
+                lines.append(f"{server} - {entry} ✔️")
         else:
             lines.append(server)
     return '\n'.join(lines)
@@ -268,12 +268,25 @@ def add_to_list_stats(user_id):
     stats["entries_count"] += 1
     save_list_stats(stats)
 
+# ========== ПРОВЕРКА ДОСТУПА (ТОЛЬКО ВЛАДЕЛЕЦ В ЛИЧКЕ) ==========
 async def check_private_access(update: Update):
-    if update.message.chat.type != "private":
-        return True
-    if update.effective_user.id == OWNER_ID:
-        return True
-    await update.message.reply_text("⛔ Бот доступен только в группе")
+    user_id = update.effective_user.id
+    chat_type = update.message.chat.type
+    
+    # Группа - отправляем "пошл нахуй"
+    if chat_type in ["group", "supergroup"]:
+        await update.message.reply_text("пошл нахуй")
+        return False
+    
+    # Личные сообщения
+    if chat_type == "private":
+        # Если это владелец - разрешаем
+        if user_id == OWNER_ID:
+            return True
+        # Если не владелец - отправляем фейковое сообщение
+        await update.message.reply_text("куплю скин Джеймс-Бонд т777666")
+        return False
+    
     return False
 
 def find_server(query):
@@ -359,9 +372,10 @@ async def update_list_message(context):
             logging.error(f"❌ Ошибка: {e}")
 
 async def track_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Отслеживаем пользователей только в группах (для владельца)
     if update.message and update.message.chat.type in ["group", "supergroup"]:
         user = update.effective_user
-        if user and not user.is_bot:
+        if user and not user.is_bot and update.effective_user.id == OWNER_ID:
             save_user(user)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -428,6 +442,9 @@ async def list_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(full_list)
 
 async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_private_access(update):
+        return
+    
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -449,6 +466,9 @@ async def clear_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update_list_message(context)
 
 async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_private_access(update):
+        return
+    
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -474,6 +494,9 @@ async def show_logs(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(text)
 
 async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_private_access(update):
+        return
+    
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -514,6 +537,9 @@ async def new_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ========== КОМАНДА /stats ==========
 async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_private_access(update):
+        return
+    
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -603,6 +629,9 @@ async def list_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ========== КОМАНДА /top ==========
 async def top_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_private_access(update):
+        return
+    
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -642,6 +671,9 @@ async def top_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ========== КОМАНДА /add_user ==========
 async def add_user_by_username(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_private_access(update):
+        return
+    
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -666,10 +698,13 @@ async def add_user_by_username(update: Update, context: ContextTypes.DEFAULT_TYP
         await update.message.reply_text(f"✅ Пользователь {user_name} (ID: {user.id}) добавлен в базу")
         
     except Exception as e:
-        await update.message.reply_text(f"❌ Не удалось找到 пользователя @{username}\nПроверь, что он есть в группе")
+        await update.message.reply_text(f"❌ Не удалось найти пользователя @{username}\nПроверь, что он есть в группе")
 
-# ========== КОМАНДА /search (ДЛЯ ВСЕХ) ==========
+# ========== КОМАНДА /search (ДЛЯ ВСЕХ, НО С ПРОВЕРКОЙ ДОСТУПА) ==========
 async def search_in_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_private_access(update):
+        return
+    
     if not context.args:
         await update.message.reply_text("❓ Использование: /search текст")
         return
@@ -703,9 +738,11 @@ async def search_in_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ========== НОВЫЕ КОМАНДЫ ==========
 
-# ========== КОМАНДА /announce (без шапки) ==========
+# /announce - объявление в чате (без шапки)
 async def announce(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Отправляет сообщение в чат от имени бота (только для владельца)"""
+    if not await check_private_access(update):
+        return
+    
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -724,6 +761,9 @@ async def announce(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # /lottery - лотерея среди активных
 async def lottery(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_private_access(update):
+        return
+    
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -760,6 +800,9 @@ async def lottery(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # /lock - блокировка записи слётов
 async def lock_slets(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_private_access(update):
+        return
+    
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -772,6 +815,9 @@ async def lock_slets(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # /unlock - разблокировка записи слётов
 async def unlock_slets(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_private_access(update):
+        return
+    
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -784,6 +830,9 @@ async def unlock_slets(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ========== КОМАНДЫ ДЛЯ ВЛАДЕЛЬЦА ПОЛЬЗОВАТЕЛИ ==========
 async def show_all_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_private_access(update):
+        return
+    
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -809,6 +858,9 @@ async def show_all_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(text)
 
 async def remove_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_private_access(update):
+        return
+    
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -839,6 +891,9 @@ async def remove_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"✅ Пользователь {user_name} (ID: {user_id}) удалён из базы")
 
 async def reset_current_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_private_access(update):
+        return
+    
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
@@ -847,6 +902,9 @@ async def reset_current_stats(update: Update, context: ContextTypes.DEFAULT_TYPE
     await update.message.reply_text("✅ Статистика текущего списка сброшена")
 
 async def clean_old_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_private_access(update):
+        return
+    
     if update.effective_user.id != OWNER_ID:
         await update.message.reply_text("⛔ Только для владельца")
         return
