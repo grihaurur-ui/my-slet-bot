@@ -268,22 +268,24 @@ def add_to_list_stats(user_id):
     stats["entries_count"] += 1
     save_list_stats(stats)
 
-# ========== ПРОВЕРКА ДОСТУПА (ТОЛЬКО ВЛАДЕЛЕЦ В ЛИЧКЕ) ==========
+# ========== ПРОВЕРКА ДОСТУПА (ТОЛЬКО ТВОЯ ГРУППА) ==========
 async def check_private_access(update: Update):
     user_id = update.effective_user.id
     chat_type = update.message.chat.type
+    chat_id = update.message.chat.id
     
-    # Группа - отправляем "пошл нахуй"
+    # Группа - проверяем, что это ТВОЯ группа
     if chat_type in ["group", "supergroup"]:
-        await update.message.reply_text("пошл нахуй")
-        return False
+        if chat_id == CHAT_ID:
+            return True
+        else:
+            await update.message.reply_text("пошл нахуй")
+            return False
     
-    # Личные сообщения
+    # Личные сообщения - только владельцу
     if chat_type == "private":
-        # Если это владелец - разрешаем
         if user_id == OWNER_ID:
             return True
-        # Если не владелец - отправляем фейковое сообщение
         await update.message.reply_text("куплю скин Джеймс-Бонд т777666")
         return False
     
@@ -372,10 +374,9 @@ async def update_list_message(context):
             logging.error(f"❌ Ошибка: {e}")
 
 async def track_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Отслеживаем пользователей только в группах (для владельца)
     if update.message and update.message.chat.type in ["group", "supergroup"]:
         user = update.effective_user
-        if user and not user.is_bot and update.effective_user.id == OWNER_ID:
+        if user and not user.is_bot and update.message.chat.id == CHAT_ID:
             save_user(user)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -388,12 +389,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     await update_list_message(context)
 
-# ========== ОСНОВНАЯ КОМАНДА ДОБАВЛЕНИЯ (С ПРОВЕРКОЙ БЛОКИРОВКИ) ==========
+# ========== ОСНОВНАЯ КОМАНДА ДОБАВЛЕНИЯ ==========
 async def add_entry(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_private_access(update):
         return
     
-    # Проверка блокировки
     if await is_locked():
         await update.message.reply_text("🔒 Запись слётов временно заблокирована владельцем")
         return
@@ -700,7 +700,7 @@ async def add_user_by_username(update: Update, context: ContextTypes.DEFAULT_TYP
     except Exception as e:
         await update.message.reply_text(f"❌ Не удалось найти пользователя @{username}\nПроверь, что он есть в группе")
 
-# ========== КОМАНДА /search (ДЛЯ ВСЕХ, НО С ПРОВЕРКОЙ ДОСТУПА) ==========
+# ========== КОМАНДА /search ==========
 async def search_in_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_private_access(update):
         return
@@ -738,7 +738,6 @@ async def search_in_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ========== НОВЫЕ КОМАНДЫ ==========
 
-# /announce - объявление в чате (без шапки)
 async def announce(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_private_access(update):
         return
@@ -759,7 +758,6 @@ async def announce(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка: {e}")
 
-# /lottery - лотерея среди активных
 async def lottery(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_private_access(update):
         return
@@ -798,7 +796,6 @@ async def lottery(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Поздравляем! 🎉"
     )
 
-# /lock - блокировка записи слётов
 async def lock_slets(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_private_access(update):
         return
@@ -813,7 +810,6 @@ async def lock_slets(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     await update.message.reply_text("🔒 **Запись слётов ЗАБЛОКИРОВАНА** 🔒\n\nНикто не может записывать слёты до команды /unlock")
 
-# /unlock - разблокировка записи слётов
 async def unlock_slets(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_private_access(update):
         return
@@ -993,8 +989,6 @@ async def run_bot():
     application.add_handler(CommandHandler("remove_user", remove_user))
     application.add_handler(CommandHandler("reset_stats", reset_current_stats))
     application.add_handler(CommandHandler("clean_users", clean_old_users))
-    
-    # НОВЫЕ КОМАНДЫ
     application.add_handler(CommandHandler("announce", announce))
     application.add_handler(CommandHandler("lottery", lottery))
     application.add_handler(CommandHandler("lock", lock_slets))
